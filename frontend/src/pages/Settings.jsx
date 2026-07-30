@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, Button, TextField, Snackbar, Alert, Paper, Grid, Divider,
+  Box, Typography, Snackbar, Alert,
 } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import BoltIcon from "@mui/icons-material/Bolt";
+import MessageIcon from "@mui/icons-material/Message";
+import PersonIcon from "@mui/icons-material/Person";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import settingApi from "../api/settingApi";
 
 export default function Settings() {
   const [form, setForm] = useState({});
+  const [savedMsg, setSavedMsg] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   useEffect(() => {
@@ -14,134 +21,153 @@ export default function Settings() {
 
   const set = (key, value) => setForm({ ...form, [key]: value });
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
     try {
       await settingApi.save(form);
-      setSnack({ open: true, message: "Lưu cài đặt thành công", severity: "success" });
+      setSavedMsg("Cấu hình chung hệ thống đã được lưu cập nhật thành công!");
+      setTimeout(() => setSavedMsg(""), 4000);
     } catch {
       setSnack({ open: true, message: "Lỗi lưu cài đặt", severity: "error" });
     }
   };
 
-  const handleCheckZalo = async () => {
-    try {
-      const res = await settingApi.checkZalo();
-      setSnack({ open: true, message: res.data.message, severity: "success" });
-    } catch {
-      setSnack({ open: true, message: "Kết nối Zalo thất bại", severity: "error" });
-    }
+  const inputSx = {
+    width: "100%", px: 1.75, py: 1.5, fontSize: "0.75rem", bgcolor: "#f8fafc",
+    border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", boxSizing: "border-box",
+    fontFamily: "Arial, sans-serif",
+    "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" },
   };
+
+  const sectionSx = { bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
       <Box>
-        <Typography variant="h4">Cài đặt chung</Typography>
-        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>Cấu hình đơn giá, ngân hàng, Zalo OA và thông tin chủ trọ.</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Cài Đặt Cấu Hình Hệ Thống Chung</Typography>
+        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
+          Cấu hình đơn giá tiện ích điện nước, tài khoản ngân hàng VietQR, token kết nối Zalo OA và thông tin vận hành.
+        </Typography>
       </Box>
 
-      {/* Đơn giá */}
-      <Paper sx={{ p: 3, borderRadius: "16px" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, pb: 1.5, borderBottom: "1px solid #f1f5f9" }}>
-          <Typography sx={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0f172a" }}>Đơn giá</Typography>
+      {savedMsg && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 2, bgcolor: "#d1fae5", color: "#065f46", fontSize: "0.75rem", fontWeight: 700, borderRadius: "16px", border: "1px solid #a7f3d0" }}>
+          <CheckCircleIcon sx={{ fontSize: 18, color: "#059669" }} />
+          <span>{savedMsg}</span>
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <TextField fullWidth label="Điện (VND/kWh)" type="number" value={form.electricityRate || ""} onChange={(e) => set("electricityRate", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField fullWidth label="Nước (VND/m³)" type="number" value={form.waterRate || ""} onChange={(e) => set("waterRate", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField fullWidth label="Phí dịch vụ (VND/tháng)" type="number" value={form.serviceFee || ""} onChange={(e) => set("serviceFee", e.target.value)} />
-          </Grid>
-        </Grid>
-      </Paper>
+      )}
 
-      {/* Thông tin ngân hàng */}
-      <Paper sx={{ p: 3, borderRadius: "16px" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, pb: 1.5, borderBottom: "1px solid #f1f5f9" }}>
-          <Typography sx={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0f172a" }}>Thông tin ngân hàng</Typography>
+      <Box component="form" onSubmit={handleSave} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        {/* 1. Đơn giá */}
+        <Box sx={sectionSx}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
+            <BoltIcon sx={{ fontSize: 18, color: "#2563eb" }} />
+            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>1. Đơn Giá Tiện Ích & Dịch Vụ Mặc Định</Typography>
+          </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Điện (đ/kWh)</Typography>
+              <Box component="input" type="number" value={form.electricityRate || ""} onChange={(e) => set("electricityRate", e.target.value)} sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Nước (đ/m³)</Typography>
+              <Box component="input" type="number" value={form.waterRate || ""} onChange={(e) => set("waterRate", e.target.value)} sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phí Dịch Vụ & Rác (đ/tháng)</Typography>
+              <Box component="input" type="number" value={form.serviceFee || ""} onChange={(e) => set("serviceFee", e.target.value)} sx={inputSx} />
+            </Box>
+          </Box>
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="Tên ngân hàng" value={form.bankName || ""} onChange={(e) => set("bankName", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="Số tài khoản" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="Chủ tài khoản" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="Chi nhánh" value={form.bankBranch || ""} onChange={(e) => set("bankBranch", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <TextField fullWidth label="Nội dung chuyển khoản mẫu" value={form.transferContent || ""} onChange={(e) => set("transferContent", e.target.value)} helperText="Sử dụng biến: {{MAPHONG}}, {{TENKHACH}}, {{THANG}}" />
-          </Grid>
-        </Grid>
-      </Paper>
 
-      {/* Cấu hình Zalo OA */}
-      <Paper sx={{ p: 3, borderRadius: "16px" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, pb: 1.5, borderBottom: "1px solid #f1f5f9" }}>
-          <Typography sx={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0f172a" }}>Cấu hình Zalo OA</Typography>
+        {/* 2. Ngân hàng VietQR */}
+        <Box sx={sectionSx}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
+            <CreditCardIcon sx={{ fontSize: 18, color: "#2563eb" }} />
+            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>2. Thông Tin Ngân Hàng Tích Hợp VietQR Automate</Typography>
+          </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Ngân Hàng (Mã BIN)</Typography>
+              <Box component="input" placeholder="MBBank / Vietcombank / Techcombank" value={form.bankName || ""} onChange={(e) => set("bankName", e.target.value)} sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Tài Khoản</Typography>
+              <Box component="input" placeholder="0988776655" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} sx={{ ...inputSx, fontFamily: "monospace" }} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Chủ Tài Khoản (VIETIN)</Typography>
+              <Box component="input" placeholder="NGUYEN VAN A" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} sx={{ ...inputSx, textTransform: "uppercase", fontWeight: 800 }} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chi Nhánh Ngân Hàng</Typography>
+              <Box component="input" placeholder="Chi nhánh Hà Nội" value={form.bankBranch || ""} onChange={(e) => set("bankBranch", e.target.value)} sx={inputSx} />
+            </Box>
+          </Box>
         </Box>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={5}>
-            <TextField fullWidth label="OA ID" value={form.zaloOaId || ""} onChange={(e) => set("zaloOaId", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={5}>
-            <TextField fullWidth label="Access Token" value={form.zaloAccessToken || ""} onChange={(e) => set("zaloAccessToken", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={2}>
-            <Button variant="outlined" onClick={handleCheckZalo} sx={{ width: "100%" }}>Kiểm tra kết nối</Button>
-          </Grid>
-        </Grid>
-      </Paper>
 
-      {/* Cài đặt hệ thống */}
-      <Paper sx={{ p: 3, borderRadius: "16px" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, pb: 1.5, borderBottom: "1px solid #f1f5f9" }}>
-          <Typography sx={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0f172a" }}>Cài đặt hệ thống</Typography>
+        {/* 3. Zalo OA */}
+        <Box sx={sectionSx}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
+            <MessageIcon sx={{ fontSize: 18, color: "#2563eb" }} />
+            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>3. Cấu Hình Tự Động Hóa Zalo Official Account (Zalo OA)</Typography>
+          </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Zalo Official Account ID</Typography>
+              <Box component="input" value={form.zaloOaId || ""} onChange={(e) => set("zaloOaId", e.target.value)} sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Zalo Access Token</Typography>
+              <Box component="input" type="password" value={form.zaloAccessToken || ""} onChange={(e) => set("zaloAccessToken", e.target.value)} sx={{ ...inputSx, fontFamily: "monospace" }} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Chốt Hóa Đơn Hàng Tháng</Typography>
+              <Box component="input" type="number" min="1" max="31" value={form.invoiceClosingDay || ""} onChange={(e) => set("invoiceClosingDay", e.target.value)} sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Nhắc Nợ Tự Động</Typography>
+              <Box component="input" type="number" min="1" max="31" value={form.defaultRemindDay || ""} onChange={(e) => set("defaultRemindDay", e.target.value)} sx={inputSx} />
+            </Box>
+          </Box>
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <TextField fullWidth label="Ngày chốt hóa đơn" type="number" value={form.invoiceClosingDay || ""} onChange={(e) => set("invoiceClosingDay", e.target.value)} inputProps={{ min: 1, max: 31 }} />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField fullWidth label="Ngày gửi nhắc tự động" type="number" value={form.defaultRemindDay || ""} onChange={(e) => set("defaultRemindDay", e.target.value)} inputProps={{ min: 1, max: 31 }} />
-          </Grid>
-        </Grid>
-      </Paper>
 
-      {/* Thông tin chủ trọ */}
-      <Paper sx={{ p: 3, borderRadius: "16px" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2, pb: 1.5, borderBottom: "1px solid #f1f5f9" }}>
-          <Typography sx={{ fontWeight: 700, fontSize: "0.9375rem", color: "#0f172a" }}>Thông tin chủ trọ</Typography>
+        {/* 4. Chủ trọ */}
+        <Box sx={sectionSx}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
+            <PersonIcon sx={{ fontSize: 18, color: "#2563eb" }} />
+            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>4. Thông Tin Chủ Trọ Quản Lý</Typography>
+          </Box>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Chủ Trọ</Typography>
+              <Box component="input" value={form.landlordName || ""} onChange={(e) => set("landlordName", e.target.value)} sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại Liên Hệ</Typography>
+              <Box component="input" value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email Thông Báo</Typography>
+              <Box component="input" type="email" value={form.landlordEmail || ""} onChange={(e) => set("landlordEmail", e.target.value)} sx={inputSx} />
+            </Box>
+          </Box>
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="Tên" value={form.landlordName || ""} onChange={(e) => set("landlordName", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="SĐT" value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="Email" value={form.landlordEmail || ""} onChange={(e) => set("landlordEmail", e.target.value)} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth label="Địa chỉ" value={form.landlordAddress || ""} onChange={(e) => set("landlordAddress", e.target.value)} />
-          </Grid>
-        </Grid>
-      </Paper>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Button variant="contained" size="large" onClick={handleSave} sx={{ px: 4 }}>Lưu cài đặt</Button>
+        {/* Save */}
+        <Box sx={{ textAlign: "right" }}>
+          <Box component="button" type="submit"
+            sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 4, py: 1.5, bgcolor: "#2563eb", color: "#fff", fontWeight: 700, fontSize: "0.75rem", borderRadius: "12px", border: "none", cursor: "pointer", "&:hover": { bgcolor: "#1d4ed8" }, boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}
+          >
+            <SaveIcon sx={{ fontSize: 16 }} />
+            <span>Lưu Cập Nhật Cấu Hình Hệ Thống</span>
+          </Box>
+        </Box>
       </Box>
 
       <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })}>{snack.message}</Alert>
+        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
       </Snackbar>
     </Box>
   );
