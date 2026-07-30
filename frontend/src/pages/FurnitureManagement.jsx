@@ -89,9 +89,8 @@ export default function FurnitureManagement() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                   >
                     <td style={{ padding: "12px 16px", fontWeight: 700, color: "#94a3b8" }}>{idx + 1}</td>
-                    <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: 1.5 }}>
-                      <InventoryIcon sx={{ fontSize: 16, color: "#2563eb" }} />
-                      <span>{item.name}</span>
+                    <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
+                      {item.name}
                     </td>
                     <td style={{ padding: "12px 16px", color: "#475569" }}>{item.note || "—"}</td>
                     <td style={{ padding: "12px 16px" }}>
