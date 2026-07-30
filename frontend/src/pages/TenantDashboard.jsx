@@ -143,10 +143,11 @@ export default function TenantDashboard() {
 
   const getVietQRUrl = () => {
     const bankName = s.bankName || "MBBank";
-    const accNo = s.bankAccountNo || "0988776655";
+    const accNo = s.bankAccount || "0988776655";
+    const holder = s.bankHolder || "CHU TRO";
     const amt = calcTotal;
     const addInfo = encodeURIComponent(`Thanh toan phong ${room?.room_number || ""} thang ${monthStr()}`);
-    return `https://img.vietqr.io/image/${bankName}-${accNo}-compact2.png?amount=${amt}&addInfo=${addInfo}&accountName=${encodeURIComponent(s.bankAccountOwner || "CHU TRO")}`;
+    return `https://img.vietqr.io/image/${bankName}-${accNo}-compact2.png?amount=${amt}&addInfo=${addInfo}&accountName=${encodeURIComponent(holder)}`;
   };
 
   const tabBtnStyle = (tab) => ({
@@ -393,11 +394,11 @@ export default function TenantDashboard() {
               </Box>
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                 <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Số tài khoản:</Typography>
-                <Typography sx={{ fontWeight: 800, color: "#0f172a", fontFamily: "monospace" }}>{s.bankAccountNo || "0988776655"}</Typography>
+                <Typography sx={{ fontWeight: 800, color: "#0f172a", fontFamily: "monospace" }}>{s.bankAccount || "0988776655"}</Typography>
               </Box>
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                 <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Chủ tài khoản:</Typography>
-                <Typography sx={{ fontWeight: 800, color: "#0f172a", textTransform: "uppercase" }}>{s.bankAccountOwner || "CHU TRO"}</Typography>
+                <Typography sx={{ fontWeight: 800, color: "#0f172a", textTransform: "uppercase" }}>{s.bankHolder || "CHU TRO"}</Typography>
               </Box>
               <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #e2e8f0", pt: 1.5, color: "#2563eb" }}>
                 <Typography sx={{ fontWeight: 900, fontSize: "0.875rem" }}>Số tiền chuyển:</Typography>
