@@ -1,0 +1,55 @@
+const bcrypt = require("bcrypt");
+const { User, Tenant } = require("../models");
+
+exports.getProfile = async (req, res, next) => {
+    try {
+        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const profile = {
+            name: req.user.name,
+            email: req.user.email,
+            phone: req.user.phone,
+            cccd: req.user.cccd || (tenant ? tenant.cccd : ""),
+            avatar: req.user.avatar
+        };
+        res.json({ profile });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const { name, email, phone, cccd } = req.body;
+        const updateData = {};
+        if (name) updateData.name = name;
+        if (email) updateData.email = email;
+        if (phone) updateData.phone = phone;
+        if (cccd !== undefined) updateData.cccd = cccd;
+
+        await req.user.update(updateData);
+
+        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        if (tenant && cccd !== undefined) {
+            await tenant.update({ cccd });
+        }
+
+        res.json({ message: "Cap nhat thong tin thanh cong" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.changePassword = async (req, res, next) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const user = await User.scope('withPassword').findByPk(req.user.id);
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) return res.status(400).json({ message: "Mat khau cu khong dung" });
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+        await user.update({ password: hashed });
+        res.json({ message: "Doi mat khau thanh cong" });
+    } catch (error) {
+        next(error);
+    }
+};
