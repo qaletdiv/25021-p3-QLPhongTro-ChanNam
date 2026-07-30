@@ -58,6 +58,15 @@ export default function RoomManagement() {
     catch (err) { setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" }); }
   };
 
+  const openDetail = async (room) => {
+    try {
+      const res = await roomApi.getById(room.id);
+      setDetailRoom(res.data.room);
+    } catch {
+      setSnack({ open: true, message: "Lỗi tải chi tiết phòng", severity: "error" });
+    }
+  };
+
   if (loading) return <CircularProgress />;
 
   const getContract = (room) => room.contracts?.[0];
@@ -189,7 +198,7 @@ export default function RoomManagement() {
 
               {/* Card Actions */}
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", pt: 1.5 }}>
-                <Box onClick={() => setDetailRoom(room)} sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, fontSize: "0.75rem", fontWeight: 700, color: "#2563eb", cursor: "pointer", "&:hover": { color: "#1d4ed8" } }}>
+                <Box onClick={() => openDetail(room)} sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, fontSize: "0.75rem", fontWeight: 700, color: "#2563eb", cursor: "pointer", "&:hover": { color: "#1d4ed8" } }}>
                   <EyeIcon sx={{ fontSize: 16 }} />
                   <span>Xem vật dụng & chi tiết</span>
                 </Box>
