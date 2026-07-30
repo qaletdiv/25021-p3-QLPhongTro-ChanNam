@@ -35,7 +35,7 @@ exports.getContractById = async (req, res, next) => {
 
 exports.updateContract = async (req, res, next) => {
     try {
-        const { deposit, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints } = req.body;
+        const { deposit, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints, roomId } = req.body;
 
         const contract = await Contract.findByPk(req.params.id, {
             include: [{ model: Room, as: "room" }]
@@ -43,7 +43,18 @@ exports.updateContract = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Khong tim thay hop dong" });
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Khong co quyen" });
 
-        await contract.update({ deposit, startDate, endDate, paymentDay, fingerprintCode });
+        const updateData = { deposit, startDate, endDate, paymentDay, fingerprintCode };
+
+        if (roomId && Number(roomId) !== contract.roomId) {
+            const newRoom = await Room.findByPk(roomId);
+            if (!newRoom || newRoom.landlordId !== req.user.id) return res.status(400).json({ message: "Phong khong hop le" });
+            if (newRoom.status !== 'empty') return res.status(400).json({ message: "Phong khong trong" });
+            await contract.room.update({ status: 'empty' });
+            await newRoom.update({ status: 'rented' });
+            updateData.roomId = roomId;
+        }
+
+        await contract.update(updateData);
 
         if (companionFingerprints && companionFingerprints.length > 0) {
             await Promise.all(companionFingerprints.map(c =>

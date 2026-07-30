@@ -56,9 +56,10 @@ export default function TenantManagement() {
     const activeContract = tenant.contracts?.find((c) => c.status === "active");
     if (activeContract) {
       try {
-        const [furnRes, contractRes] = await Promise.all([
+        const [furnRes, contractRes, roomsRes] = await Promise.all([
           furnitureApi.getAll(),
           contractApi.getById(activeContract.id),
+          roomApi.getAll(),
         ]);
         const contract = contractRes.data.contract;
         setFurnitureList(furnRes.data.furnitures);
@@ -68,6 +69,9 @@ export default function TenantManagement() {
           existingFurns[f.id] = { checked: !!ef, quantity: ef ? ef.quantity : f.default_quantity };
         });
         setSelectedFurnitures(existingFurns);
+
+        const allRooms = roomsRes.data.rooms;
+        setEmptyRooms(allRooms.filter(r => r.status === 'empty' || r.id === activeContract.roomId));
 
         setContractForm({
           tenantId: tenant.id, roomId: activeContract.roomId,
@@ -104,7 +108,7 @@ export default function TenantManagement() {
         const contractData = {
           ...contractForm, deposit: Number(contractForm.deposit),
           paymentDay: Number(contractForm.paymentDay),
-          companionFingerprints
+          companionFingerprints, roomId: contractForm.roomId
         };
         await contractApi.update(editContractId, contractData);
       }
@@ -140,8 +144,8 @@ export default function TenantManagement() {
     try {
       const res = await contractApi.getById(contractId);
       const contract = res.data.contract;
-      const [roomsRes, furnRes] = await Promise.all([roomApi.getAll("empty"), furnitureApi.getAll()]);
-      setEmptyRooms(roomsRes.data.rooms);
+      const [roomsRes, furnRes] = await Promise.all([roomApi.getAll(), furnitureApi.getAll()]);
+      setEmptyRooms(roomsRes.data.rooms.filter(r => r.status === 'empty' || r.id === contract.roomId));
       setFurnitureList(furnRes.data.furnitures);
       const existingFurns = {};
       furnRes.data.furnitures.forEach((f) => {
@@ -608,6 +612,22 @@ export default function TenantManagement() {
               {editContractId && (
                 <>
                   <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem", mt: 1 }}>Thông tin hợp đồng</Typography>
+                  <Box>
+                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phòng</Typography>
+                    {emptyRooms.length === 0 ? (
+                      <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
+                        Không có phòng trống nào khả dụng.
+                      </Box>
+                    ) : (
+                      <Box component="select" value={contractForm.roomId}
+                        onChange={(e) => setContractForm({ ...contractForm, roomId: e.target.value })}
+                        sx={{ width: "100%", px: 1.75, py: 1.5, fontSize: "0.75rem", bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" }, fontFamily: "Arial, sans-serif" }}>
+                        {emptyRooms.map((r) => (
+                          <option key={r.id} value={r.id}>Phòng {r.room_number} - Tầng {r.floor || "?"} ({r.area || "?"}m²) - Giá: {formatCurrency(r.price)}/tháng</option>
+                        ))}
+                      </Box>
+                    )}
+                  </Box>
                   <Grid container spacing={1.5}>
                     <Grid item xs={4}>
                       <TextField fullWidth size="small" label="Tiền cọc (VND)" type="number" value={contractForm.deposit} onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })} required
