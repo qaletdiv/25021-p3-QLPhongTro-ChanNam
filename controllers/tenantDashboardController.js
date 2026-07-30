@@ -3,13 +3,26 @@ const { Tenant, Contract, Room, Notification } = require("../models");
 
 exports.getDashboard = async (req, res, next) => {
     try {
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        let tenant = await Tenant.findOne({ where: { userId: req.user.id } });
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
-        const contract = await Contract.findOne({
+        let contract = await Contract.findOne({
             where: { tenantId: tenant.id, status: 'active' },
             include: [{ model: Room, as: "room" }]
         });
+
+        if (!contract) {
+            contract = await Contract.findOne({
+                where: { status: 'active' },
+                include: [{
+                    model: Room, as: "room"
+                }, {
+                    model: Tenant, as: "tenant",
+                    where: { name: req.user.name, phone: req.user.phone }
+                }]
+            });
+            if (contract) tenant = contract.tenant;
+        }
 
         let notifications = [];
         if (contract) {
