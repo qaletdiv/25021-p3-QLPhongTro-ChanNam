@@ -112,6 +112,8 @@ export default function TenantManagement() {
         };
         await contractApi.update(editContractId, contractData);
       }
+      setEditTenantId(null);
+      setEditContractId(null);
       fetchTenants();
       setTimeout(() => setSnack({ open: true, message: "Cập nhật thông tin thành công", severity: "success" }), 300);
     } catch (err) {
