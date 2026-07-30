@@ -101,13 +101,10 @@ export default function TenantManagement() {
         await tenantApi.create(tenantForm);
       }
       if (editContractId) {
-        const furnitures = Object.entries(selectedFurnitures)
-          .filter(([, v]) => v.checked)
-          .map(([furnitureId, v]) => ({ furnitureId: Number(furnitureId), quantity: v.quantity }));
         const contractData = {
           ...contractForm, deposit: Number(contractForm.deposit),
           paymentDay: Number(contractForm.paymentDay),
-          furnitures, companionFingerprints
+          companionFingerprints
         };
         await contractApi.update(editContractId, contractData);
       }
@@ -180,14 +177,15 @@ export default function TenantManagement() {
     }
     try {
       setContractLoading(true);
-      const furnitures = Object.entries(selectedFurnitures)
-        .filter(([, v]) => v.checked)
-        .map(([furnitureId, v]) => ({ furnitureId: Number(furnitureId), quantity: v.quantity }));
-      const data = { ...contractForm, deposit: Number(contractForm.deposit), paymentDay: Number(contractForm.paymentDay), furnitures, companionFingerprints };
+      const data = { ...contractForm, deposit: Number(contractForm.deposit), paymentDay: Number(contractForm.paymentDay), companionFingerprints };
 
       if (editContractId) {
         await contractApi.update(editContractId, data);
       } else {
+        const furnitures = Object.entries(selectedFurnitures)
+          .filter(([, v]) => v.checked)
+          .map(([furnitureId, v]) => ({ furnitureId: Number(furnitureId), quantity: v.quantity }));
+        data.furnitures = furnitures;
         await contractApi.create(data);
       }
       setOpenContract(false);
@@ -645,20 +643,14 @@ export default function TenantManagement() {
                   {furnitureList.length > 0 && (
                     <Box>
                       <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Vật dụng trong phòng</Typography>
-                      <Box sx={{ maxHeight: 180, overflow: "auto", display: "flex", flexDirection: "column", gap: 0.75 }}>
-                        {furnitureList.map((f) => (
-                          <Box key={f.id} sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 1, bgcolor: "#f8fafc", borderRadius: "8px" }}>
-                            <Checkbox checked={selectedFurnitures[f.id]?.checked || false}
-                              onChange={(e) => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], checked: e.target.checked } })}
-                              sx={{ "& .MuiSvgIcon-root": { fontSize: 18 } }} />
-                            <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a", flex: 1 }}>{f.name}</Typography>
-                            {selectedFurnitures[f.id]?.checked && (
-                              <TextField size="small" type="number" label="SL" value={selectedFurnitures[f.id]?.quantity || 1}
-                                onChange={(e) => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], quantity: Number(e.target.value) } })}
-                                inputProps={{ min: 1 }} sx={{ width: 80, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "8px", bgcolor: "#fff" } }} />
-                            )}
-                          </Box>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+                        {furnitureList.filter(f => selectedFurnitures[f.id]?.checked).map((f) => (
+                          <Chip key={f.id} label={`${f.name} (x${selectedFurnitures[f.id].quantity})`}
+                            size="small" sx={{ bgcolor: "#f1f5f9", color: "#0f172a", fontWeight: 600, borderRadius: "8px", fontSize: "0.75rem" }} />
                         ))}
+                        {!furnitureList.some(f => selectedFurnitures[f.id]?.checked) && (
+                          <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Chưa bàn giao vật dụng</Typography>
+                        )}
                       </Box>
                     </Box>
                   )}

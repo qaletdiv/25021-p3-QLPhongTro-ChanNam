@@ -8,7 +8,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import EyeIcon from "@mui/icons-material/Visibility";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import CheckIcon from "@mui/icons-material/Check";
 import roomApi from "../api/roomApi";
+import contractApi from "../api/contractApi";
+import furnitureApi from "../api/furnitureApi";
 
 const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
 
@@ -22,6 +25,10 @@ export default function RoomManagement() {
   const [editRoom, setEditRoom] = useState(null);
   const [form, setForm] = useState({ room_number: "", floor: 1, area: 25, price: 3000000, default_payment_day: 5 });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+  const [furnitureEditMode, setFurnitureEditMode] = useState(false);
+  const [furnitureEditList, setFurnitureEditList] = useState([]);
+  const [furnitureEditSelections, setFurnitureEditSelections] = useState({});
+  const [furnitureEditSaving, setFurnitureEditSaving] = useState(false);
 
   const fetchRooms = useCallback(async () => {
     try { const res = await roomApi.getAll(); setRooms(res.data.rooms); }
@@ -65,6 +72,43 @@ export default function RoomManagement() {
     } catch {
       setSnack({ open: true, message: "Lỗi tải chi tiết phòng", severity: "error" });
     }
+  };
+
+  const openFurnitureEdit = async () => {
+    const contract = getContract(detailRoom);
+    if (!contract) return;
+    try {
+      const res = await furnitureApi.getAll();
+      const allFurniture = res.data.furnitures;
+      setFurnitureEditList(allFurniture);
+      const selections = {};
+      allFurniture.forEach(f => {
+        const cf = contract.contractFurnitures?.find(c => c.furnitureId === f.id);
+        selections[f.id] = { checked: !!cf, quantity: cf ? cf.quantity : f.default_quantity || 1 };
+      });
+      setFurnitureEditSelections(selections);
+      setFurnitureEditMode(true);
+    } catch {
+      setSnack({ open: true, message: "Lỗi tải danh sách vật dụng", severity: "error" });
+    }
+  };
+
+  const handleFurnitureSave = async () => {
+    try {
+      setFurnitureEditSaving(true);
+      const contract = getContract(detailRoom);
+      if (!contract) return;
+      const furnitures = Object.entries(furnitureEditSelections)
+        .filter(([, v]) => v.checked)
+        .map(([furnitureId, v]) => ({ furnitureId: Number(furnitureId), quantity: v.quantity }));
+      await contractApi.update(contract.id, { furnitures });
+      setFurnitureEditMode(false);
+      const res = await roomApi.getById(detailRoom.id);
+      setDetailRoom(res.data.room);
+      setTimeout(() => setSnack({ open: true, message: "Cập nhật vật dụng thành công", severity: "success" }), 300);
+    } catch (err) {
+      setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" });
+    } finally { setFurnitureEditSaving(false); }
   };
 
   if (loading) return <CircularProgress />;
@@ -325,23 +369,61 @@ export default function RoomManagement() {
 
               {/* Inventory Items */}
               <Box>
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em", mb: 1.5 }}>
-                  Danh Sách Vật Dụng Trong Phòng
-                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Danh Sách Vật Dụng Trong Phòng
+                  </Typography>
+                  {getContract(detailRoom) && !furnitureEditMode && (
+                    <Box onClick={openFurnitureEdit} sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, fontSize: "0.6875rem", fontWeight: 700, color: "#2563eb", cursor: "pointer", "&:hover": { color: "#1d4ed8" } }}>
+                      <EditIcon sx={{ fontSize: 14 }} /> Chỉnh sửa
+                    </Box>
+                  )}
+                </Box>
                 <Paper sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
-                  {(getContract(detailRoom)?.contractFurnitures?.length > 0) ? (
-                    <Box>
-                      {getContract(detailRoom).contractFurnitures.map((cf, idx) => (
-                        <Box key={idx} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 1.75, borderBottom: idx < getContract(detailRoom).contractFurnitures.length - 1 ? "1px solid #f1f5f9" : "none" }}>
-                          <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>{cf.furniture?.name || `Vật dụng #${cf.furnitureId}`}</Typography>
-                          <Chip label={`SL: ${cf.quantity}`} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, borderRadius: "8px", fontSize: "0.6875rem", border: "1px solid #fde68a" }} />
+                  {furnitureEditMode ? (
+                    <Box sx={{ p: 1.5, display: "flex", flexDirection: "column", gap: 1 }}>
+                      {furnitureEditList.map((f) => {
+                        const sel = furnitureEditSelections[f.id] || { checked: false, quantity: 1 };
+                        return (
+                          <Box key={f.id} sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 1, bgcolor: "#f8fafc", borderRadius: "12px" }}>
+                            <Box
+                              onClick={() => setFurnitureEditSelections({ ...furnitureEditSelections, [f.id]: { ...sel, checked: !sel.checked } })}
+                              sx={{ width: 16, height: 16, borderRadius: "4px", border: sel.checked ? "none" : "1px solid #cbd5e1", bgcolor: sel.checked ? "#2563eb" : "transparent", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                            >
+                              {sel.checked && <CheckIcon sx={{ fontSize: 12, color: "#fff" }} />}
+                            </Box>
+                            <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a", flex: 1 }}>{f.name}</Typography>
+                            {sel.checked && (
+                              <TextField size="small" type="number" value={sel.quantity} inputProps={{ min: 1 }}
+                                onChange={(e) => setFurnitureEditSelections({ ...furnitureEditSelections, [f.id]: { ...sel, quantity: Number(e.target.value) } })}
+                                sx={{ width: 80, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "8px", bgcolor: "#fff" } }} />
+                            )}
+                          </Box>
+                        );
+                      })}
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 1 }}>
+                        <Box onClick={() => setFurnitureEditMode(false)} sx={{ px: 2, py: 1, fontSize: "0.75rem", fontWeight: 700, color: "#475569", borderRadius: "8px", cursor: "pointer", bgcolor: "#f1f5f9", "&:hover": { bgcolor: "#e2e8f0" } }}>Hủy</Box>
+                        <Box onClick={handleFurnitureSave} sx={{ px: 2, py: 1, fontSize: "0.75rem", fontWeight: 700, color: "#fff", borderRadius: "8px", cursor: "pointer", bgcolor: "#2563eb", "&:hover": { bgcolor: "#1d4ed8" }, display: "flex", alignItems: "center", gap: 1 }}>
+                          {furnitureEditSaving && <CircularProgress size={12} sx={{ color: "#fff" }} />}
+                          Lưu
                         </Box>
-                      ))}
+                      </Box>
                     </Box>
                   ) : (
-                    <Box sx={{ p: 3, textAlign: "center", color: "#64748b", fontSize: "0.75rem" }}>
-                      Phòng hiện chưa có hợp đồng bàn giao vật dụng riêng.
-                    </Box>
+                    (getContract(detailRoom)?.contractFurnitures?.length > 0) ? (
+                      <Box>
+                        {getContract(detailRoom).contractFurnitures.map((cf, idx) => (
+                          <Box key={idx} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 1.75, borderBottom: idx < getContract(detailRoom).contractFurnitures.length - 1 ? "1px solid #f1f5f9" : "none" }}>
+                            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>{cf.furniture?.name || `Vật dụng #${cf.furnitureId}`}</Typography>
+                            <Chip label={`SL: ${cf.quantity}`} size="small" sx={{ bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, borderRadius: "8px", fontSize: "0.6875rem", border: "1px solid #fde68a" }} />
+                          </Box>
+                        ))}
+                      </Box>
+                    ) : (
+                      <Box sx={{ p: 3, textAlign: "center", color: "#64748b", fontSize: "0.75rem" }}>
+                        Phòng hiện chưa có hợp đồng bàn giao vật dụng riêng.
+                      </Box>
+                    )
                   )}
                 </Paper>
               </Box>
