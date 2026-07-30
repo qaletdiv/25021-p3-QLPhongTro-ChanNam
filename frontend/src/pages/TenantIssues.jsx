@@ -33,9 +33,9 @@ export default function TenantIssues() {
   const handleCreate = async () => {
     try {
       await tenantIssueApi.create(form);
-      setSnack({ open: true, message: "Gửi báo cáo thành công", severity: "success" });
       setOpenCreate(false);
       fetchIssues();
+      setTimeout(() => setSnack({ open: true, message: "Gửi báo cáo thành công", severity: "success" }), 300);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" });
     }
