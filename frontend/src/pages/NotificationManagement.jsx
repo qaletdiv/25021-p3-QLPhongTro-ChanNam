@@ -49,9 +49,10 @@ export default function NotificationManagement() {
     try {
       const payload = { title, content, targetType: targetRoom === "all" ? "all" : "specific_rooms", targetRoomIds: targetRoom === "all" ? [] : [targetRoom] };
       await notificationApi.create(payload);
-      setSuccessMsg("Đã tự động gửi thông báo Zalo OA thành công tới danh sách khách hàng!");
+      setSuccessMsg("");
       fetchData();
-      setTimeout(() => setSuccessMsg(""), 4000);
+      setTimeout(() => setSuccessMsg("Đã tự động gửi thông báo Zalo OA thành công tới danh sách khách hàng!"), 300);
+      setTimeout(() => setSuccessMsg(""), 4300);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi gửi thông báo", severity: "error" });
     } finally { setIsSending(false); }

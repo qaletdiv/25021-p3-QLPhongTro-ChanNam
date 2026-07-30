@@ -53,8 +53,8 @@ export default function InvoiceManagement() {
   const handleMarkAsPaid = async (id) => {
     try {
       await invoiceApi.markAsPaid(id);
-      setSnack({ open: true, message: "Xác nhận thanh toán thành công", severity: "success" });
       fetchInvoices();
+      setTimeout(() => setSnack({ open: true, message: "Xác nhận thanh toán thành công", severity: "success" }), 300);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" });
     }
@@ -89,9 +89,9 @@ export default function InvoiceManagement() {
     }
     try {
       await invoiceApi.submitReading(editingInvoice.id, { electricity: newElecInput, water: newWaterInput });
-      setSnack({ open: true, message: "Nhập chỉ số thành công", severity: "success" });
       setEditingInvoice(null);
       fetchInvoices();
+      setTimeout(() => setSnack({ open: true, message: "Nhập chỉ số thành công", severity: "success" }), 300);
     } catch (err) {
       setReadingError(err.response?.data?.message || "Lỗi khi lưu chỉ số");
     }

@@ -111,8 +111,8 @@ export default function TenantManagement() {
         };
         await contractApi.update(editContractId, contractData);
       }
-      setSnack({ open: true, message: "Cập nhật thông tin thành công", severity: "success" });
       fetchTenants();
+      setTimeout(() => setSnack({ open: true, message: "Cập nhật thông tin thành công", severity: "success" }), 300);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" });
     } finally { setContractLoading(false); }
@@ -187,12 +187,11 @@ export default function TenantManagement() {
 
       if (editContractId) {
         await contractApi.update(editContractId, data);
-        setSnack({ open: true, message: "Cập nhật hợp đồng thành công", severity: "success" });
       } else {
         await contractApi.create(data);
-        setSnack({ open: true, message: "Tạo hợp đồng thành công", severity: "success" });
       }
       setOpenContract(false);
+      setTimeout(() => setSnack({ open: true, message: editContractId ? "Cập nhật hợp đồng thành công" : "Tạo hợp đồng thành công", severity: "success" }), 300);
       fetchTenants();
     } catch (err) {
       const data = err.response?.data;
@@ -208,9 +207,9 @@ export default function TenantManagement() {
   const handleCheckout = async (contractId) => {
     try {
       await contractApi.checkout(contractId);
-      setSnack({ open: true, message: "Trả phòng thành công", severity: "success" });
       setCheckoutConfirm(null);
       fetchTenants();
+      setTimeout(() => setSnack({ open: true, message: "Trả phòng thành công", severity: "success" }), 300);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" });
       setCheckoutConfirm(null);

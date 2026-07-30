@@ -30,15 +30,11 @@ export default function FurnitureManagement() {
 
   const handleSave = async () => {
     try {
-      if (editItem) {
-        await furnitureApi.update(editItem.id, form);
-        setSnack({ open: true, message: "Cập nhật vật dụng thành công", severity: "success" });
-      } else {
-        await furnitureApi.create(form);
-        setSnack({ open: true, message: "Thêm vật dụng thành công", severity: "success" });
-      }
+      if (editItem) { await furnitureApi.update(editItem.id, form); }
+      else { await furnitureApi.create(form); }
       setOpen(false);
       fetchItems();
+      setTimeout(() => setSnack({ open: true, message: editItem ? "Cập nhật vật dụng thành công" : "Thêm vật dụng thành công", severity: "success" }), 300);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" });
     }

@@ -45,9 +45,10 @@ export default function RoomManagement() {
 
   const handleSave = async () => {
     try {
-      if (editRoom) { await roomApi.update(editRoom.id, form); setSnack({ open: true, message: "Cập nhật phòng thành công", severity: "success" }); }
-      else { await roomApi.create(form); setSnack({ open: true, message: "Thêm phòng thành công", severity: "success" }); }
+      if (editRoom) { await roomApi.update(editRoom.id, form); }
+      else { await roomApi.create(form); }
       setOpenCreate(false); fetchRooms();
+      setTimeout(() => setSnack({ open: true, message: editRoom ? "Cập nhật phòng thành công" : "Thêm phòng thành công", severity: "success" }), 300);
     } catch (err) { setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" }); }
   };
 
