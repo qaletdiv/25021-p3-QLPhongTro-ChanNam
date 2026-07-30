@@ -90,9 +90,23 @@ export default function TenantManagement() {
         setSnack({ open: true, message: "Lỗi tải thông tin hợp đồng", severity: "error" });
       }
     } else {
+      try {
+        const [roomsRes, furnRes] = await Promise.all([roomApi.getAll(), furnitureApi.getAll()]);
+        setEmptyRooms(roomsRes.data.rooms.filter(r => r.status === 'empty'));
+        setFurnitureList(furnRes.data.furnitures);
+        const defaultFurns = {};
+        furnRes.data.furnitures.forEach((f) => { defaultFurns[f.id] = { checked: false, quantity: f.default_quantity }; });
+        setSelectedFurnitures(defaultFurns);
+        setContractForm({
+          tenantId: tenant.id, roomId: "", deposit: "", startDate: "", endDate: "",
+          paymentDay: 5, fingerprintCode: "", furnitures: [],
+        });
+        setCompanionFingerprints([]);
+        paymentDayManuallyChanged.current = false;
+      } catch {
+        setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" });
+      }
       setEditContractId(null);
-      setFurnitureList([]);
-      setSelectedFurnitures({});
     }
   };
 
@@ -111,6 +125,15 @@ export default function TenantManagement() {
           companionFingerprints, roomId: contractForm.roomId
         };
         await contractApi.update(editContractId, contractData);
+      } else if (contractForm.roomId) {
+        const furnitures = Object.entries(selectedFurnitures)
+          .filter(([, v]) => v.checked)
+          .map(([furnitureId, v]) => ({ furnitureId: Number(furnitureId), quantity: v.quantity }));
+        await contractApi.create({
+          ...contractForm, deposit: Number(contractForm.deposit),
+          paymentDay: Number(contractForm.paymentDay),
+          furnitures, companionFingerprints
+        });
       }
       setEditTenantId(null);
       setEditContractId(null);
@@ -611,62 +634,66 @@ export default function TenantManagement() {
               <TextField fullWidth size="small" label="CCCD" value={tenantForm.cccd} onChange={(e) => setTenantForm({ ...tenantForm, cccd: e.target.value })}
                 sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
 
-              {editContractId && (
-                <>
-                  <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem", mt: 1 }}>Thông tin hợp đồng</Typography>
-                  <Box>
-                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phòng</Typography>
-                    {emptyRooms.length === 0 ? (
-                      <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
-                        Không có phòng trống nào khả dụng.
-                      </Box>
-                    ) : (
-                      <Box component="select" value={contractForm.roomId}
-                        onChange={(e) => setContractForm({ ...contractForm, roomId: e.target.value })}
-                        sx={{ width: "100%", px: 1.75, py: 1.5, fontSize: "0.75rem", bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" }, fontFamily: "Arial, sans-serif" }}>
-                        {emptyRooms.map((r) => (
-                          <option key={r.id} value={r.id}>Phòng {r.room_number} - Tầng {r.floor || "?"} ({r.area || "?"}m²) - Giá: {formatCurrency(r.price)}/tháng</option>
-                        ))}
-                      </Box>
-                    )}
-                  </Box>
-                  <Grid container spacing={1.5}>
-                    <Grid item xs={4}>
-                      <TextField fullWidth size="small" label="Tiền cọc (VND)" type="number" value={contractForm.deposit} onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })} required
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField fullWidth size="small" label="Ngày bắt đầu" type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} InputLabelProps={{ shrink: true }} required
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField fullWidth size="small" label="Ngày kết thúc" type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} InputLabelProps={{ shrink: true }} required
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField fullWidth size="small" label="Ngày thu tiền" type="number" value={contractForm.paymentDay} onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }} inputProps={{ min: 1, max: 31 }} required
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField fullWidth size="small" label="Vân tay (khách chính)" value={contractForm.fingerprintCode} onChange={(e) => setContractForm({ ...contractForm, fingerprintCode: e.target.value })}
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-                    </Grid>
-                  </Grid>
-
-                  {companionFingerprints.length > 0 && (
-                    <Box>
-                      <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Mã số vân tay người đi kèm</Typography>
-                      {companionFingerprints.map((c, i) => (
-                        <TextField key={c.id} fullWidth size="small" label={`Vân tay: ${c.name}`} value={c.fingerprintCode}
-                          onChange={(e) => { const updated = [...companionFingerprints]; updated[i] = { ...updated[i], fingerprintCode: e.target.value }; setCompanionFingerprints(updated); }}
-                          sx={{ mb: 0.75, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+              <>
+                <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem", mt: 1 }}>Thông tin hợp đồng</Typography>
+                <Box>
+                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phòng</Typography>
+                  {emptyRooms.length === 0 ? (
+                    <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
+                      Không có phòng trống nào khả dụng.
+                    </Box>
+                  ) : (
+                    <Box component="select" value={contractForm.roomId}
+                      onChange={(e) => {
+                        const room = emptyRooms.find((r) => r.id === e.target.value);
+                        setContractForm({ ...contractForm, roomId: e.target.value, deposit: room ? String(room.price) : contractForm.deposit });
+                      }}
+                      sx={{ width: "100%", px: 1.75, py: 1.5, fontSize: "0.75rem", bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" }, fontFamily: "Arial, sans-serif" }}>
+                      <option value="">-- Chọn phòng --</option>
+                      {emptyRooms.map((r) => (
+                        <option key={r.id} value={r.id}>Phòng {r.room_number} - Tầng {r.floor || "?"} ({r.area || "?"}m²) - Giá: {formatCurrency(r.price)}/tháng</option>
                       ))}
                     </Box>
                   )}
+                </Box>
+                <Grid container spacing={1.5}>
+                  <Grid item xs={4}>
+                    <TextField fullWidth size="small" label="Tiền cọc (VND)" type="number" value={contractForm.deposit} onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })} required
+                      sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField fullWidth size="small" label="Ngày bắt đầu" type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} InputLabelProps={{ shrink: true }} required
+                      sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField fullWidth size="small" label="Ngày kết thúc" type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} InputLabelProps={{ shrink: true }} required
+                      sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField fullWidth size="small" label="Ngày thu tiền" type="number" value={contractForm.paymentDay} onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }} inputProps={{ min: 1, max: 31 }} required
+                      sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField fullWidth size="small" label="Vân tay (khách chính)" value={contractForm.fingerprintCode} onChange={(e) => setContractForm({ ...contractForm, fingerprintCode: e.target.value })}
+                      sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+                  </Grid>
+                </Grid>
 
-                  {furnitureList.length > 0 && (
-                    <Box>
-                      <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Vật dụng trong phòng</Typography>
+                {companionFingerprints.length > 0 && (
+                  <Box>
+                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Mã số vân tay người đi kèm</Typography>
+                    {companionFingerprints.map((c, i) => (
+                      <TextField key={c.id} fullWidth size="small" label={`Vân tay: ${c.name}`} value={c.fingerprintCode}
+                        onChange={(e) => { const updated = [...companionFingerprints]; updated[i] = { ...updated[i], fingerprintCode: e.target.value }; setCompanionFingerprints(updated); }}
+                        sx={{ mb: 0.75, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+                    ))}
+                  </Box>
+                )}
+
+                {furnitureList.length > 0 && (
+                  <Box>
+                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Vật dụng trong phòng</Typography>
+                    {editContractId ? (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
                         {furnitureList.filter(f => selectedFurnitures[f.id]?.checked).map((f) => (
                           <Chip key={f.id} label={`${f.name} (x${selectedFurnitures[f.id].quantity})`}
@@ -676,10 +703,32 @@ export default function TenantManagement() {
                           <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Chưa bàn giao vật dụng</Typography>
                         )}
                       </Box>
-                    </Box>
-                  )}
-                </>
-              )}
+                    ) : (
+                      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.75 }}>
+                        {furnitureList.map((f) => {
+                          const checked = selectedFurnitures[f.id]?.checked || false;
+                          return (
+                            <Box key={f.id} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 1, bgcolor: "#f8fafc", borderRadius: "8px" }}>
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 1, cursor: "pointer" }}
+                                onClick={() => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], checked: !checked } })}
+                              >
+                                <Box component="input" type="checkbox" checked={checked} readOnly sx={{ width: 15, height: 15, accentColor: "#2563eb", cursor: "pointer" }} />
+                                <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a" }}>{f.name}</Typography>
+                              </Box>
+                              {checked && (
+                                <TextField size="small" type="number" value={selectedFurnitures[f.id]?.quantity || 1} inputProps={{ min: 1 }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  onChange={(e) => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], quantity: Number(e.target.value) } })}
+                                  sx={{ width: 70, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "8px", bgcolor: "#fff" } }} />
+                              )}
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    )}
+                  </Box>
+                )}
+              </>
             </Box>
             <Box sx={{ px: 3, py: 2, borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end", gap: 1 }}>
               <Box onClick={() => { setEditTenantId(null); }} sx={{ px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, color: "#475569", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#f1f5f9" } }}>Hủy</Box>
