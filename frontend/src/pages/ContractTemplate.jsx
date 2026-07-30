@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
-  Box, Typography, TextField, Button, Paper, Snackbar, Alert, CircularProgress, Chip,
+  Box, Typography, Button, Paper, Snackbar, Alert, CircularProgress, Chip,
 } from "@mui/material";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import contractTemplateApi from "../api/contractTemplateApi";
 
 const variables = [
@@ -11,14 +13,34 @@ const variables = [
   "{{ngay_hom_nay}}", "{{ten_chu_tro}}", "{{sdt_chu_tro}}",
 ];
 
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    [{ align: [] }],
+    ["blockquote", "code-block"],
+    [{ color: [] }, { background: [] }],
+    ["link"],
+    ["clean"],
+  ],
+};
+
+const formats = [
+  "header", "bold", "italic", "underline", "strike",
+  "list", "bullet", "align", "blockquote", "code-block",
+  "color", "background", "link",
+];
+
 export default function ContractTemplate() {
   const [template, setTemplate] = useState("");
   const [loading, setLoading] = useState(true);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+  const quillRef = useRef(null);
 
   useEffect(() => {
     contractTemplateApi.getTemplate()
-      .then((res) => setTemplate(res.data.template))
+      .then((res) => setTemplate(res.data.template || ""))
       .catch(() => setSnack({ open: true, message: "Lỗi tải mẫu hợp đồng", severity: "error" }))
       .finally(() => setLoading(false));
   }, []);
@@ -33,7 +55,14 @@ export default function ContractTemplate() {
   };
 
   const insertVariable = (v) => {
-    setTemplate((prev) => prev + v);
+    const quill = quillRef.current?.getEditor();
+    if (quill) {
+      const range = quill.getSelection(true);
+      quill.insertText(range.index, v);
+      quill.setSelection(range.index + v.length);
+    } else {
+      setTemplate((prev) => prev + v);
+    }
   };
 
   if (loading) return <CircularProgress />;
@@ -64,15 +93,22 @@ export default function ContractTemplate() {
             />
           ))}
         </Box>
-        <TextField
-          fullWidth multiline rows={20} value={template}
-          onChange={(e) => setTemplate(e.target.value)}
-          sx={{
-            fontFamily: "monospace",
-            "& textarea": { fontFamily: "monospace" },
-            "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-          }}
-        />
+        <Box sx={{
+          "& .ql-container": { minHeight: 400, fontSize: "0.875rem", fontFamily: "Arial, sans-serif" },
+          "& .ql-editor": { minHeight: 400 },
+          "& .ql-toolbar": { borderRadius: "12px 12px 0 0", borderColor: "#e2e8f0" },
+          "& .ql-container": { borderRadius: "0 0 12px 12px", borderColor: "#e2e8f0" },
+        }}>
+          <ReactQuill
+            ref={quillRef}
+            theme="snow"
+            value={template}
+            onChange={setTemplate}
+            modules={modules}
+            formats={formats}
+            placeholder="Nhập nội dung hợp đồng..."
+          />
+        </Box>
         <Box mt={3} textAlign="right">
           <Button
             variant="contained"
