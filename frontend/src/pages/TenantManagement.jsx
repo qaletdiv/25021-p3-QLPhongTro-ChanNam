@@ -263,7 +263,7 @@ export default function TenantManagement() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem" }}>
                 <thead>
                   <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                    {["Phòng", "Khách Thuê", "Tiền Cọc", "Thời Hạn HĐ", "Ngày Thu", "Mã Vân Tay", "Trạng Thái", ""].map((h) => (
+                    {["Phòng", "Khách Thuê", "Số Điện Thoại", "Tiền Cọc", "Thời Hạn HĐ", "Ngày Thu", "Mã Vân Tay", "Trạng Thái", ""].map((h) => (
                       <th key={h} style={{ padding: "12px 16px", fontWeight: 700, color: "#475569", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.05em", textAlign: h === "" ? "right" : "left" }}>{h}</th>
                     ))}
                   </tr>
@@ -281,9 +281,11 @@ export default function TenantManagement() {
                         <td style={{ padding: "12px 16px", fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem" }}>
                           Phòng {displayContract?.room?.room_number || "-"}
                         </td>
-                        <td style={{ padding: "12px 16px" }}>
-                          <div style={{ fontWeight: 700, color: "#0f172a" }}>{tenant.name}</div>
-                          <div style={{ color: "#64748b", fontSize: "0.6875rem" }}>{tenant.phone}</div>
+                        <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
+                          {tenant.name}
+                        </td>
+                        <td style={{ padding: "12px 16px", color: "#64748b", fontWeight: 600 }}>
+                          {tenant.phone || "-"}
                         </td>
                         <td style={{ padding: "12px 16px", fontWeight: 700, color: "#2563eb" }}>
                           {active ? formatCurrency(active.deposit) : "-"}
