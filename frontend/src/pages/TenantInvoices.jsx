@@ -9,6 +9,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 
+const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
 const statusLabel = { pending: "Đã gửi chỉ số", paid: "Đã thanh toán" };
 
 const cardSx = {
@@ -123,15 +124,15 @@ export default function TenantInvoices() {
           <CardContent>
             <Typography variant="h6" fontWeight="bold" color="#0f172a" mb={2}>Chi tiết hóa đơn</Typography>
             <Grid container spacing={1}>
-              <Grid item xs={6}><Typography color="#64748b">Tiền phòng: <strong style={{ color: "#0f172a" }}>{Number(calculated.roomPrice).toLocaleString("vi-VN")} VND</strong></Typography></Grid>
-              <Grid item xs={6}><Typography color="#64748b">Phí dịch vụ: <strong style={{ color: "#0f172a" }}>{Number(calculated.svcFee).toLocaleString("vi-VN")} VND</strong></Typography></Grid>
+              <Grid item xs={6}><Typography color="#64748b">Tiền phòng: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.roomPrice)}</strong></Typography></Grid>
+              <Grid item xs={6}><Typography color="#64748b">Phí dịch vụ: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.svcFee)}</strong></Typography></Grid>
               <Grid item xs={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
-              <Grid item xs={6}><Typography color="#64748b">Điện: {calculated.elecOld} → {calculated.elecNew} = <strong style={{ color: "#0f172a" }}>{Number(calculated.elecCost).toLocaleString("vi-VN")} VND</strong></Typography></Grid>
-              <Grid item xs={6}><Typography color="#64748b">Nước: {calculated.waterOld} → {calculated.waterNew} = <strong style={{ color: "#0f172a" }}>{Number(calculated.waterCost).toLocaleString("vi-VN")} VND</strong></Typography></Grid>
+              <Grid item xs={6}><Typography color="#64748b">Điện: {calculated.elecOld} → {calculated.elecNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.elecCost)}</strong></Typography></Grid>
+              <Grid item xs={6}><Typography color="#64748b">Nước: {calculated.waterOld} → {calculated.waterNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.waterCost)}</strong></Typography></Grid>
               <Grid item xs={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
               <Grid item xs={12}>
                 <Typography variant="h5" sx={{ color: "#059669" }} fontWeight="bold">
-                  Tổng cộng: {Number(calculated.total).toLocaleString("vi-VN")} VND
+                  Tổng cộng: {formatCurrency(calculated.total)}
                 </Typography>
               </Grid>
             </Grid>
@@ -160,11 +161,11 @@ export default function TenantInvoices() {
             {invoices.map((inv) => (
               <TableRow key={inv.id}>
                 <TableCell sx={{ color: "#0f172a" }}>{inv.month}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{Number(inv.roomPrice).toLocaleString("vi-VN")}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{Number(inv.electricityCost).toLocaleString("vi-VN")}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{Number(inv.waterCost).toLocaleString("vi-VN")}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{Number(inv.serviceFee + inv.otherFees).toLocaleString("vi-VN")}</TableCell>
-                <TableCell align="right" sx={{ color: "#0f172a", fontWeight: 600 }}>{Number(inv.total).toLocaleString("vi-VN")}</TableCell>
+                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.roomPrice)}</TableCell>
+                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.electricityCost)}</TableCell>
+                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.waterCost)}</TableCell>
+                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.serviceFee + inv.otherFees)}</TableCell>
+                <TableCell align="right" sx={{ color: "#0f172a", fontWeight: 600 }}>{formatCurrency(inv.total)}</TableCell>
                 <TableCell>
                   <Chip label={statusLabel[inv.status]}
                     size="small"

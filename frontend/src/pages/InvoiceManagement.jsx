@@ -6,6 +6,7 @@ import {
 import { Receipt } from "@mui/icons-material";
 import invoiceApi from "../api/invoiceApi";
 
+const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
 const statusLabel = { pending: "Đã gửi chỉ số", paid: "Đã thanh toán" };
 
 const chipSx = {
@@ -132,11 +133,11 @@ export default function InvoiceManagement() {
                     <TableCell>{inv.contract?.room?.room_number || "-"}</TableCell>
                     <TableCell>{inv.contract?.tenant?.name || "-"}</TableCell>
                     <TableCell>{inv.month}</TableCell>
-                    <TableCell align="right">{Number(inv.roomPrice).toLocaleString("vi-VN")}</TableCell>
-                    <TableCell align="right">{Number(inv.electricityCost).toLocaleString("vi-VN")}</TableCell>
-                    <TableCell align="right">{Number(inv.waterCost).toLocaleString("vi-VN")}</TableCell>
-                    <TableCell align="right">{Number(inv.serviceFee + inv.otherFees).toLocaleString("vi-VN")}</TableCell>
-                    <TableCell align="right"><strong>{Number(inv.total).toLocaleString("vi-VN")}</strong></TableCell>
+                    <TableCell align="right">{formatCurrency(inv.roomPrice)}</TableCell>
+                    <TableCell align="right">{formatCurrency(inv.electricityCost)}</TableCell>
+                    <TableCell align="right">{formatCurrency(inv.waterCost)}</TableCell>
+                    <TableCell align="right">{formatCurrency(inv.serviceFee + inv.otherFees)}</TableCell>
+                    <TableCell align="right"><strong>{formatCurrency(inv.total)}</strong></TableCell>
                     <TableCell>
                       <Chip
                         label={statusLabel[inv.status]}

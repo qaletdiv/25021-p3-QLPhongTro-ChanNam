@@ -5,6 +5,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import tenantDashboardApi from "../api/tenantDashboardApi";
 
+const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
 const cardSx = {
   bgcolor: "#fff",
   borderRadius: "16px",
@@ -53,9 +54,9 @@ export default function TenantDashboard() {
                       <Typography variant="h6" fontWeight="bold" color="#0f172a">Phòng {room?.room_number}</Typography>
                     </Box>
                   </Box>
-                  <Typography variant="body2" color="#64748b">Giá thuê: <strong style={{ color: "#0f172a" }}>{Number(room?.price || 0).toLocaleString("vi-VN")} VND/tháng</strong></Typography>
+                  <Typography variant="body2" color="#64748b">Giá thuê: <strong style={{ color: "#0f172a" }}>{formatCurrency(room?.price)}/tháng</strong></Typography>
                   <Typography variant="body2" color="#64748b">Ngày thu tiền: <strong style={{ color: "#0f172a" }}>Ngày {contract.paymentDay} hàng tháng</strong></Typography>
-                  <Typography variant="body2" color="#64748b">Tiền cọc: <strong style={{ color: "#0f172a" }}>{Number(contract.deposit).toLocaleString("vi-VN")} VND</strong></Typography>
+                  <Typography variant="body2" color="#64748b">Tiền cọc: <strong style={{ color: "#0f172a" }}>{formatCurrency(contract.deposit)}</strong></Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} textAlign="right">
                   <Box display="flex" alignItems="center" justifyContent="flex-end" gap={1}>

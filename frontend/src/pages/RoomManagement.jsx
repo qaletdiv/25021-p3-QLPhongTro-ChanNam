@@ -11,7 +11,7 @@ import EyeIcon from "@mui/icons-material/Visibility";
 import CloseIcon from "@mui/icons-material/Close";
 import roomApi from "../api/roomApi";
 
-const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN");
+const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
 
 export default function RoomManagement() {
   const [rooms, setRooms] = useState([]);
@@ -144,7 +144,7 @@ export default function RoomManagement() {
                 Phòng {room.room_number}
               </Typography>
               <Typography sx={{ fontSize: "1rem", fontWeight: 700, color: "#2563eb" }}>
-                {formatCurrency(room.price)}đ
+                {formatCurrency(room.price)}
                 <Typography component="span" sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 400 }}>/tháng</Typography>
               </Typography>
             </Box>

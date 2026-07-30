@@ -19,7 +19,7 @@ import {
 import dashboardApi from "../api/dashboardApi";
 import { useNavigate } from "react-router-dom";
 
-const formatCurrency = (n) => (n || 0).toLocaleString("vi-VN");
+const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -93,8 +93,8 @@ export default function Dashboard() {
           { label: "Đã Cho Thuê", value: rentedRooms, sub: `Tỷ lệ: ${occupancyRate}%`, icon: <PeopleIcon />, color: "#059669", bg: "#d1fae5", hoverBorder: "#6ee7b7" },
           { label: "Phòng Trống", value: vacantRooms, sub: "Sẵn sàng nhận khách", icon: <MeetingRoomIcon />, color: "#d97706", bg: "#fef3c7", hoverBorder: "#fcd34d" },
           { label: "Số Khách Thuê", value: currentTenants, sub: "Đang trong hợp đồng", icon: <PeopleIcon />, color: "#7c3aed", bg: "#ede9fe", hoverBorder: "#a78bfa" },
-          { label: "Doanh Thu Tháng", value: `${formatCurrency(stats.monthlyRevenue)}đ`, sub: "Đã thực thu", icon: <PaidIcon />, color: "#2563eb", bg: "#eff6ff", hoverBorder: "#93c5fd" },
-          { label: "Tổng Công Nợ", value: `${formatCurrency(stats.totalDebt)}đ`, sub: "Chưa thanh toán", icon: <WarningIcon />, color: "#e11d48", bg: "#ffe4e6", hoverBorder: "#fda4af" },
+          { label: "Doanh Thu Tháng", value: `${formatCurrency(stats.monthlyRevenue)}`, sub: "Đã thực thu", icon: <PaidIcon />, color: "#2563eb", bg: "#eff6ff", hoverBorder: "#93c5fd" },
+          { label: "Tổng Công Nợ", value: `${formatCurrency(stats.totalDebt)}`, sub: "Chưa thanh toán", icon: <WarningIcon />, color: "#e11d48", bg: "#ffe4e6", hoverBorder: "#fda4af" },
         ].map((card) => (
           <Grid item xs={6} md={4} lg={2} key={card.label}>
             <Card
@@ -137,11 +137,11 @@ export default function Dashboard() {
                   Biểu Đồ Doanh Thu 6 Tháng
                 </Typography>
                 <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  Doanh thu thực tế theo tháng (VNĐ)
+                  Doanh thu thực tế theo tháng
                 </Typography>
               </Box>
               <Chip
-                label={`Tháng này: ${formatCurrency(stats.monthlyRevenue)}đ`}
+                label={`Tháng này: ${formatCurrency(stats.monthlyRevenue)}`}
                 size="small"
                 sx={{ bgcolor: "#eff6ff", color: "#2563eb", fontWeight: 700, borderRadius: "9999px", fontSize: "0.6875rem" }}
               />
@@ -153,7 +153,7 @@ export default function Dashboard() {
                   <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#64748b" }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} />
                   <Tooltip
-                    formatter={(value) => [`${formatCurrency(value)} VNĐ`, "Doanh Thu"]}
+                    formatter={(value) => [formatCurrency(value), "Doanh Thu"]}
                     contentStyle={{ backgroundColor: "#0f172a", color: "#fff", borderRadius: "12px", fontSize: "12px", border: "none" }}
                   />
                   <Bar dataKey="revenue" fill="#2563eb" radius={[6, 6, 0, 0]} />
