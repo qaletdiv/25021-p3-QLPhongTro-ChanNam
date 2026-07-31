@@ -311,7 +311,7 @@ export default function RoomManagement() {
                 <Box>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Thu Tiền</Typography>
                   <TextField fullWidth size="small" type="number" value={form.default_payment_day}
-                    onChange={(e) => setForm({ ...form, default_payment_day: e.target.value })} inputProps={{ min: 1, max: 31 }}
+                    onChange={(e) => setForm({ ...form, default_payment_day: e.target.value })} slotProps={{ htmlInput: { min: 1, max: 31 } }}
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                 </Box>
               </Box>
@@ -388,7 +388,7 @@ export default function RoomManagement() {
                             </Box>
                             <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a", flex: 1 }}>{f.name}</Typography>
                             {sel.checked && (
-                              <TextField size="small" type="number" value={sel.quantity} inputProps={{ min: 1 }}
+                              <TextField size="small" type="number" value={sel.quantity} slotProps={{ htmlInput: { min: 1 } }}
                                 onChange={(e) => setFurnitureEditSelections({ ...furnitureEditSelections, [f.id]: { ...sel, quantity: Number(e.target.value) } })}
                                 sx={{ width: 80, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "8px", bgcolor: "#fff" } }} />
                             )}

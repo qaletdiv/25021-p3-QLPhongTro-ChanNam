@@ -261,7 +261,7 @@ export default function TenantManagement() {
           <TextField
             size="small" placeholder="Tìm theo tên, SĐT hoặc phòng..."
             value={search} onChange={(e) => setSearch(e.target.value)}
-            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#94a3b8", fontSize: 16 }} /></InputAdornment> }}
+            slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#94a3b8", fontSize: 16 }} /></InputAdornment> } }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "10px", fontSize: "0.75rem", bgcolor: "#f8fafc",
@@ -483,7 +483,7 @@ export default function TenantManagement() {
                 <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Thu Tiền</Typography>
                   <TextField
-                    fullWidth size="small" type="number" inputProps={{ min: 1, max: 31 }}
+                    fullWidth size="small" type="number" slotProps={{ htmlInput: { min: 1, max: 31 } }}
                     value={contractForm.paymentDay}
                     onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }}
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
@@ -509,7 +509,7 @@ export default function TenantManagement() {
                     fullWidth size="small" type="date"
                     value={contractForm.startDate}
                     onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })}
-                    InputLabelProps={{ shrink: true }}
+                    slotProps={{ inputLabel: { shrink: true } }}
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                   />
                 </Grid>
@@ -519,7 +519,7 @@ export default function TenantManagement() {
                     fullWidth size="small" type="date"
                     value={contractForm.endDate}
                     onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })}
-                    InputLabelProps={{ shrink: true }}
+                    slotProps={{ inputLabel: { shrink: true } }}
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                   />
                 </Grid>
@@ -568,7 +568,7 @@ export default function TenantManagement() {
                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                               <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", fontWeight: 700 }}>SL:</Typography>
                               <TextField
-                                size="small" type="number" inputProps={{ min: 1 }}
+                                size="small" type="number" slotProps={{ htmlInput: { min: 1 } }}
                                 value={selectedFurnitures[f.id]?.quantity || 1}
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], quantity: Number(e.target.value) } })}
@@ -667,15 +667,15 @@ export default function TenantManagement() {
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
                   <Grid size={4}>
-                    <TextField fullWidth size="small" label="Ngày bắt đầu" type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} InputLabelProps={{ shrink: true }} required
+                    <TextField fullWidth size="small" label="Ngày bắt đầu" type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} required
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
                   <Grid size={4}>
-                    <TextField fullWidth size="small" label="Ngày kết thúc" type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} InputLabelProps={{ shrink: true }} required
+                    <TextField fullWidth size="small" label="Ngày kết thúc" type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} required
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
                   <Grid size={4}>
-                    <TextField fullWidth size="small" label="Ngày thu tiền" type="number" value={contractForm.paymentDay} onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }} inputProps={{ min: 1, max: 31 }} required
+                    <TextField fullWidth size="small" label="Ngày thu tiền" type="number" value={contractForm.paymentDay} onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }} slotProps={{ htmlInput: { min: 1, max: 31 } }} required
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
                   <Grid size={4}>
@@ -721,7 +721,7 @@ export default function TenantManagement() {
                                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a" }}>{f.name}</Typography>
                               </Box>
                               {checked && (
-                                <TextField size="small" type="number" value={selectedFurnitures[f.id]?.quantity || 1} inputProps={{ min: 1 }}
+                                <TextField size="small" type="number" value={selectedFurnitures[f.id]?.quantity || 1} slotProps={{ htmlInput: { min: 1 } }}
                                   onClick={(e) => e.stopPropagation()}
                                   onChange={(e) => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], quantity: Number(e.target.value) } })}
                                   sx={{ width: 70, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "8px", bgcolor: "#fff" } }} />

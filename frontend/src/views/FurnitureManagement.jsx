@@ -149,7 +149,7 @@ export default function FurnitureManagement() {
               </Box>
               <Box>
                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Lượng Mặc Định</Typography>
-                <TextField fullWidth size="small" type="number" inputProps={{ min: 1 }}
+                <TextField fullWidth size="small" type="number" slotProps={{ htmlInput: { min: 1 } }}
                   value={form.default_quantity} onChange={(e) => setForm({ ...form, default_quantity: Number(e.target.value) })}
                   sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
               </Box>
