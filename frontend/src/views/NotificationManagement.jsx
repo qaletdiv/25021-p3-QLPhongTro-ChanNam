@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, CircularProgress, Paper, Select, MenuItem, TextField, Button, FormControl,
+  Box, Typography, CircularProgress, Paper, TextField, Button, Autocomplete,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import HistoryIcon from "@mui/icons-material/History";
@@ -94,19 +94,20 @@ export default function NotificationManagement() {
               {/* Target */}
               <Box>
                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đối Tượng Nhận Thông Báo *</Typography>
-                <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}>
-                  <Select value={targetRoom} onChange={(e) => setTargetRoom(e.target.value)}>
-                    <MenuItem value="all">Tất Cả Các Phòng Đang Cho Thuê</MenuItem>
-                    {rentedRooms.map((r) => {
-                      const tenant = r.contracts?.[0]?.tenant;
-                      return (
-                        <MenuItem key={r.id} value={r.id}>
-                          Phòng {r.room_number} - {tenant?.name || "—"} ({tenant?.phone || "—"})
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  fullWidth size="small" disableClearable
+                  options={[{ id: "all", label: "Tất Cả Các Phòng Đang Cho Thuê" }, ...rentedRooms.map((r) => {
+                    const tenant = r.contracts?.[0]?.tenant;
+                    return { id: r.id, label: `Phòng ${r.room_number} - ${tenant?.name || "—"} (${tenant?.phone || "—"})` };
+                  })]}
+                  getOptionLabel={(o) => o.label}
+                  value={[{ id: "all", label: "Tất Cả Các Phòng Đang Cho Thuê" }, ...rentedRooms.map((r) => {
+                    const tenant = r.contracts?.[0]?.tenant;
+                    return { id: r.id, label: `Phòng ${r.room_number} - ${tenant?.name || "—"} (${tenant?.phone || "—"})` };
+                  })].find((o) => String(o.id) === String(targetRoom)) || null}
+                  onChange={(e, o) => setTargetRoom(o ? o.id : "all")}
+                  renderInput={(params) => <TextField {...params} />}
+                />
               </Box>
 
               {/* Title */}

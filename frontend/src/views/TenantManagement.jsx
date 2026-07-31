@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box, Typography, TextField, IconButton, CircularProgress,
-  Chip, Paper, InputAdornment, Grid, Checkbox, Select, MenuItem, FormControl,
+  Chip, Paper, InputAdornment, Grid, Checkbox, Autocomplete,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -406,22 +406,17 @@ export default function TenantManagement() {
                     Không có phòng trống nào khả dụng! Vui lòng tạo thêm phòng mới trong mục quản lý phòng.
                   </Box>
                 ) : (
-                  <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}>
-                    <Select
-                      value={contractForm.roomId}
-                      onChange={(e) => {
-                        const room = emptyRooms.find((r) => r.id === e.target.value);
-                        setContractForm({ ...contractForm, roomId: e.target.value, deposit: room ? String(room.price) : contractForm.deposit, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room?.default_payment_day || 5) });
-                      }}
-                    >
-                      <MenuItem value=""><em>-- Chọn phòng --</em></MenuItem>
-                      {emptyRooms.map((r) => (
-                        <MenuItem key={r.id} value={r.id}>
-                          Phòng {r.room_number} - Tầng {r.floor || "?"} ({r.area || "?"}m²) - Giá: {formatCurrency(r.price)}/tháng
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <Autocomplete
+                    fullWidth size="small" disableClearable
+                    options={emptyRooms}
+                    getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
+                    value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
+                    onChange={(e, room) => {
+                      setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room?.default_payment_day || 5) });
+                    }}
+                    renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />}
+                    sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
+                  />
                 )}
               </Box>
 
@@ -434,23 +429,18 @@ export default function TenantManagement() {
                     value={editContractId ? "" : contractForm.tenantName} onChange={() => {}}
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                   />
-                  <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}>
-                    <Select
-                      value={contractForm.tenantId}
-                      onChange={(e) => {
-                        const tid = e.target.value;
-                        setContractForm({ ...contractForm, tenantId: tid });
-                        const t = tenants.find(t => t.id === tid);
-                        setCompanionFingerprints(t?.companions?.map(c => ({ id: c.id, name: c.name, fingerprintCode: "" })) || []);
-                      }}
-                      disabled={!!editContractId}
-                    >
-                      <MenuItem value=""><em>-- Chọn khách --</em></MenuItem>
-                      {tenants.map((t) => (
-                        <MenuItem key={t.id} value={t.id}>{t.name} - {t.phone}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <Autocomplete
+                    fullWidth size="small" disableClearable
+                    options={tenants}
+                    getOptionLabel={(t) => `${t.name} - ${t.phone}`}
+                    value={tenants.find((t) => t.id === contractForm.tenantId) || null}
+                    onChange={(e, t) => {
+                      setContractForm({ ...contractForm, tenantId: t ? t.id : "" });
+                      setCompanionFingerprints(t?.companions?.map(c => ({ id: c.id, name: c.name, fingerprintCode: "" })) || []);
+                    }}
+                    disabled={!!editContractId}
+                    renderInput={(params) => <TextField {...params} placeholder="-- Chọn khách --" />}
+                  />
                 </Grid>
                 <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
@@ -617,18 +607,15 @@ export default function TenantManagement() {
               {!editTenantId && (
                 <Box>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn từ danh sách</Typography>
-                  <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}>
-                    <Select
-                      value=""
-                      onChange={(e) => {
-                        const t = tenants.find(t => t.id === e.target.value);
-                        if (t) setTenantForm({ name: t.name, phone: t.phone, cccd: t.cccd || "" });
-                      }}
-                    >
-                      <MenuItem value=""><em>-- Nhập thủ công --</em></MenuItem>
-                      {tenants.map((t) => <MenuItem key={t.id} value={t.id}>{t.name} - {t.phone}</MenuItem>)}
-                    </Select>
-                  </FormControl>
+                  <Autocomplete
+                    fullWidth size="small" disableClearable
+                    options={tenants}
+                    getOptionLabel={(t) => `${t.name} - ${t.phone}`}
+                    onChange={(e, t) => {
+                      if (t) setTenantForm({ name: t.name, phone: t.phone, cccd: t.cccd || "" });
+                    }}
+                    renderInput={(params) => <TextField {...params} placeholder="-- Nhập thủ công --" />}
+                  />
                 </Box>
               )}
               <TextField fullWidth size="small" label="Họ tên" value={tenantForm.name} onChange={(e) => setTenantForm({ ...tenantForm, name: e.target.value })} required
@@ -647,19 +634,16 @@ export default function TenantManagement() {
                       Không có phòng trống nào khả dụng.
                     </Box>
                   ) : (
-                    <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}>
-                      <Select value={contractForm.roomId}
-                        onChange={(e) => {
-                          const room = emptyRooms.find((r) => r.id === e.target.value);
-                          setContractForm({ ...contractForm, roomId: e.target.value, deposit: room ? String(room.price) : contractForm.deposit });
-                        }}
-                      >
-                        <MenuItem value=""><em>-- Chọn phòng --</em></MenuItem>
-                        {emptyRooms.map((r) => (
-                          <MenuItem key={r.id} value={r.id}>Phòng {r.room_number} - Tầng {r.floor || "?"} ({r.area || "?"}m²) - Giá: {formatCurrency(r.price)}/tháng</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                    <Autocomplete
+                      fullWidth size="small" disableClearable
+                      options={emptyRooms}
+                      getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
+                      value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
+                      onChange={(e, room) => {
+                        setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit });
+                      }}
+                      renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" />}
+                    />
                   )}
                 </Box>
                 <Grid container spacing={1.5}>
