@@ -68,9 +68,12 @@ exports.generatePdf = async (req, res, next) => {
         const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN");
         const companionText = companions.map(c => `${c.name} - ${c.relationship}`).join("\n");
 
-        const furnitureText = contract.contractFurnitures?.map(cf =>
-            `- ${cf.furniture?.name}: ${cf.quantity} cai`
-        ).join("\n") || "Khong co";
+        const contractFurnitures = contract.contractFurnitures?.filter(cf => cf.furniture) || [];
+        const furnitureText = contractFurnitures.length > 0
+            ? contractFurnitures.map(cf => `- ${cf.furniture?.name}: ${cf.quantity} cai`).join("\n")
+            : (await Furniture.findAll({ where: { landlordId: req.user.id }, order: [['name', 'ASC']] }))
+                .map(f => `- ${f.name}: ${f.default_quantity} cai`)
+                .join("\n") || "Khong co";
 
         const today = new Date().toLocaleDateString("vi-VN");
 
@@ -112,14 +115,11 @@ exports.generatePdf = async (req, res, next) => {
                 doc.font(allBold ? 'Arial-Bold' : 'Arial').fontSize(allBold ? 13 : 11).text(text, { align: 'center' });
             } else {
                 doc.fontSize(11);
-                let first = true;
-                for (const seg of segments) {
+                for (const [i, seg] of segments.entries()) {
                     doc.font(seg.bold ? 'Arial-Bold' : 'Arial');
-                    const opts = { align: 'left' };
-                    if (first && segments[0].text.startsWith('- ')) opts.indent = 20;
-                    if (!first) opts.continued = true;
+                    const opts = { align: 'left', continued: i < segments.length - 1 };
+                    if (i === 0 && segments[0].text.startsWith('- ')) opts.indent = 20;
                     doc.text(seg.text, opts);
-                    first = false;
                 }
                 doc.text("");
             }
