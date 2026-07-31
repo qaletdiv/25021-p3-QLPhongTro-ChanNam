@@ -2,6 +2,45 @@ const PDFDocument = require("pdfkit");
 const path = require("path");
 const { Contract, Tenant, Room, Companion, ContractFurniture, Furniture, Setting, User } = require("../models");
 
+const decodeEntities = (s) =>
+    s
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+
+const parseHtmlToLines = (html) => {
+    if (!html) return [];
+    let s = html
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/(p|div|h[1-6]|li|ul|ol|blockquote)>/gi, "\n")
+        .replace(/<li[^>]*>/gi, "- ")
+        .replace(/<ul[^>]*>/gi, "")
+        .replace(/<ol[^>]*>/gi, "");
+
+    const result = [];
+    for (const raw of s.split("\n")) {
+        const align = /ql-align[-]?center/i.test(raw) ? "center" : "left";
+        const parts = raw.split(/(<[^>]+>)/g);
+        const segments = [];
+        let currentBold = false;
+        for (const part of parts) {
+            if (/^<\/?(strong|b)(\s|>)/i.test(part) && /^<[^>]+>$/i.test(part)) {
+                currentBold = !part.startsWith("</");
+                continue;
+            }
+            if (/^<[^>]+>$/i.test(part)) continue;
+            if (part.trim() === "") continue;
+            segments.push({ text: decodeEntities(part), bold: currentBold });
+        }
+        if (segments.length === 0) result.push(null);
+        else result.push({ segments, align });
+    }
+    return result;
+};
+
 exports.generatePdf = async (req, res, next) => {
     try {
         const contract = await Contract.findByPk(req.params.id, {
@@ -60,19 +99,29 @@ exports.generatePdf = async (req, res, next) => {
         res.setHeader('Content-Disposition', `inline; filename=hop_dong_${contract.room?.room_number}.pdf`);
         doc.pipe(res);
 
-        const lines = content.split('\n');
+        const lines = parseHtmlToLines(content);
         for (const line of lines) {
-            if (line.trim() === '') {
+            if (!line) {
                 doc.moveDown(0.5);
+                continue;
+            }
+            const { segments, align } = line;
+            const allBold = segments.length > 0 && segments.every((seg) => seg.bold);
+            if (align === "center") {
+                const text = segments.map((seg) => seg.text).join(" ").trim();
+                doc.font(allBold ? 'Arial-Bold' : 'Arial').fontSize(allBold ? 13 : 11).text(text, { align: 'center' });
             } else {
-                const isBold = line.startsWith('Điều') || line.startsWith('HỢP ĐỒNG') || line.startsWith('CỘNG HÒA') || line.startsWith('BÊN');
-                if (isBold) {
-                    doc.font('Arial-Bold').fontSize(13).text(line, { align: line.startsWith('CỘNG') || line.startsWith('HỢP') ? 'center' : 'left' });
-                } else if (line.startsWith('  -') || line.startsWith('-')) {
-                    doc.font('Arial').fontSize(11).text(line, { indent: 20 });
-                } else {
-                    doc.font('Arial').fontSize(11).text(line);
+                doc.fontSize(11);
+                let first = true;
+                for (const seg of segments) {
+                    doc.font(seg.bold ? 'Arial-Bold' : 'Arial');
+                    const opts = { align: 'left' };
+                    if (first && segments[0].text.startsWith('- ')) opts.indent = 20;
+                    if (!first) opts.continued = true;
+                    doc.text(seg.text, opts);
+                    first = false;
                 }
+                doc.text("");
             }
         }
 
