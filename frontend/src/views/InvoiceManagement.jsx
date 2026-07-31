@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, TextField, MenuItem, Alert, CircularProgress, Snackbar, Paper, IconButton, Button,
+  Box, Typography, TextField, MenuItem, CircularProgress, Paper, IconButton, Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import PrinterIcon from "@mui/icons-material/Print";
+import MessageDialog from "../components/MessageDialog";
 import invoiceApi from "../api/invoiceApi";
 import settingApi from "../api/settingApi";
 
@@ -349,9 +350,7 @@ export default function InvoiceManagement() {
         </Box>
       )}
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

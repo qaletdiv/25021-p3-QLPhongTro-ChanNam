@@ -4,10 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Box, Typography, Button, TextField, Card, CardContent, Table, TableHead, TableRow,
   TableCell, TableBody, TableContainer, Paper, Chip, Dialog, DialogTitle, DialogContent,
-  DialogActions, Snackbar, Alert, CircularProgress, Grid,
+  DialogActions, CircularProgress, Grid,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import BugReportIcon from "@mui/icons-material/BugReport";
+import MessageDialog from "../components/MessageDialog";
 import tenantIssueApi from "../api/tenantIssueApi";
 
 const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
@@ -118,9 +119,7 @@ export default function TenantIssues() {
         </DialogActions>
       </Dialog>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px" }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

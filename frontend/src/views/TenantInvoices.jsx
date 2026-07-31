@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Box, Typography, Table, TableHead, TableRow, TableCell, TableBody,
   Card, CardContent, Grid, TextField, Button, Chip, TableContainer, Paper,
-  Snackbar, Alert, CircularProgress, Divider,
+  CircularProgress, Divider,
 } from "@mui/material";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import HistoryIcon from "@mui/icons-material/History";
 import CalculateIcon from "@mui/icons-material/Calculate";
+import MessageDialog from "../components/MessageDialog";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 
 const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
@@ -189,9 +190,7 @@ export default function TenantInvoices() {
         </Table>
       </TableContainer>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px" }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

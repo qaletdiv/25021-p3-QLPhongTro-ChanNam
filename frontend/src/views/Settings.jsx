@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, Snackbar, Alert, TextField, Button,
+  Box, Typography, TextField, Button,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -10,6 +10,7 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import MessageIcon from "@mui/icons-material/Message";
 import PersonIcon from "@mui/icons-material/Person";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import MessageDialog from "../components/MessageDialog";
 import settingApi from "../api/settingApi";
 
 export default function Settings() {
@@ -161,9 +162,7 @@ export default function Settings() {
         </Box>
       </Box>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, IconButton, TextField, Alert, CircularProgress, Snackbar, Paper,
+  Box, Typography, IconButton, TextField, CircularProgress, Paper,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import MessageDialog from "../components/MessageDialog";
 import furnitureApi from "../api/furnitureApi";
 
 export default function FurnitureManagement() {
@@ -166,9 +167,7 @@ export default function FurnitureManagement() {
         </Box>
       )}
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

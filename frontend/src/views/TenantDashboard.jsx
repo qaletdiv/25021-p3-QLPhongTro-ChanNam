@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, Chip, TextField, Snackbar, Alert, CircularProgress, Paper, Button,
+  Box, Typography, Chip, TextField, CircularProgress, Paper, Button,
 } from "@mui/material";
+import MessageDialog from "../components/MessageDialog";
 import tenantDashboardApi from "../api/tenantDashboardApi";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import tenantProfileApi from "../api/tenantProfileApi";
@@ -478,9 +479,7 @@ export default function TenantDashboard() {
         </Paper>
       )}
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

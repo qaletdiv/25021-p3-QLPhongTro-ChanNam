@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  Box, Typography, TextField, IconButton, Alert, CircularProgress,
-  Snackbar, Chip, Paper, InputAdornment, Grid, Checkbox, Select, MenuItem, FormControl,
+  Box, Typography, TextField, IconButton, CircularProgress,
+  Chip, Paper, InputAdornment, Grid, Checkbox, Select, MenuItem, FormControl,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -11,6 +11,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PrintIcon from "@mui/icons-material/Print";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
+import MessageDialog from "../components/MessageDialog";
 import contractTemplateApi from "../api/contractTemplateApi";
 import tenantApi from "../api/tenantApi";
 import roomApi from "../api/roomApi";
@@ -783,9 +784,7 @@ export default function TenantManagement() {
         </Box>
       )}
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, Snackbar, Alert, CircularProgress, Paper, Select, MenuItem, TextField, Button, FormControl,
+  Box, Typography, CircularProgress, Paper, Select, MenuItem, TextField, Button, FormControl,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import HistoryIcon from "@mui/icons-material/History";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import BoltIcon from "@mui/icons-material/Bolt";
+import MessageDialog from "../components/MessageDialog";
 import notificationApi from "../api/notificationApi";
 import roomApi from "../api/roomApi";
 
@@ -192,9 +193,7 @@ export default function NotificationManagement() {
         </Box>
       )}
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

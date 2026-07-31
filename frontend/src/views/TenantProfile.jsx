@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, TextField, Button, Paper, Grid, Snackbar, Alert, CircularProgress, Divider,
+  Box, Typography, TextField, Button, Paper, Grid, CircularProgress, Divider,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
+import MessageDialog from "../components/MessageDialog";
 import tenantProfileApi from "../api/tenantProfileApi";
 
 const cardSx = {
@@ -127,9 +128,7 @@ export default function TenantProfile() {
         </Box>
       </Paper>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px" }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }

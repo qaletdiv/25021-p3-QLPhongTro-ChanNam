@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, Chip, IconButton, TextField, Alert, CircularProgress, Snackbar, Paper,
+  Box, Typography, Chip, IconButton, TextField, CircularProgress, Paper,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -11,6 +11,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import EyeIcon from "@mui/icons-material/Visibility";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import CheckIcon from "@mui/icons-material/Check";
+import MessageDialog from "../components/MessageDialog";
 import roomApi from "../api/roomApi";
 import contractApi from "../api/contractApi";
 import furnitureApi from "../api/furnitureApi";
@@ -433,9 +434,7 @@ export default function RoomManagement() {
         </Box>
       )}
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })} sx={{ borderRadius: "12px", fontSize: "0.75rem", fontWeight: 600 }}>{snack.message}</Alert>
-      </Snackbar>
+      <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );
 }
