@@ -73,7 +73,7 @@ exports.generatePdf = async (req, res, next) => {
             ? contractFurnitures.map(cf => `- ${cf.furniture?.name}: ${cf.quantity} cai`).join("\n")
             : (await Furniture.findAll({ where: { landlordId: req.user.id }, order: [['name', 'ASC']] }))
                 .map(f => `- ${f.name}: ${f.default_quantity} cai`)
-                .join("\n") || "Khong co";
+                .join("\n");
 
         const today = new Date().toLocaleDateString("vi-VN");
 
@@ -87,8 +87,8 @@ exports.generatePdf = async (req, res, next) => {
             .replace(/\{\{ngay_bat_dau\}\}/g, formatDate(contract.startDate))
             .replace(/\{\{ngay_ket_thuc\}\}/g, formatDate(contract.endDate))
             .replace(/\{\{ngay_thu_tien\}\}/g, String(contract.paymentDay))
-            .replace(/\{\{ma_van_tay\}\}/g, contract.fingerprintCode || "Khong co")
-            .replace(/\{\{nguoi_di_kem\}\}/g, companionText || "Khong co")
+            .replace(/\{\{ma_van_tay\}\}/g, contract.fingerprintCode || "")
+            .replace(/\{\{nguoi_di_kem\}\}/g, companionText)
             .replace(/\{\{vat_dung\}\}/g, furnitureText)
             .replace(/\{\{ngay_hom_nay\}\}/g, today)
             .replace(/\{\{sdt_chu_tro\}\}/g, landlord?.phone || "")
