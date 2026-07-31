@@ -71,7 +71,7 @@ export default function ContractTemplate() {
 
   return (
     <Box>
-      <Box mb={3}>
+      <Box sx={{ mb: 3 }}>
         <Typography sx={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a" }}>Mẫu hợp đồng</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>Quản lý nội dung mẫu hợp đồng thuê phòng</Typography>
       </Box>
@@ -82,7 +82,7 @@ export default function ContractTemplate() {
             Biến mẫu hợp đồng
           </Typography>
         </Box>
-        <Box display="flex" flexWrap="wrap" gap={1} mb={3}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 3 }}>
           {variables.map((v) => (
             <Chip
               key={v}
@@ -111,7 +111,7 @@ export default function ContractTemplate() {
             placeholder="Nhập nội dung hợp đồng..."
           />
         </Box>
-        <Box mt={3} textAlign="right">
+        <Box sx={{ mt: 3, textAlign: "right" }}>
           <Button
             variant="contained"
             onClick={handleSave}

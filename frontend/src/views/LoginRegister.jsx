@@ -111,12 +111,12 @@ export default function LoginRegister() {
               <TextField fullWidth label="Mật khẩu" type="password" margin="normal" value={regForm.password} onChange={(e) => setRegForm({ ...regForm, password: e.target.value })} required />
               <TextField fullWidth label="Xác nhận mật khẩu" type="password" margin="normal" value={regForm.confirmPassword} onChange={(e) => setRegForm({ ...regForm, confirmPassword: e.target.value })} required />
 
-              <Box mt={2} mb={1} display="flex" alignItems="center" justifyContent="space-between">
+              <Box sx={{ mt: 2, mb: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Typography variant="subtitle2">Người đi kèm</Typography>
                 <Button size="small" startIcon={<AddIcon />} onClick={addCompanion} sx={{ fontSize: "0.75rem" }}>Thêm</Button>
               </Box>
               {companions.map((c, i) => (
-                <Box key={i} display="flex" gap={1} alignItems="center" mb={1}>
+                <Box key={i} sx={{ display: "flex", gap: 1, alignItems: "center", mb: 1 }}>
                   <TextField size="small" label="Họ tên" value={c.name} onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={{ flex: 2 }} />
                   <TextField size="small" label="SĐT" value={c.phone} onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ flex: 1.5 }} />
                   <TextField size="small" label="CCCD" value={c.cccd} onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={{ flex: 1.5 }} />

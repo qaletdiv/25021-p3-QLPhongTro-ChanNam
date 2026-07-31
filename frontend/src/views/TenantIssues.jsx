@@ -47,7 +47,7 @@ export default function TenantIssues() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight="bold" color="#0f172a">Báo hỏng</Typography>
           <Typography variant="body2" color="#64748b" mt={0.5}>Theo dõi và gửi báo cáo các vấn đề hỏng hóc</Typography>
@@ -100,7 +100,7 @@ export default function TenantIssues() {
       <Dialog open={openCreate} onClose={() => setOpenCreate(false)} maxWidth="sm" fullWidth
         PaperProps={{ sx: { borderRadius: "16px" } }}>
         <DialogTitle sx={{ fontWeight: "bold", color: "#0f172a", borderBottom: "1px solid #e2e8f0" }}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <BugReportIcon sx={{ color: "#059669", fontSize: 20 }} />
             Gửi báo cáo hỏng hóc
           </Box>

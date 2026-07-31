@@ -64,13 +64,13 @@ export default function TenantProfile() {
 
   return (
     <Box>
-      <Box mb={3}>
+      <Box sx={{ mb: 3 }}>
         <Typography variant="h5" fontWeight="bold" color="#0f172a">Hồ sơ cá nhân</Typography>
         <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý thông tin cá nhân và thay đổi mật khẩu</Typography>
       </Box>
 
       <Paper sx={cardSx}>
-        <Box display="flex" alignItems="center" gap={1} pb={1} mb={2} sx={{ borderBottom: "1px solid #e2e8f0" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
           <PersonIcon sx={{ color: "#059669", fontSize: 20 }} />
           <Typography variant="h6" fontWeight="bold" color="#0f172a">Thông tin cá nhân</Typography>
         </Box>
@@ -92,7 +92,7 @@ export default function TenantProfile() {
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
         </Grid>
-        <Box mt={2} textAlign="right">
+        <Box sx={{ mt: 2, textAlign: "right" }}>
           <Button variant="contained" onClick={handleUpdateProfile} disabled={saving}
             sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
             Lưu thay đổi
@@ -101,7 +101,7 @@ export default function TenantProfile() {
       </Paper>
 
       <Paper sx={cardSx}>
-        <Box display="flex" alignItems="center" gap={1} pb={1} mb={2} sx={{ borderBottom: "1px solid #e2e8f0" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
           <LockIcon sx={{ color: "#059669", fontSize: 20 }} />
           <Typography variant="h6" fontWeight="bold" color="#0f172a">Đổi mật khẩu</Typography>
         </Box>
@@ -119,7 +119,7 @@ export default function TenantProfile() {
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
         </Grid>
-        <Box mt={2} textAlign="right">
+        <Box sx={{ mt: 2, textAlign: "right" }}>
           <Button variant="contained" onClick={handleChangePassword} disabled={saving}
             sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
             Đổi mật khẩu

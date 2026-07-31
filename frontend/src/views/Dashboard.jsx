@@ -41,7 +41,7 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Box display="flex" justifyContent="center" mt={10}><CircularProgress /></Box>;
+  if (loading) return <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}><CircularProgress /></Box>;
   if (error) return <Alert severity="error" sx={{ borderRadius: "12px" }}>{error}</Alert>;
 
   const totalRooms = stats.totalRooms || 0;

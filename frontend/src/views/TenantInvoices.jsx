@@ -85,14 +85,14 @@ export default function TenantInvoices() {
 
   return (
     <Box>
-      <Box mb={3}>
+      <Box sx={{ mb: 3 }}>
         <Typography variant="h5" fontWeight="bold" color="#0f172a">Hóa đơn của tôi</Typography>
         <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý chỉ số điện nước và theo dõi hóa đơn hàng tháng</Typography>
       </Box>
 
       <Card sx={cardSx}>
         <CardContent>
-          <Box display="flex" alignItems="center" gap={1} pb={1} mb={2} sx={{ borderBottom: "1px solid #e2e8f0" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
             <CalculateIcon sx={{ color: "#059669", fontSize: 20 }} />
             <Typography variant="h6" fontWeight="bold" color="#0f172a">Nhập chỉ số</Typography>
           </Box>
@@ -142,7 +142,7 @@ export default function TenantInvoices() {
         </Card>
       )}
 
-      <Box display="flex" alignItems="center" gap={1} pb={1} mb={2} sx={{ borderBottom: "1px solid #e2e8f0" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
         <HistoryIcon sx={{ color: "#059669", fontSize: 20 }} />
         <Typography variant="h6" fontWeight="bold" color="#0f172a">Lịch sử hóa đơn</Typography>
       </Box>

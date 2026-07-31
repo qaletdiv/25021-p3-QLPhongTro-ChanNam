@@ -15,6 +15,6 @@ export default function ProtectedRoute({ children }) {
     }
   }, [loading, user, router]);
 
-  if (loading || !user) return <Box display="flex" justifyContent="center" mt={10}><CircularProgress /></Box>;
+  if (loading || !user) return <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}><CircularProgress /></Box>;
   return children;
 }
