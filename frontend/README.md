@@ -1,16 +1,52 @@
-# React + Vite
+# SmartRent Frontend (Next.js)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Frontend cho hệ thống quản lý phòng trọ, xây dựng bằng Next.js 15 (App Router) + MUI + Recharts.
 
-Currently, two official plugins are available:
+## Cài đặt
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+```
 
-## React Compiler
+## Chạy phát triển
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Backend Express chạy ở `http://localhost:3000`. Frontend chạy ở `http://localhost:5173`, proxy `/api/*` sang backend.
 
-## Expanding the Oxlint configuration
+```bash
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Nếu backend chạy ở cổng khác, set biến môi trường `BACKEND_URL`:
+
+```bash
+$env:BACKEND_URL = "http://localhost:4000"
+npm run dev
+```
+
+## Build sản xuất
+
+```bash
+npm run build
+npm run start
+```
+
+## Cấu trúc
+
+```
+app/                    # App Router routes
+  login/[role]/         # Đăng nhập / đăng ký theo vai trò (landlord, tenant)
+  landlord/             # Các trang của chủ trọ
+  tenant/               # Các trang của người thuê
+src/
+  api/                  # Axios client + API modules
+  components/           # RoleRoute, ProtectedRoute
+  contexts/             # AuthContext
+  layouts/              # MainLayout (chủ trọ), TenantLayout (người thuê)
+  views/                # Các trang (page components)
+  theme.js              # MUI theme
+```
+
+## Ghi chú
+
+- Tất cả view/components đều là client components (`"use client"`) vì ứng dụng dựa vào localStorage, MUI và browser APIs.
+- Axios dùng `baseURL: "/api"`; Next.js rewrites `/api/:path*` về backend Express.

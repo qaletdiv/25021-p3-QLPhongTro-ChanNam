@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Box, Typography, Button, Avatar, Drawer, List, ListItemButton, ListItemIcon,
   ListItemText, Divider, useMediaQuery, useTheme, IconButton,
@@ -30,15 +32,15 @@ const menuItems = [
   { label: "Mẫu Hợp Đồng", icon: <DescriptionIcon />, path: "/landlord/contract-template" },
 ];
 
-export default function MainLayout() {
+export default function MainLayout({ children }) {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleLogout = () => { logout(); navigate("/login/landlord"); };
+  const handleLogout = () => { logout(); router.push("/login/landlord"); };
 
   const sidebar = (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column", bgcolor: "#fff" }}>
@@ -58,12 +60,12 @@ export default function MainLayout() {
       </Box>
       <List sx={{ px: 1, py: 0.5, flex: 1 }}>
         {menuItems.map((item) => {
-          const selected = location.pathname === item.path;
+          const selected = pathname === item.path;
           return (
             <ListItemButton
               key={item.path}
               selected={selected}
-              onClick={() => { navigate(item.path); if (isMobile) setMobileOpen(false); }}
+              onClick={() => { router.push(item.path); if (isMobile) setMobileOpen(false); }}
               sx={{
                 borderRadius: "8px", mb: 0.25, px: 1.5, py: 0.8,
                 "&.Mui-selected": { bgcolor: "#eff6ff", "& .MuiListItemIcon-root": { color: "#2563eb" }, "& .MuiListItemText-primary": { color: "#2563eb", fontWeight: 700 } },
@@ -102,7 +104,7 @@ export default function MainLayout() {
         </Drawer>
       </Box>
       <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3 }, mt: isMobile ? 7 : 0, ml: { md: `${drawerWidth}px` }, maxWidth: { md: `calc(100% - ${drawerWidth}px)` } }}>
-        <Outlet />
+        {children}
       </Box>
     </Box>
   );
