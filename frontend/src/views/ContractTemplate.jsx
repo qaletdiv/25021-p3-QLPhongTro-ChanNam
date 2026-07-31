@@ -96,9 +96,12 @@ export default function ContractTemplate() {
           ))}
         </Box>
         <Box sx={{
-          "& .ql-container": { minHeight: 400, maxHeight: 600, overflowY: "auto", fontSize: "0.875rem", fontFamily: "Arial, sans-serif", borderRadius: "0 0 12px 12px", borderColor: "#e2e8f0" },
-          "& .ql-editor": { minHeight: 400 },
-          "& .ql-toolbar": { borderRadius: "12px 12px 0 0", borderColor: "#e2e8f0" },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          "& .ql-toolbar": { width: "210mm", borderRadius: "12px 12px 0 0", borderColor: "#e2e8f0" },
+          "& .ql-container": { width: "210mm", minHeight: "297mm", maxHeight: "297mm", overflowY: "auto", fontSize: "0.875rem", fontFamily: "Arial, sans-serif", borderRadius: "0 0 12px 12px", borderColor: "#e2e8f0" },
+          "& .ql-editor": { minHeight: "297mm", padding: "20mm 20mm 15mm 20mm" },
         }}>
           <ReactQuill
             ref={quillRef}
