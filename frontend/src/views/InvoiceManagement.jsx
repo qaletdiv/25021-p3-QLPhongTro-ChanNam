@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, TextField, MenuItem, Alert, CircularProgress, Snackbar, Paper, IconButton,
+  Box, Typography, TextField, MenuItem, Alert, CircularProgress, Snackbar, Paper, IconButton, Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import PrinterIcon from "@mui/icons-material/Print";
@@ -126,20 +126,12 @@ export default function InvoiceManagement() {
             >{f.label}</Box>
           ))}
         </Box>
-        <Box sx={{ position: "relative", width: { xs: "100%", md: 280 } }}>
-          <SearchIcon sx={{ position: "absolute", left: 10, top: 9, fontSize: 16, color: "#94a3b8", zIndex: 1 }} />
-          <input
-            value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm số phòng, tên khách..."
-            style={{
-              width: "100%", padding: "8.5px 12px 8.5px 34px", fontSize: "0.75rem",
-              border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", boxSizing: "border-box",
-              backgroundColor: "#f8fafc", fontFamily: "Arial, sans-serif",
-            }}
-            onFocus={(e) => { e.target.style.borderColor = "#2563eb"; e.target.style.backgroundColor = "#fff"; e.target.style.boxShadow = "0 0 0 2px rgba(37,99,235,0.2)"; }}
-            onBlur={(e) => { e.target.style.borderColor = "#e2e8f0"; e.target.style.backgroundColor = "#f8fafc"; e.target.style.boxShadow = "none"; }}
-          />
-        </Box>
+        <TextField
+          value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Tìm số phòng, tên khách..."
+          sx={{ width: { xs: "100%", md: 280 }, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, pl: 3.5 } }}
+          slotProps={{ input: { startAdornment: <SearchIcon sx={{ color: "#94a3b8", fontSize: 16, mr: 0.5 }} /> } }}
+        />
       </Paper>
 
       {/* Table */}
@@ -263,10 +255,10 @@ export default function InvoiceManagement() {
                   sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
               </Box>
               <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, pt: 1 }}>
-                <Box onClick={() => setEditingInvoice(null)} sx={{ px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, color: "#475569", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#f1f5f9" } }}>Hủy</Box>
-                <Box component="button" type="submit" sx={{ px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, bgcolor: "#2563eb", color: "#fff", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#1d4ed8" }, border: "none" }}>
+                <Button onClick={() => setEditingInvoice(null)} sx={{ px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, color: "#475569", borderRadius: "12px" }}>Hủy</Button>
+                <Button type="submit" variant="contained" sx={{ px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px" }}>
                   Tính & Gửi Hóa Đơn
-                </Box>
+                </Button>
               </Box>
             </Box>
           </Box>

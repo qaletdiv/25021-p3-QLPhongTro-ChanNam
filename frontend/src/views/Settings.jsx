@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, Snackbar, Alert,
+  Box, Typography, Snackbar, Alert, TextField, Button,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -34,13 +34,6 @@ export default function Settings() {
     }
   };
 
-  const inputSx = {
-    width: "100%", px: 1.75, py: 1.5, fontSize: "0.75rem", bgcolor: "#f8fafc",
-    border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", boxSizing: "border-box",
-    fontFamily: "Arial, sans-serif",
-    "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" },
-  };
-
   const sectionSx = { bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" };
 
   return (
@@ -70,15 +63,15 @@ export default function Settings() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Điện (đ/kWh)</Typography>
-              <Box component="input" type="number" value={form.electricityRate || ""} onChange={(e) => set("electricityRate", e.target.value)} sx={inputSx} />
+              <TextField fullWidth type="number" value={form.electricityRate || ""} onChange={(e) => set("electricityRate", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Nước (đ/m³)</Typography>
-              <Box component="input" type="number" value={form.waterRate || ""} onChange={(e) => set("waterRate", e.target.value)} sx={inputSx} />
+              <TextField fullWidth type="number" value={form.waterRate || ""} onChange={(e) => set("waterRate", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phí Dịch Vụ & Rác (đ/tháng)</Typography>
-              <Box component="input" type="number" value={form.serviceFee || ""} onChange={(e) => set("serviceFee", e.target.value)} sx={inputSx} />
+              <TextField fullWidth type="number" value={form.serviceFee || ""} onChange={(e) => set("serviceFee", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
           </Box>
         </Box>
@@ -92,19 +85,19 @@ export default function Settings() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Ngân Hàng (Mã BIN)</Typography>
-              <Box component="input" placeholder="MBBank / Vietcombank / Techcombank" value={form.bankName || ""} onChange={(e) => set("bankName", e.target.value)} sx={inputSx} />
+              <TextField fullWidth placeholder="MBBank / Vietcombank / Techcombank" value={form.bankName || ""} onChange={(e) => set("bankName", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Tài Khoản</Typography>
-              <Box component="input" placeholder="0988776655" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} sx={{ ...inputSx, fontFamily: "monospace" }} />
+              <TextField fullWidth placeholder="0988776655" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, fontFamily: "monospace" } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Chủ Tài Khoản (VIETIN)</Typography>
-              <Box component="input" placeholder="NGUYEN VAN A" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} sx={{ ...inputSx, textTransform: "uppercase", fontWeight: 800 }} />
+              <TextField fullWidth placeholder="NGUYEN VAN A" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} inputProps={{ style: { textTransform: "uppercase", fontWeight: 800 } }} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chi Nhánh Ngân Hàng</Typography>
-              <Box component="input" placeholder="Chi nhánh Hà Nội" value={form.bankBranch || ""} onChange={(e) => set("bankBranch", e.target.value)} sx={inputSx} />
+              <TextField fullWidth placeholder="Chi nhánh Hà Nội" value={form.bankBranch || ""} onChange={(e) => set("bankBranch", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
           </Box>
         </Box>
@@ -118,19 +111,19 @@ export default function Settings() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Zalo Official Account ID</Typography>
-              <Box component="input" value={form.zaloOaId || ""} onChange={(e) => set("zaloOaId", e.target.value)} sx={inputSx} />
+              <TextField fullWidth value={form.zaloOaId || ""} onChange={(e) => set("zaloOaId", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Zalo Access Token</Typography>
-              <Box component="input" type="password" value={form.zaloAccessToken || ""} onChange={(e) => set("zaloAccessToken", e.target.value)} sx={{ ...inputSx, fontFamily: "monospace" }} />
+              <TextField fullWidth type="password" value={form.zaloAccessToken || ""} onChange={(e) => set("zaloAccessToken", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, fontFamily: "monospace" } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Chốt Hóa Đơn Hàng Tháng</Typography>
-              <Box component="input" type="number" min="1" max="31" value={form.invoiceClosingDay || ""} onChange={(e) => set("invoiceClosingDay", e.target.value)} sx={inputSx} />
+              <TextField fullWidth type="number" inputProps={{ min: 1, max: 31 }} value={form.invoiceClosingDay || ""} onChange={(e) => set("invoiceClosingDay", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Nhắc Nợ Tự Động</Typography>
-              <Box component="input" type="number" min="1" max="31" value={form.defaultRemindDay || ""} onChange={(e) => set("defaultRemindDay", e.target.value)} sx={inputSx} />
+              <TextField fullWidth type="number" inputProps={{ min: 1, max: 31 }} value={form.defaultRemindDay || ""} onChange={(e) => set("defaultRemindDay", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
           </Box>
         </Box>
@@ -144,27 +137,27 @@ export default function Settings() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Chủ Trọ</Typography>
-              <Box component="input" value={form.landlordName || ""} onChange={(e) => set("landlordName", e.target.value)} sx={inputSx} />
+              <TextField fullWidth value={form.landlordName || ""} onChange={(e) => set("landlordName", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại Liên Hệ</Typography>
-              <Box component="input" value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} sx={inputSx} />
+              <TextField fullWidth value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email Thông Báo</Typography>
-              <Box component="input" type="email" value={form.landlordEmail || ""} onChange={(e) => set("landlordEmail", e.target.value)} sx={inputSx} />
+              <TextField fullWidth type="email" value={form.landlordEmail || ""} onChange={(e) => set("landlordEmail", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
           </Box>
         </Box>
 
         {/* Save */}
         <Box sx={{ textAlign: "right" }}>
-          <Box component="button" type="submit"
-            sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 4, py: 1.5, bgcolor: "#2563eb", color: "#fff", fontWeight: 700, fontSize: "0.75rem", borderRadius: "12px", border: "none", cursor: "pointer", "&:hover": { bgcolor: "#1d4ed8" }, boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}
+          <Button type="submit" variant="contained"
+            sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 4, py: 1.5, fontWeight: 700, fontSize: "0.75rem", borderRadius: "12px", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}
           >
             <SaveIcon sx={{ fontSize: 16 }} />
             <span>Lưu Cập Nhật Cấu Hình Hệ Thống</span>
-          </Box>
+          </Button>
         </Box>
       </Box>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, Snackbar, Alert, CircularProgress, Paper,
+  Box, Typography, Snackbar, Alert, CircularProgress, Paper, Select, MenuItem, TextField, Button, FormControl,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import HistoryIcon from "@mui/icons-material/History";
@@ -93,31 +93,28 @@ export default function NotificationManagement() {
               {/* Target */}
               <Box>
                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đối Tượng Nhận Thông Báo *</Typography>
-                <Box
-                  component="select" value={targetRoom}
-                  onChange={(e) => setTargetRoom(e.target.value)}
-                  sx={{ width: "100%", px: 1.75, py: 1.5, fontSize: "0.75rem", bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" }, fontFamily: "Arial, sans-serif" }}
-                >
-                  <option value="all">Tất Cả Các Phòng Đang Cho Thuê</option>
-                  {rentedRooms.map((r) => {
-                    const tenant = r.contracts?.[0]?.tenant;
-                    return (
-                      <option key={r.id} value={r.id}>
-                        Phòng {r.room_number} - {tenant?.name || "—"} ({tenant?.phone || "—"})
-                      </option>
-                    );
-                  })}
-                </Box>
+                <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}>
+                  <Select value={targetRoom} onChange={(e) => setTargetRoom(e.target.value)}>
+                    <MenuItem value="all">Tất Cả Các Phòng Đang Cho Thuê</MenuItem>
+                    {rentedRooms.map((r) => {
+                      const tenant = r.contracts?.[0]?.tenant;
+                      return (
+                        <MenuItem key={r.id} value={r.id}>
+                          Phòng {r.room_number} - {tenant?.name || "—"} ({tenant?.phone || "—"})
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                </FormControl>
               </Box>
 
               {/* Title */}
               <Box>
                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tiêu Đề Thông Báo *</Typography>
-                <Box
-                  component="input" required value={title}
+                <TextField fullWidth required value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ví dụ: Nhắc tiền phòng tháng 07/2026"
-                  sx={{ width: "100%", px: 1.75, py: 1.5, fontSize: "0.75rem", bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" }, fontFamily: "Arial, sans-serif", boxSizing: "border-box" }}
+                  sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                 />
               </Box>
 
@@ -139,20 +136,20 @@ export default function NotificationManagement() {
                   ))}
                 </Box>
 
-                <Box
-                  component="textarea" rows={4} required value={content}
+                <TextField
+                  fullWidth multiline minRows={4} required value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  sx={{ width: "100%", p: 1.75, fontSize: "0.75rem", bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", "&:focus": { bgcolor: "#fff", borderColor: "#2563eb", boxShadow: "0 0 0 2px rgba(37,99,235,0.2)" }, fontFamily: "Arial, sans-serif", lineHeight: 1.6, resize: "vertical", boxSizing: "border-box" }}
+                  sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, lineHeight: 1.6 } }}
                 />
               </Box>
 
               {/* Submit */}
-              <Box component="button" type="submit" disabled={isSending}
-                sx={{ width: "100%", py: 1.5, bgcolor: isSending ? "#cbd5e1" : "#2563eb", color: "#fff", fontWeight: 700, fontSize: "0.75rem", borderRadius: "12px", border: "none", cursor: isSending ? "not-allowed" : "pointer", "&:hover": { bgcolor: isSending ? "#cbd5e1" : "#1d4ed8" }, display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}
+              <Button type="submit" variant="contained" disabled={isSending}
+                sx={{ width: "100%", py: 1.5, fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}
               >
                 <BoltIcon sx={{ fontSize: 16 }} />
                 <span>{isSending ? "Đang Gửi..." : "Lưu Dữ Liệu & Gửi Zalo OA Ngay"}</span>
-              </Box>
+              </Button>
             </Box>
           </Box>
 

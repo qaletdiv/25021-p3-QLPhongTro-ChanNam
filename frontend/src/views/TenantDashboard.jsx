@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Box, Typography, Chip, TextField, Snackbar, Alert, CircularProgress, Paper,
+  Box, Typography, Chip, TextField, Snackbar, Alert, CircularProgress, Paper, Button,
 } from "@mui/material";
 import tenantDashboardApi from "../api/tenantDashboardApi";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
@@ -318,11 +318,11 @@ export default function TenantDashboard() {
                   <TextField fullWidth size="small" type="number" value={elecVal} required
                     onChange={(e) => setElecVal(Number(e.target.value))}
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
-                  <Box component="label" sx={{ px: 2.5, py: 1, bgcolor: "#2563eb", color: "#fff", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 1, whiteSpace: "nowrap", "&:hover": { bgcolor: "#1d4ed8" } }}>
+                  <Button component="label" variant="contained" sx={{ px: 2.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 1 }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     {ocrLoading ? "Đang đọc..." : "Chụp Ảnh OCR"}
                     <input type="file" accept="image/*" hidden onChange={(e) => handleOcrUpload(e, "electricity")} />
-                  </Box>
+                  </Button>
                 </Box>
               </Box>
 
@@ -341,11 +341,11 @@ export default function TenantDashboard() {
                   <TextField fullWidth size="small" type="number" value={waterVal} required
                     onChange={(e) => setWaterVal(Number(e.target.value))}
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
-                  <Box component="label" sx={{ px: 2.5, py: 1, bgcolor: "#2563eb", color: "#fff", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 1, whiteSpace: "nowrap", "&:hover": { bgcolor: "#1d4ed8" } }}>
+                  <Button component="label" variant="contained" sx={{ px: 2.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 1 }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     {ocrLoading ? "Đang đọc..." : "Chụp Ảnh OCR"}
                     <input type="file" accept="image/*" hidden onChange={(e) => handleOcrUpload(e, "water")} />
-                  </Box>
+                  </Button>
                 </Box>
               </Box>
 
@@ -369,11 +369,11 @@ export default function TenantDashboard() {
                 </Box>
               </Box>
 
-              <Box component="button" type="submit"
-                sx={{ width: "100%", py: 1.5, bgcolor: "#2563eb", color: "#fff", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, "&:hover": { bgcolor: "#1d4ed8" } }}>
+              <Button type="submit" variant="contained"
+                sx={{ width: "100%", py: 1.5, fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 Gửi Chỉ Số & Chốt Hóa Đơn Mới
-              </Box>
+              </Button>
             </Box>
           </Paper>
 
@@ -468,11 +468,11 @@ export default function TenantDashboard() {
             </Box>
 
             <Box sx={{ textAlign: "right", pt: 1 }}>
-              <Box onClick={handleSaveProfile}
-                sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 3, py: 1.25, bgcolor: "#2563eb", color: "#fff", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", cursor: "pointer", "&:hover": { bgcolor: "#1d4ed8" } }}>
+              <Button onClick={handleSaveProfile} variant="contained"
+                sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                 {profileSaving ? "Đang lưu..." : "Lưu Thay Đổi Hồ Sơ"}
-              </Box>
+              </Button>
             </Box>
           </Box>
         </Paper>
