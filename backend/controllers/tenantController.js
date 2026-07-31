@@ -16,12 +16,16 @@ exports.getTenants = async (req, res, next) => {
             include: [
                 { model: Companion, as: "companions", attributes: ["name", "phone", "cccd", "relationship"] },
                 { model: Contract, as: "contracts", where: { status: 'active' }, required: false,
-                  include: [{ model: Room, as: "room", attributes: ["room_number"] }]
+                  include: [{ model: Room, as: "room", attributes: ["room_number"], where: { landlordId: req.user.id } }]
                 }
             ],
             order: [['name', 'ASC']]
         });
-        res.json({ tenants });
+        const filtered = tenants.map((tenant) => {
+            const contracts = (tenant.contracts || []).filter((c) => c.room);
+            return contracts.length ? { ...tenant.toJSON(), contracts } : { ...tenant.toJSON(), contracts: [] };
+        });
+        res.json({ tenants: filtered });
     } catch (error) {
         next(error);
     }
