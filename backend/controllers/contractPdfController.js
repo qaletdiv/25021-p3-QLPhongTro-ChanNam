@@ -77,22 +77,31 @@ exports.generatePdf = async (req, res, next) => {
 
         const today = new Date().toLocaleDateString("vi-VN");
 
-        let content = template
-            .replace(/\{\{ten_nguoi_thue\}\}/g, contract.tenant?.name || "")
-            .replace(/\{\{cccd\}\}/g, contract.tenant?.cccd || "")
-            .replace(/\{\{so_dien_thoai\}\}/g, contract.tenant?.phone || "")
-            .replace(/\{\{ma_phong\}\}/g, contract.room?.room_number || "")
-            .replace(/\{\{gia_thue\}\}/g, formatCurrency(contract.room?.price))
-            .replace(/\{\{tien_coc\}\}/g, formatCurrency(contract.deposit))
-            .replace(/\{\{ngay_bat_dau\}\}/g, formatDate(contract.startDate))
-            .replace(/\{\{ngay_ket_thuc\}\}/g, formatDate(contract.endDate))
-            .replace(/\{\{ngay_thu_tien\}\}/g, String(contract.paymentDay))
-            .replace(/\{\{ma_van_tay\}\}/g, contract.fingerprintCode || "")
-            .replace(/\{\{nguoi_di_kem\}\}/g, companionText)
-            .replace(/\{\{vat_dung\}\}/g, furnitureText)
-            .replace(/\{\{ngay_hom_nay\}\}/g, today)
-            .replace(/\{\{sdt_chu_tro\}\}/g, landlord?.phone || "")
-            .replace(/\{\{ten_chu_tro\}\}/g, landlord?.name || "");
+        const placeholders = [
+            { key: "ten_nguoi_thue", value: contract.tenant?.name || "" },
+            { key: "cccd", value: contract.tenant?.cccd || "" },
+            { key: "so_dien_thoai", value: contract.tenant?.phone || "" },
+            { key: "ma_phong", value: contract.room?.room_number || "" },
+            { key: "gia_thue", value: formatCurrency(contract.room?.price) },
+            { key: "tien_coc", value: formatCurrency(contract.deposit) },
+            { key: "ngay_bat_dau", value: formatDate(contract.startDate) },
+            { key: "ngay_ket_thuc", value: formatDate(contract.endDate) },
+            { key: "ngay_thu_tien", value: String(contract.paymentDay) },
+            { key: "ma_van_tay", value: contract.fingerprintCode || "" },
+            { key: "nguoi_di_kem", value: companionText },
+            { key: "vat_dung", value: furnitureText },
+            { key: "ngay_hom_nay", value: today },
+            { key: "sdt_chu_tro", value: landlord?.phone || "" },
+            { key: "ten_chu_tro", value: landlord?.name || "" },
+        ];
+        let content = template;
+        for (const { key, value } of placeholders) {
+            if (value) {
+                content = content.replace(new RegExp(`\\{\\{\\s*${key}\\s*\\}\\}`, "g"), value);
+            } else {
+                content = content.replace(new RegExp(`(?:&nbsp;|[ \\t])*\\{\\{\\s*${key}\\s*\\}\\}(?:&nbsp;|[ \\t])*`, "g"), "");
+            }
+        }
 
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
         const fontPath = path.join(__dirname, "..", "fonts");
