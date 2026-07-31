@@ -100,8 +100,8 @@ export default function ContractTemplate() {
           flexDirection: "column",
           alignItems: "center",
           "& .ql-toolbar": { width: "210mm", borderRadius: "12px 12px 0 0", borderColor: "#e2e8f0" },
-          "& .ql-container": { width: "210mm", minHeight: "297mm", maxHeight: "297mm", overflowY: "auto", fontSize: "0.875rem", fontFamily: "Arial, sans-serif", borderRadius: "0 0 12px 12px", borderColor: "#e2e8f0" },
-          "& .ql-editor": { minHeight: "297mm", padding: "20mm 20mm 15mm 20mm" },
+          "& .ql-container": { width: "210mm", minHeight: "calc(100vh - 420px)", maxHeight: "calc(100vh - 420px)", overflowY: "auto", fontSize: "0.875rem", fontFamily: "Arial, sans-serif", borderRadius: "0 0 12px 12px", borderColor: "#e2e8f0" },
+          "& .ql-editor": { minHeight: "calc(100vh - 420px)", padding: "15mm 20mm 10mm 20mm" },
         }}>
           <ReactQuill
             ref={quillRef}
