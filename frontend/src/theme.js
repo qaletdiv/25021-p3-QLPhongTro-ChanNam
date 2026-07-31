@@ -192,6 +192,9 @@ const theme = createTheme({
       },
     },
     MuiSnackbar: {
+      defaultProps: {
+        anchorOrigin: { vertical: "middle", horizontal: "center" },
+      },
       styleOverrides: {
         root: {
           "& .MuiAlert-root": {
