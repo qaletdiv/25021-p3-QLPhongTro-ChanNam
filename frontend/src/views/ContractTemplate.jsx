@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Box, Typography, Button, Paper, Snackbar, Alert, CircularProgress, Chip,
+  Box, Typography, Button, Paper, CircularProgress, Chip,
+  Dialog, DialogTitle, DialogContent, DialogActions,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorOutlinedIcon from "@mui/icons-material/ErrorOutlined";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import contractTemplateApi from "../api/contractTemplateApi";
@@ -124,9 +127,29 @@ export default function ContractTemplate() {
         </Box>
       </Paper>
 
-      <Snackbar open={snack.open} autoHideDuration={3000} onClose={() => setSnack({ ...snack, open: false })}>
-        <Alert severity={snack.severity} onClose={() => setSnack({ ...snack, open: false })}>{snack.message}</Alert>
-      </Snackbar>
+      <Dialog open={snack.open} onClose={() => setSnack({ ...snack, open: false })} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ textAlign: "center", pb: 0, bgcolor: "#ffffff", color: "#0f172a" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1.5, py: 1 }}>
+            {snack.severity === "success"
+              ? <CheckCircleIcon sx={{ fontSize: 52, color: "#059669" }} />
+              : <ErrorOutlinedIcon sx={{ fontSize: 52, color: "#e11d48" }} />}
+            <Typography sx={{ fontSize: "1.125rem", fontWeight: 700 }}>{snack.severity === "success" ? "Thành công" : "Lỗi"}</Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: "center", pt: "24px !important", bgcolor: "#ffffff" }}>
+          <Typography sx={{ fontSize: "0.875rem", color: "#475569", lineHeight: 1.6 }}>{snack.message}</Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", bgcolor: "#ffffff" }}>
+          <Button
+            variant="contained"
+            color={snack.severity === "success" ? "success" : "error"}
+            onClick={() => setSnack({ ...snack, open: false })}
+            sx={{ minWidth: 120, borderRadius: "10px", fontWeight: 700 }}
+          >
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

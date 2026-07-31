@@ -1,4 +1,5 @@
 const PDFDocument = require("pdfkit");
+const path = require("path");
 const { Contract, Tenant, Room, Companion, ContractFurniture, Furniture, Setting, User } = require("../models");
 
 exports.generatePdf = async (req, res, next) => {
@@ -52,6 +53,9 @@ exports.generatePdf = async (req, res, next) => {
             .replace(/\{\{ten_chu_tro\}\}/g, landlord?.name || "");
 
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        const fontPath = path.join(__dirname, "..", "fonts");
+        doc.registerFont('Arial', path.join(fontPath, 'arial.ttf'));
+        doc.registerFont('Arial-Bold', path.join(fontPath, 'arialbd.ttf'));
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `inline; filename=hop_dong_${contract.room?.room_number}.pdf`);
         doc.pipe(res);
@@ -63,11 +67,11 @@ exports.generatePdf = async (req, res, next) => {
             } else {
                 const isBold = line.startsWith('Điều') || line.startsWith('HỢP ĐỒNG') || line.startsWith('CỘNG HÒA') || line.startsWith('BÊN');
                 if (isBold) {
-                    doc.font('Helvetica-Bold').fontSize(13).text(line, { align: line.startsWith('CỘNG') || line.startsWith('HỢP') ? 'center' : 'left' });
+                    doc.font('Arial-Bold').fontSize(13).text(line, { align: line.startsWith('CỘNG') || line.startsWith('HỢP') ? 'center' : 'left' });
                 } else if (line.startsWith('  -') || line.startsWith('-')) {
-                    doc.font('Helvetica').fontSize(11).text(line, { indent: 20 });
+                    doc.font('Arial').fontSize(11).text(line, { indent: 20 });
                 } else {
-                    doc.font('Helvetica').fontSize(11).text(line);
+                    doc.font('Arial').fontSize(11).text(line);
                 }
             }
         }
