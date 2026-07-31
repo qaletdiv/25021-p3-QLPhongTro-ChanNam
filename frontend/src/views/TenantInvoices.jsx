@@ -1,26 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  Box, Typography, Table, TableHead, TableRow, TableCell, TableBody,
-  Card, CardContent, Grid, TextField, Button, Chip, TableContainer, Paper,
-  CircularProgress, Divider,
-} from "@mui/material";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import HistoryIcon from "@mui/icons-material/History";
-import CalculateIcon from "@mui/icons-material/Calculate";
+import { useState, useEffect } from "react";
+import { Box, Typography, CircularProgress } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
+import MeterInputCard from "../components/tenant/MeterInputCard";
+import CalculatedInvoiceCard from "../components/tenant/CalculatedInvoiceCard";
+import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
-
-const formatCurrency = (n) => Number(n || 0).toLocaleString("vi-VN") + "₫";
-const statusLabel = { pending: "Đã gửi chỉ số", paid: "Đã thanh toán" };
-
-const cardSx = {
-  bgcolor: "#fff",
-  borderRadius: "16px",
-  border: "1px solid #e2e8f0",
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-};
 
 export default function TenantInvoices() {
   const [invoices, setInvoices] = useState([]);
@@ -91,104 +77,15 @@ export default function TenantInvoices() {
         <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý chỉ số điện nước và theo dõi hóa đơn hàng tháng</Typography>
       </Box>
 
-      <Card sx={cardSx}>
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
-            <CalculateIcon sx={{ color: "#059669", fontSize: 20 }} />
-            <Typography variant="h6" fontWeight="bold" color="#0f172a">Nhập chỉ số</Typography>
-          </Box>
-          <Grid container spacing={2} alignItems="flex-end">
-            <Grid size={5}>
-              <TextField fullWidth label="Chỉ số điện mới" type="number" value={electricityNew}
-                onChange={(e) => setElectricityNew(e.target.value)}
-                helperText={lastInv ? `Chỉ số cũ: ${lastInv.electricityNew}` : "Chỉ số cũ: 0"}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
-              />
-            </Grid>
-            <Grid size={5}>
-              <TextField fullWidth label="Chỉ số nước mới" type="number" value={waterNew}
-                onChange={(e) => setWaterNew(e.target.value)}
-                helperText={lastInv ? `Chỉ số cũ: ${lastInv.waterNew}` : "Chỉ số cũ: 0"}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
-              />
-            </Grid>
-            <Grid size={2}>
-              <Button variant="contained" fullWidth onClick={calculate}
-                sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
-                Tính ngay
-              </Button>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <MeterInputCard
+        electricityNew={electricityNew} setElectricityNew={setElectricityNew}
+        waterNew={waterNew} setWaterNew={setWaterNew}
+        lastInv={lastInv} onCalculate={calculate}
+      />
 
-      {calculated && (
-        <Card sx={{ ...cardSx, mb: 3, borderLeft: "4px solid #059669" }}>
-          <CardContent>
-            <Typography variant="h6" fontWeight="bold" color="#0f172a" mb={2}>Chi tiết hóa đơn</Typography>
-            <Grid container spacing={1}>
-              <Grid size={6}><Typography color="#64748b">Tiền phòng: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.roomPrice)}</strong></Typography></Grid>
-              <Grid size={6}><Typography color="#64748b">Phí dịch vụ: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.svcFee)}</strong></Typography></Grid>
-              <Grid size={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
-              <Grid size={6}><Typography color="#64748b">Điện: {calculated.elecOld} → {calculated.elecNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.elecCost)}</strong></Typography></Grid>
-              <Grid size={6}><Typography color="#64748b">Nước: {calculated.waterOld} → {calculated.waterNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.waterCost)}</strong></Typography></Grid>
-              <Grid size={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
-              <Grid size={12}>
-                <Typography variant="h5" sx={{ color: "#059669" }} fontWeight="bold">
-                  Tổng cộng: {formatCurrency(calculated.total)}
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      )}
+      <CalculatedInvoiceCard calculated={calculated} />
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
-        <HistoryIcon sx={{ color: "#059669", fontSize: 20 }} />
-        <Typography variant="h6" fontWeight="bold" color="#0f172a">Lịch sử hóa đơn</Typography>
-      </Box>
-      <TableContainer component={Paper} sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ bgcolor: "#f1f5f9" }}>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Tháng</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 600, color: "#0f172a" }}>Tiền phòng</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 600, color: "#0f172a" }}>Tiền điện</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 600, color: "#0f172a" }}>Tiền nước</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 600, color: "#0f172a" }}>Phí khác</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 600, color: "#0f172a" }}>Tổng</TableCell>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Trạng thái</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {invoices.map((inv) => (
-              <TableRow key={inv.id}>
-                <TableCell sx={{ color: "#0f172a" }}>{inv.month}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.roomPrice)}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.electricityCost)}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.waterCost)}</TableCell>
-                <TableCell align="right" sx={{ color: "#64748b" }}>{formatCurrency(inv.serviceFee + inv.otherFees)}</TableCell>
-                <TableCell align="right" sx={{ color: "#0f172a", fontWeight: 600 }}>{formatCurrency(inv.total)}</TableCell>
-                <TableCell>
-                  <Chip label={statusLabel[inv.status]}
-                    size="small"
-                    sx={{
-                      borderRadius: "12px", fontWeight: 600,
-                      bgcolor: inv.status === "paid" ? "#d1fae5" : "#fef3c7",
-                      color: inv.status === "paid" ? "#065f46" : "#d97706",
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-            {invoices.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ color: "#64748b" }}>Chưa có hóa đơn nào</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <InvoiceHistoryTable invoices={invoices} />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
