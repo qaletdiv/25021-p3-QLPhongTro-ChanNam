@@ -426,7 +426,7 @@ export default function TenantManagement() {
 
               {/* Tenant Details */}
               <Grid container spacing={1.5}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Khách *</Typography>
                   <TextField
                     fullWidth size="small" placeholder="Nguyễn Văn A"
@@ -451,7 +451,7 @@ export default function TenantManagement() {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
                   <TextField
                     fullWidth size="small" placeholder="0912345678"
@@ -459,7 +459,7 @@ export default function TenantManagement() {
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email (Tùy chọn)</Typography>
                   <TextField
                     fullWidth size="small" placeholder="email@gmail.com"
@@ -471,7 +471,7 @@ export default function TenantManagement() {
 
               {/* Financial & Fingerprint */}
               <Grid container spacing={1.5}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tiền Cọc (VND)</Typography>
                   <TextField
                     fullWidth size="small" type="number"
@@ -480,7 +480,7 @@ export default function TenantManagement() {
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Thu Tiền</Typography>
                   <TextField
                     fullWidth size="small" type="number" inputProps={{ min: 1, max: 31 }}
@@ -489,7 +489,7 @@ export default function TenantManagement() {
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Mã Vân Tay Khóa Cửa</Typography>
                   <TextField
                     fullWidth size="small"
@@ -503,7 +503,7 @@ export default function TenantManagement() {
 
               {/* Contract Dates */}
               <Grid container spacing={1.5}>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Bắt Đầu Hợp Đồng</Typography>
                   <TextField
                     fullWidth size="small" type="date"
@@ -513,7 +513,7 @@ export default function TenantManagement() {
                     sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Kết Thúc Hợp Đồng</Typography>
                   <TextField
                     fullWidth size="small" type="date"
@@ -662,23 +662,23 @@ export default function TenantManagement() {
                   )}
                 </Box>
                 <Grid container spacing={1.5}>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <TextField fullWidth size="small" label="Tiền cọc (VND)" type="number" value={contractForm.deposit} onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })} required
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <TextField fullWidth size="small" label="Ngày bắt đầu" type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} InputLabelProps={{ shrink: true }} required
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <TextField fullWidth size="small" label="Ngày kết thúc" type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} InputLabelProps={{ shrink: true }} required
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <TextField fullWidth size="small" label="Ngày thu tiền" type="number" value={contractForm.paymentDay} onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }} inputProps={{ min: 1, max: 31 }} required
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid size={4}>
                     <TextField fullWidth size="small" label="Vân tay (khách chính)" value={contractForm.fingerprintCode} onChange={(e) => setContractForm({ ...contractForm, fingerprintCode: e.target.value })}
                       sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
                   </Grid>

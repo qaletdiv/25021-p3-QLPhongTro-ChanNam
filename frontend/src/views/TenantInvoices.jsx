@@ -97,21 +97,21 @@ export default function TenantInvoices() {
             <Typography variant="h6" fontWeight="bold" color="#0f172a">Nhập chỉ số</Typography>
           </Box>
           <Grid container spacing={2} alignItems="flex-end">
-            <Grid item xs={5}>
+            <Grid size={5}>
               <TextField fullWidth label="Chỉ số điện mới" type="number" value={electricityNew}
                 onChange={(e) => setElectricityNew(e.target.value)}
                 helperText={lastInv ? `Chỉ số cũ: ${lastInv.electricityNew}` : "Chỉ số cũ: 0"}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
               />
             </Grid>
-            <Grid item xs={5}>
+            <Grid size={5}>
               <TextField fullWidth label="Chỉ số nước mới" type="number" value={waterNew}
                 onChange={(e) => setWaterNew(e.target.value)}
                 helperText={lastInv ? `Chỉ số cũ: ${lastInv.waterNew}` : "Chỉ số cũ: 0"}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid size={2}>
               <Button variant="contained" fullWidth onClick={calculate}
                 sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
                 Tính ngay
@@ -126,13 +126,13 @@ export default function TenantInvoices() {
           <CardContent>
             <Typography variant="h6" fontWeight="bold" color="#0f172a" mb={2}>Chi tiết hóa đơn</Typography>
             <Grid container spacing={1}>
-              <Grid item xs={6}><Typography color="#64748b">Tiền phòng: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.roomPrice)}</strong></Typography></Grid>
-              <Grid item xs={6}><Typography color="#64748b">Phí dịch vụ: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.svcFee)}</strong></Typography></Grid>
-              <Grid item xs={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
-              <Grid item xs={6}><Typography color="#64748b">Điện: {calculated.elecOld} → {calculated.elecNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.elecCost)}</strong></Typography></Grid>
-              <Grid item xs={6}><Typography color="#64748b">Nước: {calculated.waterOld} → {calculated.waterNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.waterCost)}</strong></Typography></Grid>
-              <Grid item xs={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
-              <Grid item xs={12}>
+              <Grid size={6}><Typography color="#64748b">Tiền phòng: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.roomPrice)}</strong></Typography></Grid>
+              <Grid size={6}><Typography color="#64748b">Phí dịch vụ: <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.svcFee)}</strong></Typography></Grid>
+              <Grid size={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
+              <Grid size={6}><Typography color="#64748b">Điện: {calculated.elecOld} → {calculated.elecNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.elecCost)}</strong></Typography></Grid>
+              <Grid size={6}><Typography color="#64748b">Nước: {calculated.waterOld} → {calculated.waterNew} = <strong style={{ color: "#0f172a" }}>{formatCurrency(calculated.waterCost)}</strong></Typography></Grid>
+              <Grid size={12}><Divider sx={{ borderColor: "#e2e8f0" }} /></Grid>
+              <Grid size={12}>
                 <Typography variant="h5" sx={{ color: "#059669" }} fontWeight="bold">
                   Tổng cộng: {formatCurrency(calculated.total)}
                 </Typography>

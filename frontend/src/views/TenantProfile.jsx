@@ -75,19 +75,19 @@ export default function TenantProfile() {
           <Typography variant="h6" fontWeight="bold" color="#0f172a">Thông tin cá nhân</Typography>
         </Box>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <TextField fullWidth label="Họ tên" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <TextField fullWidth label="Email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <TextField fullWidth label="Số điện thoại" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <TextField fullWidth label="CCCD" value={profile.cccd || ""} onChange={(e) => setProfile({ ...profile, cccd: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
@@ -106,15 +106,15 @@ export default function TenantProfile() {
           <Typography variant="h6" fontWeight="bold" color="#0f172a">Đổi mật khẩu</Typography>
         </Box>
         <Grid container spacing={2}>
-          <Grid item xs={4}>
+          <Grid size={4}>
             <TextField fullWidth label="Mật khẩu cũ" type="password" value={passwords.oldPassword} onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
-          <Grid item xs={4}>
+          <Grid size={4}>
             <TextField fullWidth label="Mật khẩu mới" type="password" value={passwords.newPassword} onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
-          <Grid item xs={4}>
+          <Grid size={4}>
             <TextField fullWidth label="Xác nhận mật khẩu" type="password" value={passwords.confirmPassword} onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>

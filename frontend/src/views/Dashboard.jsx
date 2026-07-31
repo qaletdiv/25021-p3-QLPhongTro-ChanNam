@@ -114,7 +114,7 @@ export default function Dashboard() {
           { label: "Thực Thu", value: formatCurrency(stats.monthlyRevenue), sub: "Đã ghi nhận", icon: <PaidIcon />, color: "#2563eb", bg: "#eff6ff", valueColor: "#0f172a", subIcon: <TrendingUpIcon sx={{ fontSize: 12, mr: 0.25 }} />, subColor: "#059669" },
           { label: "Công Nợ", value: formatCurrency(stats.totalDebt), sub: "Chưa thanh toán", icon: <WarningIcon />, color: "#e11d48", bg: "#ffe4e6", valueColor: "#e11d48" },
         ].map((card) => (
-          <Grid item xs={6} md={4} lg={2} key={card.label}>
+          <Grid size={{ xs: 6, md: 4, lg: 2 }} key={card.label}>
             <Card
               sx={{
                 borderRadius: "16px", border: "1px solid #e2e8f0",
@@ -146,7 +146,7 @@ export default function Dashboard() {
       {/* Middle Row: Chart + Expiring Contracts */}
       <Grid container spacing={2}>
         {/* Chart */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Card sx={{ borderRadius: "16px", p: 3 }}>
             <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 1, mb: 3 }}>
               <Box>
@@ -181,7 +181,7 @@ export default function Dashboard() {
         </Grid>
 
         {/* Expiring Contracts */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Card sx={{ borderRadius: "16px", p: 3, display: "flex", flexDirection: "column", height: "100%" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
