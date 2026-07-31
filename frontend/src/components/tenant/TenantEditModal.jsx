@@ -1,11 +1,9 @@
 "use client";
 
-import { Box, Typography, TextField, IconButton, CircularProgress, Grid, Checkbox, Autocomplete, Chip } from "@mui/material";
+import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocomplete, Chip } from "@mui/material";
+import ModalShell from "../ui/ModalShell";
 import { formatCurrency } from "../../utils/format";
-
-const inputSx = {
-  "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } },
-};
+import { inputSx } from "../../utils/styles";
 
 export default function TenantEditModal({
   editTenantId, editContractId, tenants, tenantForm, setTenantForm,
@@ -17,16 +15,13 @@ export default function TenantEditModal({
   if (!editTenantId || openContract) return null;
 
   return (
-    <Box sx={{ position: "fixed", inset: 0, zIndex: 1300, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "rgba(2,6,23,0.6)", backdropFilter: "blur(2px)", p: 2 }}>
-      <Box sx={{ bgcolor: "#fff", borderRadius: "24px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)", width: "100%", maxWidth: editContractId ? 640 : 420, maxHeight: "90vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        <Box sx={{ bgcolor: "#2563eb", px: 3, py: 2.5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
-            {editTenantId ? "Sửa Thông Tin" : "Thêm Khách Thuê Mới"}
-          </Typography>
-          <IconButton onClick={onClose} sx={{ color: "rgba(255,255,255,0.7)", "&:hover": { color: "#fff" } }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </IconButton>
-        </Box>
+    <ModalShell open={!!editTenantId && !openContract} onClose={onClose} maxWidth={editContractId ? 640 : 420}
+      header={
+        <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+          {editTenantId ? "Sửa Thông Tin" : "Thêm Khách Thuê Mới"}
+        </Typography>
+      }
+      body={
         <Box sx={{ p: 3, overflow: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
           {!editTenantId && (
             <Box>
@@ -144,6 +139,8 @@ export default function TenantEditModal({
             )}
           </>
         </Box>
+      }
+      footer={
         <Box sx={{ px: 3, py: 2, borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end", gap: 1 }}>
           <Box onClick={onClose} sx={{ px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, color: "#475569", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#f1f5f9" } }}>Hủy</Box>
           <Box onClick={onSave}
@@ -153,7 +150,7 @@ export default function TenantEditModal({
             {editTenantId ? "Lưu" : "Thêm"}
           </Box>
         </Box>
-      </Box>
-    </Box>
+      }
+    />
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
-import InvoiceFilterBar from "../components/invoice/InvoiceFilterBar";
+import FilterBar from "../components/ui/FilterBar";
 import InvoiceTable from "../components/invoice/InvoiceTable";
 import ReadingModal from "../components/invoice/ReadingModal";
 import PrintableInvoiceModal from "../components/invoice/PrintableInvoiceModal";
@@ -91,13 +91,20 @@ export default function InvoiceManagement() {
         </Typography>
       </Box>
 
-      <InvoiceFilterBar
+      <FilterBar
+        filters={[
+          { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
+          { key: "submitted", label: "Đã Gửi Chỉ Số", activeColor: "#d97706" },
+          { key: "paid", label: "Đã Thanh Toán", activeColor: "#059669" },
+          { key: "pending", label: "Chờ Nhập Chỉ Số", activeColor: "#334155" },
+        ]}
         total={invoices.length}
         counts={counts}
-        filterStatus={filterStatus}
+        activeKey={filterStatus}
         onFilterChange={setFilterStatus}
-        searchQuery={searchQuery}
+        search={searchQuery}
         onSearchChange={setSearchQuery}
+        searchPlaceholder="Tìm số phòng, tên khách..."
       />
 
       {loading ? <CircularProgress /> : (

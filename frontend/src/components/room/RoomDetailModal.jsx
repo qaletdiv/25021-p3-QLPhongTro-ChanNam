@@ -1,8 +1,9 @@
 "use client";
 
-import { Box, Typography, Paper, Chip, TextField, IconButton, CircularProgress } from "@mui/material";
+import { Box, Typography, Paper, Chip, TextField, CircularProgress } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
+import ModalShell from "../ui/ModalShell";
 
 export default function RoomDetailModal({
   detailRoom, furnitureEditMode, furnitureEditList, furnitureEditSelections, furnitureEditSaving,
@@ -13,21 +14,14 @@ export default function RoomDetailModal({
   const contract = detailRoom.contracts?.[0];
 
   return (
-    <Box sx={{ position: "fixed", inset: 0, zIndex: 1300, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "rgba(2,6,23,0.6)", backdropFilter: "blur(2px)", p: 2 }}>
-      <Box sx={{ bgcolor: "#fff", borderRadius: "24px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)", width: "100%", maxWidth: 520, overflow: "hidden" }}>
-        {/* Header */}
-        <Box sx={{ bgcolor: "#0f172a", px: 3, py: 2.5, borderBottom: "1px solid #1e293b" }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <Box>
-              <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Chi Tiết Phòng {detailRoom.room_number}</Typography>
-              <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8", mt: 0.25 }}>Danh sách vật dụng bàn giao theo hợp đồng hiện tại</Typography>
-            </Box>
-            <IconButton onClick={onClose} sx={{ color: "#94a3b8", "&:hover": { color: "#fff" } }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </IconButton>
-          </Box>
+    <ModalShell open={!!detailRoom} onClose={onClose} headerBg="#0f172a" maxWidth={520}
+      header={
+        <Box>
+          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Chi Tiết Phòng {detailRoom.room_number}</Typography>
+          <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8", mt: 0.25 }}>Danh sách vật dụng bàn giao theo hợp đồng hiện tại</Typography>
         </Box>
-
+      }
+      body={
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2.5 }}>
           {/* Status & Fingerprint Header */}
           <Paper sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -105,14 +99,14 @@ export default function RoomDetailModal({
             </Paper>
           </Box>
         </Box>
-
-        {/* Footer */}
+      }
+      footer={
         <Box sx={{ px: 3, py: 2, borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end" }}>
           <Box onClick={onClose} sx={{ px: 4, py: 1.25, fontSize: "0.75rem", fontWeight: 800, bgcolor: "#0f172a", color: "#fff", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#1e293b" }, boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}>
             Đóng Chi Tiết
           </Box>
         </Box>
-      </Box>
-    </Box>
+      }
+    />
   );
 }

@@ -1,13 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Typography, TextField, Button, IconButton } from "@mui/material";
-
-const CloseIcon = ({ onClick }) => (
-  <IconButton onClick={onClick} sx={{ color: "rgba(255,255,255,0.7)", "&:hover": { color: "#fff" } }}>
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  </IconButton>
-);
+import { Box, Typography, TextField, Button } from "@mui/material";
+import ModalShell from "../ui/ModalShell";
 
 export default function ReadingModal({ invoice, onClose, onSave }) {
   const [elec, setElec] = useState(0);
@@ -42,14 +37,13 @@ export default function ReadingModal({ invoice, onClose, onSave }) {
   };
 
   return (
-    <Box sx={{ position: "fixed", inset: 0, zIndex: 1300, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "rgba(2,6,23,0.6)", backdropFilter: "blur(2px)", p: 2 }}>
-      <Box sx={{ bgcolor: "#fff", borderRadius: "24px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)", width: "100%", maxWidth: 460, overflow: "hidden" }}>
-        <Box sx={{ bgcolor: "#2563eb", px: 3, py: 2.5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
-            Nhập Chỉ Số - Phòng {invoice.contract?.room?.room_number || ""}
-          </Typography>
-          <CloseIcon onClick={onClose} />
-        </Box>
+    <ModalShell open={!!invoice} onClose={onClose}
+      header={
+        <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+          Nhập Chỉ Số - Phòng {invoice.contract?.room?.room_number || ""}
+        </Typography>
+      }
+      body={
         <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2.5 }}>
           {error && (
             <Box sx={{ p: 1.5, bgcolor: "#ffe4e6", color: "#be123c", fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", border: "1px solid #fecaca" }}>{error}</Box>
@@ -76,7 +70,7 @@ export default function ReadingModal({ invoice, onClose, onSave }) {
             </Button>
           </Box>
         </Box>
-      </Box>
-    </Box>
+      }
+    />
   );
 }

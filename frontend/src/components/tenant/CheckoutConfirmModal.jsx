@@ -1,25 +1,23 @@
 "use client";
 
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import ModalShell from "../ui/ModalShell";
 import { formatCurrency } from "../../utils/format";
 
 export default function CheckoutConfirmModal({ checkoutConfirm, onClose, onConfirm }) {
   if (!checkoutConfirm) return null;
 
   return (
-    <Box sx={{ position: "fixed", inset: 0, zIndex: 1300, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "rgba(2,6,23,0.6)", backdropFilter: "blur(2px)", p: 2 }}>
-      <Box sx={{ bgcolor: "#fff", borderRadius: "24px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)", width: "100%", maxWidth: 440, overflow: "hidden" }}>
-        <Box sx={{ bgcolor: "#e11d48", px: 3, py: 2.5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
-              Xác Nhận Trả Phòng {checkoutConfirm.roomNumber}
-            </Typography>
-          </Box>
-          <IconButton onClick={onClose} sx={{ color: "rgba(255,255,255,0.7)", "&:hover": { color: "#fff" } }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </IconButton>
+    <ModalShell open={!!checkoutConfirm} onClose={onClose} headerBg="#e11d48" maxWidth={440}
+      header={
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+            Xác Nhận Trả Phòng {checkoutConfirm.roomNumber}
+          </Typography>
         </Box>
+      }
+      body={
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
           <Typography sx={{ fontSize: "0.75rem", color: "#334155", lineHeight: 1.6 }}>
             Bạn có chắc chắn muốn làm thủ tục <strong>Trả phòng {checkoutConfirm.roomNumber}</strong> cho khách hàng <strong>{checkoutConfirm.tenantName}</strong>?
@@ -36,7 +34,7 @@ export default function CheckoutConfirmModal({ checkoutConfirm, onClose, onConfi
             </Box>
           </Box>
         </Box>
-      </Box>
-    </Box>
+      }
+    />
   );
 }

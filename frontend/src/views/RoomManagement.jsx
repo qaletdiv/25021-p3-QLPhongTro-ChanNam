@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MessageDialog from "../components/MessageDialog";
-import RoomFilterBar from "../components/room/RoomFilterBar";
+import FilterBar from "../components/ui/FilterBar";
 import RoomCard from "../components/room/RoomCard";
 import RoomFormModal from "../components/room/RoomFormModal";
 import RoomDetailModal from "../components/room/RoomDetailModal";
@@ -146,13 +146,19 @@ export default function RoomManagement() {
         </Box>
       </Box>
 
-      <RoomFilterBar
+      <FilterBar
+        filters={[
+          { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
+          { key: "empty", label: "Trống", activeColor: "#d97706" },
+          { key: "rented", label: "Đã Thuê", activeColor: "#059669" },
+        ]}
         total={rooms.length}
         counts={roomCounts}
-        filter={filter}
+        activeKey={filter}
         onFilterChange={setFilter}
         search={search}
         onSearchChange={setSearch}
+        searchPlaceholder="Tìm theo số phòng hoặc tên khách..."
       />
 
       {/* Room Cards Grid */}

@@ -1,14 +1,9 @@
 "use client";
 
-import { Box, Typography, Paper, IconButton } from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
+import ModalShell from "../ui/ModalShell";
 import { formatCurrency } from "../../utils/format";
-
-const CloseIcon = ({ onClick, color }) => (
-  <IconButton onClick={onClick} sx={{ color: color || "#94a3b8", "&:hover": { color: "#fff" } }}>
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-  </IconButton>
-);
 
 const Row = (inv) => [
   { label: "Tiền phòng", detail: "1 Tháng", amount: inv.roomPrice },
@@ -21,18 +16,17 @@ export default function PrintableInvoiceModal({ invoice, settings, onClose }) {
   if (!invoice) return null;
 
   return (
-    <Box sx={{ position: "fixed", inset: 0, zIndex: 1300, display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "rgba(2,6,23,0.6)", backdropFilter: "blur(2px)", p: 2 }}>
-      <Box sx={{ bgcolor: "#fff", borderRadius: "24px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)", width: "100%", maxWidth: 560, maxHeight: "90vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        <Box sx={{ bgcolor: "#0f172a", px: 3, py: 2.5, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Phiếu Bảng Kê Thanh Toán & VietQR</Typography>
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <Box onClick={() => window.print()} sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, px: 1.5, py: 0.9, bgcolor: "#2563eb", color: "#fff", borderRadius: "12px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
-              <PrinterIcon sx={{ fontSize: 14 }} />
-              <span>In PDF</span>
-            </Box>
-            <CloseIcon onClick={onClose} />
-          </Box>
+    <ModalShell open={!!invoice} onClose={onClose} headerBg="#0f172a" maxWidth={560}
+      header={
+        <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Phiếu Bảng Kê Thanh Toán & VietQR</Typography>
+      }
+      headerRight={
+        <Box onClick={() => window.print()} sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, px: 1.5, py: 0.9, bgcolor: "#2563eb", color: "#fff", borderRadius: "12px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
+          <PrinterIcon sx={{ fontSize: 14 }} />
+          <span>In PDF</span>
         </Box>
+      }
+      body={
         <Box sx={{ p: 3, overflow: "auto" }}>
           <Box sx={{ textAlign: "center", borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
             <Typography sx={{ fontSize: "1.25rem", fontWeight: 900, color: "#0f172a", textTransform: "uppercase" }}>BẢNG KÊ TIỀN PHÒNG</Typography>
@@ -92,7 +86,7 @@ export default function PrintableInvoiceModal({ invoice, settings, onClose }) {
             </Typography>
           </Box>
         </Box>
-      </Box>
-    </Box>
+      }
+    />
   );
 }
