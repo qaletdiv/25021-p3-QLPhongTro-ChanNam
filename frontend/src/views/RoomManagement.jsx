@@ -8,6 +8,7 @@ import FilterBar from "../components/ui/FilterBar";
 import RoomCard from "../components/room/RoomCard";
 import RoomFormModal from "../components/room/RoomFormModal";
 import RoomDetailModal from "../components/room/RoomDetailModal";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import roomApi from "../api/roomApi";
 import contractApi from "../api/contractApi";
 import furnitureApi from "../api/furnitureApi";
@@ -26,6 +27,7 @@ export default function RoomManagement() {
   const [furnitureEditList, setFurnitureEditList] = useState([]);
   const [furnitureEditSelections, setFurnitureEditSelections] = useState({});
   const [furnitureEditSaving, setFurnitureEditSaving] = useState(false);
+  const [deleteRoomId, setDeleteRoomId] = useState(null);
 
   const getContract = (room) => room.contracts?.[0];
 
@@ -65,9 +67,8 @@ export default function RoomManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa phòng này?")) return;
-    try { await roomApi.delete(id); setSnack({ open: true, message: "Xóa phòng thành công", severity: "success" }); fetchRooms(); }
-    catch (err) { setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" }); }
+    try { await roomApi.delete(id); setDeleteRoomId(null); setSnack({ open: true, message: "Xóa phòng thành công", severity: "success" }); fetchRooms(); }
+    catch (err) { setDeleteRoomId(null); setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" }); }
   };
 
   const openDetail = async (room) => {
@@ -164,7 +165,7 @@ export default function RoomManagement() {
       {/* Room Cards Grid */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2.5 }}>
         {filteredRooms.map((room) => (
-          <RoomCard key={room.id} room={room} onOpenDetail={openDetail} onOpenEdit={openEdit} onDelete={handleDelete} />
+          <RoomCard key={room.id} room={room} onOpenDetail={openDetail} onOpenEdit={openEdit} onDelete={setDeleteRoomId} />
         ))}
       </Box>
 
@@ -188,6 +189,15 @@ export default function RoomManagement() {
         onQuantityChange={changeFurnitureQuantity}
         onCancelFurnitureEdit={() => setFurnitureEditMode(false)}
         onSaveFurniture={handleFurnitureSave}
+      />
+
+      <ConfirmDialog
+        open={!!deleteRoomId}
+        title="Xóa Phòng"
+        message="Bạn có chắc muốn xóa phòng này? Hành động này không thể hoàn tác."
+        confirmText="Xóa Phòng"
+        onClose={() => setDeleteRoomId(null)}
+        onConfirm={() => handleDelete(deleteRoomId)}
       />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />

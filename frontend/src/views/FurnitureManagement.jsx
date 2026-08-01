@@ -6,6 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import MessageDialog from "../components/MessageDialog";
 import FurnitureTable from "../components/furniture/FurnitureTable";
 import FurnitureModal from "../components/furniture/FurnitureModal";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import furnitureApi from "../api/furnitureApi";
 
 export default function FurnitureManagement() {
@@ -13,6 +14,7 @@ export default function FurnitureManagement() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [deleteItemId, setDeleteItemId] = useState(null);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const fetchItems = useCallback(async () => {
@@ -40,12 +42,13 @@ export default function FurnitureManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa vật dụng này?")) return;
     try {
       await furnitureApi.delete(id);
+      setDeleteItemId(null);
       setSnack({ open: true, message: "Xóa vật dụng thành công", severity: "success" });
       fetchItems();
     } catch (err) {
+      setDeleteItemId(null);
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi xóa", severity: "error" });
     }
   };
@@ -70,10 +73,19 @@ export default function FurnitureManagement() {
       </Box>
 
       {loading ? <CircularProgress /> : (
-        <FurnitureTable items={items} onEdit={openEdit} onDelete={handleDelete} />
+        <FurnitureTable items={items} onEdit={openEdit} onDelete={setDeleteItemId} />
       )}
 
       <FurnitureModal open={open} editItem={editItem} onClose={() => setOpen(false)} onSave={handleSave} />
+
+      <ConfirmDialog
+        open={!!deleteItemId}
+        title="Xóa Vật Dụng"
+        message="Bạn có chắc muốn xóa vật dụng này? Hành động này không thể hoàn tác."
+        confirmText="Xóa Vật Dụng"
+        onClose={() => setDeleteItemId(null)}
+        onConfirm={() => handleDelete(deleteItemId)}
+      />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
