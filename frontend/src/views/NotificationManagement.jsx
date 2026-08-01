@@ -171,7 +171,12 @@ export default function NotificationManagement() {
                     <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.75rem" }}>
                       {(() => {
                         const roomIds = typeof log.targetRoomIds === "string" ? JSON.parse(log.targetRoomIds) : log.targetRoomIds || [];
-                        return roomIds.length > 0 ? `Phòng ${roomIds.join(", ")}` : "Tất cả phòng";
+                        if (roomIds.length === 0) return "Tất cả phòng";
+                        const roomNames = roomIds.map((id) => {
+                          const room = rooms.find((r) => String(r.id) === String(id));
+                          return room ? room.room_number : id;
+                        });
+                        return `Phòng ${roomNames.join(", ")}`;
                       })()}
                     </Typography>
                     <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
