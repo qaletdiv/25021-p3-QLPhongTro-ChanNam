@@ -35,7 +35,7 @@ export default function TenantManagement() {
   const [openContract, setOpenContract] = useState(false);
   const [editContractId, setEditContractId] = useState(null);
   const [contractForm, setContractForm] = useState({
-    tenantId: "", roomId: "", deposit: "", startDate: "", endDate: "",
+    tenantId: "", roomId: "", deposit: "", price: "", startDate: "", endDate: "",
     paymentDay: 5, fingerprintCode: "", furnitures: [],
   });
   const [companionFingerprints, setCompanionFingerprints] = useState([]);
@@ -93,6 +93,7 @@ export default function TenantManagement() {
         setContractForm({
           tenantId: tenant.id, roomId: activeContract.roomId,
           deposit: contract.deposit,
+          price: contract.price,
           startDate: contract.startDate?.split("T")[0] || contract.startDate,
           endDate: contract.endDate?.split("T")[0] || contract.endDate,
           paymentDay: contract.paymentDay,
@@ -115,7 +116,7 @@ export default function TenantManagement() {
         furnRes.data.furnitures.forEach((f) => { defaultFurns[f.id] = { checked: false, quantity: f.default_quantity }; });
         setSelectedFurnitures(defaultFurns);
         setContractForm({
-          tenantId: tenant.id, roomId: "", deposit: "", startDate: "", endDate: "",
+          tenantId: tenant.id, roomId: "", deposit: "", price: "", startDate: "", endDate: "",
           paymentDay: 5, fingerprintCode: "", furnitures: [],
         });
         setCompanionFingerprints([]);
@@ -138,6 +139,7 @@ export default function TenantManagement() {
       if (editContractId) {
         const contractData = {
           ...contractForm, deposit: Number(contractForm.deposit),
+          price: Number(contractForm.price),
           paymentDay: Number(contractForm.paymentDay),
           companionFingerprints, roomId: contractForm.roomId
         };
@@ -148,6 +150,7 @@ export default function TenantManagement() {
           .map(([furnitureId, v]) => ({ furnitureId: Number(furnitureId), quantity: v.quantity }));
         await contractApi.create({
           ...contractForm, deposit: Number(contractForm.deposit),
+          price: Number(contractForm.price),
           paymentDay: Number(contractForm.paymentDay),
           furnitures, companionFingerprints
         });
@@ -170,7 +173,7 @@ export default function TenantManagement() {
       furnRes.data.furnitures.forEach((f) => { defaultFurnitures[f.id] = { checked: false, quantity: f.default_quantity }; });
       setSelectedFurnitures(defaultFurnitures);
       setContractForm({
-        tenantId: "", roomId: "", deposit: "", startDate: "", endDate: "",
+        tenantId: "", roomId: "", deposit: "", price: "", startDate: "", endDate: "",
         paymentDay: 5, fingerprintCode: "", furnitures: [],
       });
       setCompanionFingerprints([]);
@@ -223,7 +226,7 @@ export default function TenantManagement() {
     }
     try {
       setContractLoading(true);
-      const data = { ...contractForm, deposit: Number(contractForm.deposit), paymentDay: Number(contractForm.paymentDay), companionFingerprints };
+      const data = { ...contractForm, deposit: Number(contractForm.deposit), price: Number(contractForm.price), paymentDay: Number(contractForm.paymentDay), companionFingerprints };
 
       if (editContractId) {
         await contractApi.update(editContractId, data);

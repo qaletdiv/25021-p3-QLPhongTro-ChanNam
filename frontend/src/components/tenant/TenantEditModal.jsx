@@ -59,13 +59,17 @@ export default function TenantEditModal({
                   getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
                   value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
                   onChange={(e, room) => {
-                    setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit });
+                    setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price });
                   }}
                   renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" />}
                 />
               )}
             </Box>
             <Grid container spacing={1.5}>
+              <Grid size={4}>
+                <TextField fullWidth size="small" label="Giá thuê (VND/tháng)" type="number" value={contractForm.price || ""} onChange={(e) => setContractForm({ ...contractForm, price: e.target.value })} required
+                  sx={inputSx} />
+              </Grid>
               <Grid size={4}>
                 <TextField fullWidth size="small" label="Tiền cọc (VND)" type="number" value={contractForm.deposit} onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })} required
                   sx={inputSx} />

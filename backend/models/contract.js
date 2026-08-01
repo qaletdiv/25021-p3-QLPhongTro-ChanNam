@@ -14,6 +14,7 @@ module.exports = (sequelize, DataType) => {
         tenantId: { type: DataType.INTEGER, allowNull: false },
         roomId: { type: DataType.INTEGER, allowNull: false },
         deposit: { type: DataType.DECIMAL(15, 0), allowNull: false, defaultValue: 0 },
+        price: { type: DataType.DECIMAL(15, 0), allowNull: false, defaultValue: 0 },
         startDate: { type: DataType.DATEONLY, allowNull: false },
         endDate: { type: DataType.DATEONLY, allowNull: false },
         paymentDay: { type: DataType.INTEGER, allowNull: false, defaultValue: 5 },

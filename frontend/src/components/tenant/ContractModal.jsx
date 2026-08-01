@@ -40,7 +40,7 @@ export default function ContractModal({
                 getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
                 value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
                 onChange={(e, room) => {
-                  setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room?.default_payment_day || 5) });
+                  setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room?.default_payment_day || 5) });
                 }}
                 renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" sx={inputSx} />}
                 sx={inputSx}
@@ -90,6 +90,15 @@ export default function ContractModal({
 
           {/* Financial & Fingerprint */}
           <Grid container spacing={1.5}>
+            <Grid size={4}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng)</Typography>
+              <TextField
+                fullWidth size="small" type="number"
+                value={contractForm.price || ""}
+                onChange={(e) => setContractForm({ ...contractForm, price: e.target.value })}
+                sx={inputSx}
+              />
+            </Grid>
             <Grid size={4}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tiền Cọc (VND)</Typography>
               <TextField

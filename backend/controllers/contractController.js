@@ -35,7 +35,7 @@ exports.getContractById = async (req, res, next) => {
 
 exports.updateContract = async (req, res, next) => {
     try {
-        const { deposit, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints, roomId } = req.body;
+        const { deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints, roomId } = req.body;
 
         const contract = await Contract.findByPk(req.params.id, {
             include: [{ model: Room, as: "room" }]
@@ -43,7 +43,7 @@ exports.updateContract = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Khong tim thay hop dong" });
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Khong co quyen" });
 
-        const updateData = { deposit, startDate, endDate, paymentDay, fingerprintCode };
+        const updateData = { deposit, price, startDate, endDate, paymentDay, fingerprintCode };
 
         if (roomId && Number(roomId) !== contract.roomId) {
             const newRoom = await Room.findByPk(roomId);
@@ -76,13 +76,13 @@ exports.updateContract = async (req, res, next) => {
 
 exports.createContract = async (req, res, next) => {
     try {
-        const { tenantId, roomId, deposit, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints } = req.body;
+        const { tenantId, roomId, deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints } = req.body;
 
         const room = await Room.findByPk(roomId);
         if (!room || room.landlordId !== req.user.id) return res.status(400).json({ message: "Phong khong hop le" });
         if (room.status !== 'empty') return res.status(400).json({ message: "Phong khong trong" });
 
-        const contract = await Contract.create({ tenantId, roomId, deposit, startDate, endDate, paymentDay, fingerprintCode, status: 'active' });
+        const contract = await Contract.create({ tenantId, roomId, deposit, price: price ?? room.price, startDate, endDate, paymentDay, fingerprintCode, status: 'active' });
 
         if (companionFingerprints && companionFingerprints.length > 0) {
             await Promise.all(companionFingerprints.map(c =>
@@ -118,7 +118,8 @@ exports.checkoutContract = async (req, res, next) => {
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Khong co quyen" });
 
         await contract.update({ status: 'ended' });
-        await contract.room.update({ status: 'empty' });
+        await contract.room.update({ status: 'empty', price: contract.price, default_payment_day: 5 });
+        await ContractFurniture.destroy({ where: { contractId: contract.id } });
 
         res.json({ message: "Tra phong thanh cong" });
     } catch (error) {

@@ -11,6 +11,7 @@ const createContractValidationRules = () => [
             return true;
         }),
     body('deposit').notEmpty().isFloat({ min: 0 }).withMessage("Tien coc phai >= 0"),
+    body('price').optional().isFloat({ min: 0 }).withMessage("Gia thue phai >= 0"),
     body('startDate').notEmpty().isISO8601().withMessage("Ngay bat dau khong hop le"),
     body('endDate').notEmpty().isISO8601().withMessage("Ngay ket thuc khong hop le")
         .custom((value, { req }) => {
