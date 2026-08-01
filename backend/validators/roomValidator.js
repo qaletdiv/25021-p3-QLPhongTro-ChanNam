@@ -6,6 +6,7 @@ const createRoomValidationRules = () => [
     body('default_payment_day').optional().isInt({ min: 1, max: 31 }),
     body('floor').optional().isInt({ min: 0 }),
     body('area').optional().isFloat({ min: 0 }),
+    body('buildingId').optional({ nullable: true }).isInt({ min: 1 }),
 ];
 
 const updateRoomValidationRules = () => [
@@ -14,6 +15,7 @@ const updateRoomValidationRules = () => [
     body('default_payment_day').optional().isInt({ min: 1, max: 31 }),
     body('floor').optional().isInt({ min: 0 }),
     body('area').optional().isFloat({ min: 0 }),
+    body('buildingId').optional({ nullable: true }).isInt({ min: 1 }),
 ];
 
 const roomIdParamValidation = () => [

@@ -18,7 +18,9 @@ export default function RoomDetailModal({
       header={
         <Box>
           <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Chi Tiết Phòng {detailRoom.room_number}</Typography>
-          <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8", mt: 0.25 }}>Danh sách vật dụng bàn giao theo hợp đồng hiện tại</Typography>
+          <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8", mt: 0.25 }}>
+            {detailRoom.building ? `${detailRoom.building.name}${detailRoom.building.address ? " - " + detailRoom.building.address : ""}` : "Chưa thuộc nhà nào"}
+          </Typography>
         </Box>
       }
       body={

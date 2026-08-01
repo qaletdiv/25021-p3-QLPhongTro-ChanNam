@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Tenant, Contract, Room, Companion } = require("../models");
+const { Tenant, Contract, Room, Companion, Building } = require("../models");
 
 exports.getTenants = async (req, res, next) => {
     try {
@@ -16,7 +16,7 @@ exports.getTenants = async (req, res, next) => {
             include: [
                 { model: Companion, as: "companions", attributes: ["name", "phone", "cccd", "relationship"] },
                 { model: Contract, as: "contracts",
-                  include: [{ model: Room, as: "room", attributes: ["room_number"], where: { landlordId: req.user.id } }]
+                  include: [{ model: Room, as: "room", attributes: ["room_number"], where: { landlordId: req.user.id }, include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
                 }
             ],
             order: [['name', 'ASC']]

@@ -7,6 +7,7 @@ const app = express();
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const roomRoutes = require("./routes/roomRoutes");
+const buildingRoutes = require("./routes/buildingRoutes");
 const furnitureRoutes = require("./routes/furnitureRoutes");
 const tenantRoutes = require("./routes/tenantRoutes");
 const contractRoutes = require("./routes/contractRoutes");
@@ -35,6 +36,7 @@ app.get('/', (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/rooms", roomRoutes);
+app.use("/api/buildings", buildingRoutes);
 app.use("/api/furnitures", furnitureRoutes);
 app.use("/api/tenants", tenantRoutes);
 app.use("/api/contracts", contractPdfRoutes);

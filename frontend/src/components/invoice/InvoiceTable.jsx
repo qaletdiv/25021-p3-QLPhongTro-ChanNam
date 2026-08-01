@@ -56,6 +56,9 @@ const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint }) => (
     <td style={{ padding: "12px 16px" }}>
       <div style={{ fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem" }}>Phòng {inv.contract?.room?.room_number || "—"}</div>
       <div style={{ fontSize: "0.6875rem", color: "#64748b" }}>{inv.contract?.tenant?.name || "—"} ({inv.month})</div>
+      {inv.contract?.room?.building?.name && (
+        <div style={{ fontSize: "0.625rem", color: "#2563eb", fontWeight: 600 }}>{inv.contract.room.building.name}</div>
+      )}
     </td>
     <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.roomPrice)}</td>
     <td style={{ padding: "12px 16px" }}>

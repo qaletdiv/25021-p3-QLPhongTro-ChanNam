@@ -18,7 +18,18 @@ CREATE TABLE users (
     updatedAt DATETIME NOT NULL
 );
 
--- 2. Phòng trọ
+-- 2. Nhà trọ (mỗi chủ trọ có thể sở hữu nhiều nhà)
+CREATE TABLE buildings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    address TEXT,
+    landlordId INT NOT NULL,
+    FOREIGN KEY (landlordId) REFERENCES users(id) ON DELETE CASCADE,
+    createdAt DATETIME NOT NULL,
+    updatedAt DATETIME NOT NULL
+);
+
+-- 3. Phòng trọ
 CREATE TABLE rooms (
     id INT AUTO_INCREMENT PRIMARY KEY,
     room_number VARCHAR(20) NOT NULL,
@@ -28,12 +39,14 @@ CREATE TABLE rooms (
     default_payment_day INT NOT NULL DEFAULT 5,
     status ENUM('empty','rented') NOT NULL DEFAULT 'empty',
     landlordId INT NOT NULL,
+    buildingId INT,
     FOREIGN KEY (landlordId) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (buildingId) REFERENCES buildings(id) ON DELETE SET NULL,
     createdAt DATETIME NOT NULL,
     updatedAt DATETIME NOT NULL
 );
 
--- 3. Vật dụng (thư viện)
+-- 4. Vật dụng (thư viện)
 CREATE TABLE furnitures (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -132,10 +145,12 @@ CREATE TABLE settings (
     `key` VARCHAR(100) NOT NULL,
     `value` TEXT,
     landlordId INT NOT NULL,
+    buildingId INT,
     createdAt DATETIME NOT NULL,
     updatedAt DATETIME NOT NULL,
     FOREIGN KEY (landlordId) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE INDEX idx_key_landlord (`key`, landlordId)
+    FOREIGN KEY (buildingId) REFERENCES buildings(id) ON DELETE CASCADE,
+    UNIQUE INDEX idx_key_landlord_building (`key`, landlordId, buildingId)
 );
 
 -- 11. Báo hỏng từ người thuê

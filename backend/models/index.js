@@ -8,6 +8,7 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 
 db.User = require('./user')(sequelize, Sequelize);
 db.Room = require('./room')(sequelize, Sequelize);
+db.Building = require('./building')(sequelize, Sequelize);
 db.Furniture = require('./furniture')(sequelize, Sequelize);
 db.Tenant = require('./tenant')(sequelize, Sequelize);
 db.Contract = require('./contract')(sequelize, Sequelize);

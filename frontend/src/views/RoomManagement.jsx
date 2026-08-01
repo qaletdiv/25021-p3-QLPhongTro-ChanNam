@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import MessageDialog from "../components/MessageDialog";
 import FilterBar from "../components/ui/FilterBar";
 import RoomCard from "../components/room/RoomCard";
@@ -12,16 +13,19 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import roomApi from "../api/roomApi";
 import contractApi from "../api/contractApi";
 import furnitureApi from "../api/furnitureApi";
+import buildingApi from "../api/buildingApi";
 
 export default function RoomManagement() {
   const [rooms, setRooms] = useState([]);
+  const [buildings, setBuildings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [buildingFilter, setBuildingFilter] = useState("all");
   const [openCreate, setOpenCreate] = useState(false);
   const [detailRoom, setDetailRoom] = useState(null);
   const [editRoom, setEditRoom] = useState(null);
-  const [form, setForm] = useState({ room_number: "", floor: 1, area: 25, price: 3000000, default_payment_day: 5 });
+  const [form, setForm] = useState({ room_number: "", floor: 1, area: 25, price: 3000000, default_payment_day: 5, buildingId: "" });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [furnitureEditMode, setFurnitureEditMode] = useState(false);
   const [furnitureEditList, setFurnitureEditList] = useState([]);
@@ -32,12 +36,22 @@ export default function RoomManagement() {
   const getContract = (room) => room.contracts?.[0];
 
   const fetchRooms = useCallback(async () => {
-    try { const res = await roomApi.getAll(); setRooms(res.data.rooms); }
+    try {
+      const params = {};
+      if (buildingFilter !== "all") params.buildingId = buildingFilter;
+      const res = await roomApi.getAll(null, params);
+      setRooms(res.data.rooms);
+    }
     catch { setSnack({ open: true, message: "Lỗi tải danh sách phòng", severity: "error" }); }
     finally { setLoading(false); }
+  }, [buildingFilter]);
+
+  const fetchBuildings = useCallback(async () => {
+    try { const res = await buildingApi.getAll(); setBuildings(res.data.buildings || []); }
+    catch { /* bo qua */ }
   }, []);
 
-  useEffect(() => { fetchRooms(); }, [fetchRooms]);
+  useEffect(() => { fetchBuildings(); fetchRooms(); }, [fetchBuildings, fetchRooms]);
 
   const filteredRooms = rooms.filter((r) => {
     if (filter !== "all" && r.status !== filter) return false;
@@ -54,13 +68,14 @@ export default function RoomManagement() {
     rented: rooms.filter(r => r.status === "rented").length,
   };
 
-  const openAdd = () => { setEditRoom(null); setForm({ room_number: "", floor: 1, area: 25, price: 3000000, default_payment_day: 5 }); setOpenCreate(true); };
-  const openEdit = (room) => { setEditRoom(room); setForm({ room_number: room.room_number, floor: room.floor, area: room.area, price: room.price, default_payment_day: room.default_payment_day }); setOpenCreate(true); };
+  const openAdd = () => { setEditRoom(null); setForm({ room_number: "", floor: 1, area: 25, price: 3000000, default_payment_day: 5, buildingId: buildingFilter !== "all" ? buildingFilter : "" }); setOpenCreate(true); };
+  const openEdit = (room) => { setEditRoom(room); setForm({ room_number: room.room_number, floor: room.floor, area: room.area, price: room.price, default_payment_day: room.default_payment_day, buildingId: room.buildingId || "" }); setOpenCreate(true); };
 
   const handleSave = async () => {
     try {
-      if (editRoom) { await roomApi.update(editRoom.id, form); }
-      else { await roomApi.create(form); }
+      const payload = { ...form, buildingId: form.buildingId ? Number(form.buildingId) : null };
+      if (editRoom) { await roomApi.update(editRoom.id, payload); }
+      else { await roomApi.create(payload); }
       setOpenCreate(false); fetchRooms();
       setTimeout(() => setSnack({ open: true, message: editRoom ? "Cập nhật phòng thành công" : "Thêm phòng thành công", severity: "success" }), 300);
     } catch (err) { setSnack({ open: true, message: err.response?.data?.message || "Lỗi", severity: "error" }); }
@@ -162,6 +177,24 @@ export default function RoomManagement() {
         searchPlaceholder="Tìm theo số phòng hoặc tên khách..."
       />
 
+      {buildings.length > 0 && (
+        <TextField
+          select
+          size="small"
+          value={buildingFilter}
+          onChange={(e) => setBuildingFilter(e.target.value)}
+          slotProps={{
+            input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
+          }}
+          sx={{ maxWidth: 320, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
+        >
+          <MenuItem value="all">Tất cả các nhà</MenuItem>
+          {buildings.map((b) => (
+            <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+          ))}
+        </TextField>
+      )}
+
       {/* Room Cards Grid */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2.5 }}>
         {filteredRooms.map((room) => (
@@ -175,7 +208,7 @@ export default function RoomManagement() {
         </Box>
       )}
 
-      <RoomFormModal open={openCreate} editRoom={editRoom} form={form} setForm={setForm} onClose={() => setOpenCreate(false)} onSave={handleSave} />
+      <RoomFormModal open={openCreate} editRoom={editRoom} form={form} setForm={setForm} buildings={buildings} onClose={() => setOpenCreate(false)} onSave={handleSave} />
 
       <RoomDetailModal
         detailRoom={detailRoom}

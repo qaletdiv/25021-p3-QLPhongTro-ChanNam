@@ -1,5 +1,6 @@
 const { Invoice, Contract, Tenant, Room } = require("../models");
 const cloudinary = require("../config/cloudinary");
+const { getResolvedSettings } = require("../utils/settings");
 
 exports.getInvoices = async (req, res, next) => {
     try {
@@ -27,14 +28,13 @@ exports.getSettings = async (req, res, next) => {
 
         const contract = await Contract.findOne({
             where: { tenantId: tenant.id, status: 'active' },
-            include: [{ model: Room, as: "room" }]
+            include: [{ model: Room, as: "room", include: [{ model: require("../models").Building, as: "building", attributes: ["id", "name", "address"] }] }]
         });
         if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
 
-        const { Setting } = require("../models");
-        const settings = await Setting.findAll({ where: { landlordId: contract.room.landlordId } });
+        const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
         const result = {};
-        settings.forEach(s => { result[s.key] = s.value; });
+        Object.entries(settings).forEach(([k, v]) => { result[k] = v; });
 
         res.json({
             settings: result,
@@ -124,9 +124,9 @@ exports.submitMeter = async (req, res, next) => {
             return res.status(400).json({ message: "Hoa don thang nay da ton tai" });
         }
 
-        const settings = await Setting.findAll({ where: { landlordId: contract.room.landlordId } });
+        const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
         const s = {};
-        settings.forEach(x => { s[x.key] = x.value; });
+        Object.entries(settings).forEach(([k, v]) => { s[k] = v; });
         const elecRate = Number(s.electricityRate) || 3500;
         const waterRate = Number(s.waterRate) || 15000;
         const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;

@@ -1,19 +1,23 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import MessageDialog from "../components/MessageDialog";
 import FilterBar from "../components/ui/FilterBar";
 import InvoiceTable from "../components/invoice/InvoiceTable";
 import PrintableInvoiceModal from "../components/invoice/PrintableInvoiceModal";
 import invoiceApi from "../api/invoiceApi";
 import settingApi from "../api/settingApi";
+import buildingApi from "../api/buildingApi";
 
 export default function InvoiceManagement() {
   const [invoices, setInvoices] = useState([]);
+  const [buildings, setBuildings] = useState([]);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [buildingFilter, setBuildingFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
@@ -22,9 +26,10 @@ export default function InvoiceManagement() {
 
   const fetchInvoices = useCallback(async () => {
     try {
-      const [invRes, setRes] = await Promise.all([invoiceApi.getAll(), settingApi.getAll()]);
+      const [invRes, setRes, bRes] = await Promise.all([invoiceApi.getAll(), settingApi.getAll(), buildingApi.getAll()]);
       setInvoices(invRes.data.invoices);
       setSettings(setRes.data);
+      setBuildings(bRes.data.buildings || []);
     } catch {
       setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" });
     } finally { setLoading(false); }
@@ -34,6 +39,7 @@ export default function InvoiceManagement() {
 
   const filteredInvoices = invoices.filter((inv) => {
     if (filterStatus !== "all" && inv.status !== filterStatus) return false;
+    if (buildingFilter !== "all" && String(inv.contract?.room?.building?.id || "") !== buildingFilter) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const roomNum = inv.contract?.room?.room_number || "";
@@ -95,6 +101,24 @@ export default function InvoiceManagement() {
         onSearchChange={setSearchQuery}
         searchPlaceholder="Tìm số phòng, tên khách..."
       />
+
+      {buildings.length > 0 && (
+        <TextField
+          select
+          size="small"
+          value={buildingFilter}
+          onChange={(e) => setBuildingFilter(e.target.value)}
+          slotProps={{
+            input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
+          }}
+          sx={{ maxWidth: 320, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
+        >
+          <MenuItem value="all">Tất cả các nhà</MenuItem>
+          {buildings.map((b) => (
+            <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+          ))}
+        </TextField>
+      )}
 
       {loading ? <CircularProgress /> : (
         <InvoiceTable

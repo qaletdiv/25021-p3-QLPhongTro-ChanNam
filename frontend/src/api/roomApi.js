@@ -1,8 +1,9 @@
 import axiosClient from "./axiosClient";
 
 const roomApi = {
-  getAll(status) {
+  getAll(status, extraParams) {
     const params = status ? { status } : {};
+    if (extraParams) Object.assign(params, extraParams);
     return axiosClient.get("/rooms", { params });
   },
   getById(id) {

@@ -1,11 +1,12 @@
 "use client";
 
-import { Box, Typography, TextField } from "@mui/material";
+import { Box, Typography, TextField, MenuItem, InputAdornment } from "@mui/material";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import ModalShell from "../ui/ModalShell";
 import { inputSx } from "../../utils/styles";
 
-export default function RoomFormModal({ open, editRoom, form, setForm, onClose, onSave }) {
+export default function RoomFormModal({ open, editRoom, form, setForm, buildings, onClose, onSave }) {
   if (!open) return null;
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value });
@@ -22,6 +23,24 @@ export default function RoomFormModal({ open, editRoom, form, setForm, onClose, 
       }
       body={
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2.5 }}>
+          {buildings && buildings.length > 0 && (
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Thuộc Nhà Trọ</Typography>
+              <TextField
+                select fullWidth size="small" value={form.buildingId || ""}
+                onChange={set("buildingId")}
+                slotProps={{
+                  input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
+                }}
+                sx={inputSx}
+              >
+                <MenuItem value="">Chưa thuộc nhà nào</MenuItem>
+                {buildings.map((b) => (
+                  <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+                ))}
+              </TextField>
+            </Box>
+          )}
           <Box>
             <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số / Tên Phòng *</Typography>
             <TextField fullWidth size="small" placeholder="Ví dụ: 301" value={form.room_number}

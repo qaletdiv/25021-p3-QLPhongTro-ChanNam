@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import ChairIcon from "@mui/icons-material/Chair";
 import PeopleIcon from "@mui/icons-material/People";
 import ReceiptIcon from "@mui/icons-material/Receipt";
@@ -23,6 +24,7 @@ const drawerWidth = 260;
 
 const menuItems = [
   { label: "Tổng quan", icon: <DashboardIcon />, path: "/landlord/dashboard" },
+  { label: "Nhà Trọ", icon: <ApartmentIcon />, path: "/landlord/buildings" },
   { label: "Phòng", icon: <MeetingRoomIcon />, path: "/landlord/rooms" },
   { label: "Vật Dụng", icon: <ChairIcon />, path: "/landlord/furnitures" },
   { label: "Hợp Đồng", icon: <PeopleIcon />, path: "/landlord/tenants" },

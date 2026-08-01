@@ -41,7 +41,7 @@ export default function TenantDashboard() {
         notifications={notifications} calcTotal={calcTotal}
         monthStr={latestInvoice?.month || currentMonthLabel()}
         latestInvoice={latestInvoice}
-        landlordAddress={s.landlordAddress || ""}
+        landlordAddress={room?.building?.address || s.landlordAddress || ""}
         roomPrice={roomPrice}
       />
 

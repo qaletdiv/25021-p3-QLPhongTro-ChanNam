@@ -1,11 +1,13 @@
 import axiosClient from "./axiosClient";
 
 const settingApi = {
-  getAll() {
-    return axiosClient.get("/settings");
+  getAll(buildingId) {
+    const params = buildingId ? { buildingId } : {};
+    return axiosClient.get("/settings", { params });
   },
-  save(data) {
-    return axiosClient.put("/settings", data);
+  save(data, buildingId) {
+    const params = buildingId ? { buildingId } : {};
+    return axiosClient.put("/settings", data, { params });
   },
   checkZalo() {
     return axiosClient.post("/settings/check-zalo");

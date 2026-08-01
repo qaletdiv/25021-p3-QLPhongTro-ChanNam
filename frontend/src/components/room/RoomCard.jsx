@@ -4,6 +4,7 @@ import { Box, Paper, Chip, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EyeIcon from "@mui/icons-material/Visibility";
+import ApartmentIcon from "@mui/icons-material/Apartment";
 import { formatCurrency } from "../../utils/format";
 
 export default function RoomCard({ room, onOpenDetail, onOpenEdit, onDelete }) {
@@ -36,6 +37,16 @@ export default function RoomCard({ room, onOpenDetail, onOpenEdit, onDelete }) {
           Tầng {room.floor}
         </Typography>
       </Box>
+
+      {/* Building name */}
+      {room.building && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 1 }}>
+          <ApartmentIcon sx={{ fontSize: 14, color: "#64748b" }} />
+          <Typography sx={{ fontSize: "0.6875rem", color: "#475569", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {room.building.name}
+          </Typography>
+        </Box>
+      )}
 
       {/* Room Number & Price */}
       <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: 2 }}>
