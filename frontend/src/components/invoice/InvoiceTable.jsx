@@ -65,7 +65,7 @@ const InvoiceRow = ({ inv, prev, onOpenReading, onMarkPaid, onRemind, onPrint })
       </div>
     </td>
     <PhotoCell photo={inv.electricityPhoto} alt="Ảnh đồng hồ điện" />
-    <PhotoCell photo={prev?.electricityPhoto} alt="Ảnh đồng hồ điện tháng trước" />
+    <PhotoCell photo={prev?.electricityPhoto || inv.contract?.initialElectricityPhoto} alt="Ảnh đồng hồ điện tháng trước" />
     <td style={{ padding: "12px 16px" }}>
       <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.waterCost)}</div>
       <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
@@ -73,7 +73,7 @@ const InvoiceRow = ({ inv, prev, onOpenReading, onMarkPaid, onRemind, onPrint })
       </div>
     </td>
     <PhotoCell photo={inv.waterPhoto} alt="Ảnh đồng hồ nước" />
-    <PhotoCell photo={prev?.waterPhoto} alt="Ảnh đồng hồ nước tháng trước" />
+    <PhotoCell photo={prev?.waterPhoto || inv.contract?.initialWaterPhoto} alt="Ảnh đồng hồ nước tháng trước" />
     <td style={{ padding: "12px 16px", color: "#475569" }}>{formatCurrency(inv.serviceFee + inv.otherFees)}</td>
     <td style={{ padding: "12px 16px", fontWeight: 800, color: "#2563eb", fontSize: "0.8125rem" }}>{formatCurrency(inv.total)}</td>
     <td style={{ padding: "12px 16px" }}>
