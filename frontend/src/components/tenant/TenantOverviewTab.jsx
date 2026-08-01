@@ -104,7 +104,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             Chưa có thông báo nào mới từ Chủ trọ.
           </Typography>
         ) : (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, maxHeight: 440, overflow: "auto", pr: 0.5 }}>
             {notifications.map((n) => (
               <Paper key={n.id} sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
