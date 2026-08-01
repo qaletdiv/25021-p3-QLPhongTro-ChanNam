@@ -1,4 +1,4 @@
-const { Invoice, Contract, Tenant } = require("../models");
+const { Invoice, Contract, Tenant, Room } = require("../models");
 
 exports.getInvoices = async (req, res, next) => {
     try {
@@ -31,8 +31,7 @@ exports.getSettings = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
 
         const { Setting } = require("../models");
-        const settings = await Setting.findAll({ where: { landlordId: contract.room.landlordId } });
-        const result = {};
+        const settings = await Setting.findAll({ where: { landlordId: contract.room.landlordId } });        const result = {};
         settings.forEach(s => { result[s.key] = s.value; });
 
         res.json({ settings: result, roomPrice: contract.room.price });

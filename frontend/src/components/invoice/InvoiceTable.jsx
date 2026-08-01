@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, IconButton } from "@mui/material";
+import { Box, Paper, IconButton } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
 import { formatCurrency } from "../../utils/format";
 
