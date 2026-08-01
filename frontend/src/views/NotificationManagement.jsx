@@ -75,7 +75,7 @@ export default function NotificationManagement() {
         TENKHACH: activeContract?.tenant?.name || "",
         MAPHONG: room?.room_number || "",
         TONG_TIEN: room?.price != null ? String(room.price) : "",
-        HAN_THANH_TOAN: activeContract?.paymentDay ? `Ngày ${activeContract.paymentDay}` : "",
+        HAN_THANH_TOAN: activeContract?.paymentDay ? `Ngày ${activeContract.paymentDay + 5}` : "",
       });
     }).join("\n\n─────\n\n");
   };

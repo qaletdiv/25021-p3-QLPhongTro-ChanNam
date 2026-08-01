@@ -67,7 +67,7 @@ exports.runAutoReminders = async () => {
                 const text = telegram.formatMessage(content, {
                     tenantName: tenant.name,
                     roomNumber: room.room_number,
-                    dueDate: `ngay ${contract.paymentDay}`
+                    dueDate: `ngay ${contract.paymentDay + 5}`
                 });
                 await telegram.sendMessage({
                     landlordId: room.landlordId,
