@@ -5,7 +5,7 @@ import { Box, Typography, Chip, Paper } from "@mui/material";
 import { formatCurrency, formatDate } from "../../utils/format";
 import ModalShell from "../ui/ModalShell";
 
-export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice }) {
+export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice, landlordAddress }) {
   const [furnitureOpen, setFurnitureOpen] = useState(false);
   const handoverItems = contract?.contractFurnitures || [];
 
@@ -33,7 +33,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
               Phòng Trọ {room?.room_number || "—"} - {tenant?.name || ""}
             </Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "#bfdbfe", mt: 0.5, fontWeight: 500 }}>
-              Địa chỉ: Số 123 Đường Cầu Giấy, Quận Cầu Giấy, Hà Nội
+              Địa chỉ: {landlordAddress || "—"}
             </Typography>
           </Box>
           <Box sx={{

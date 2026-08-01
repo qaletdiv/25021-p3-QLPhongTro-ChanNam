@@ -148,6 +148,10 @@ export default function Settings() {
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email Thông Báo</Typography>
               <TextField fullWidth type="email" value={form.landlordEmail || ""} onChange={(e) => set("landlordEmail", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
+            <Box sx={{ gridColumn: { xs: "1", sm: "1 / -1" } }}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Địa Chỉ Nhà Trọ</Typography>
+              <TextField fullWidth placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành" value={form.landlordAddress || ""} onChange={(e) => set("landlordAddress", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+            </Box>
           </Box>
         </Box>
 
