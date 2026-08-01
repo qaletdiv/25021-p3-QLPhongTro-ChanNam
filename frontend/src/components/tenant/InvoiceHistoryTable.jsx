@@ -4,7 +4,7 @@ import { Box, Typography, Chip, Table, TableHead, TableRow, TableCell, TableBody
 import HistoryIcon from "@mui/icons-material/History";
 import { formatCurrency } from "../../utils/format";
 
-const statusLabel = { pending: "Đã gửi chỉ số", paid: "Đã thanh toán" };
+const statusLabel = { pending: "Chờ thu tiền", submitted: "Đã gửi chỉ số", paid: "Đã thanh toán" };
 
 export default function InvoiceHistoryTable({ invoices }) {
   return (

@@ -14,4 +14,4 @@ export const nextMonthLabel = () => {
   return `${String(month + 1).padStart(2, "0")}/${year}`;
 };
 
-export const statusLabel = { pending: "Chờ Nhập Chỉ Số", submitted: "Đã Gửi Chỉ Số", paid: "Đã Thanh Toán" };
+export const statusLabel = { pending: "Chờ Thu Tiền", submitted: "Đã Gửi Chỉ Số", paid: "Đã Thanh Toán" };

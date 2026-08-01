@@ -103,7 +103,7 @@ CREATE TABLE invoices (
     serviceFee DECIMAL(15,0) NOT NULL DEFAULT 0,
     otherFees DECIMAL(15,0) NOT NULL DEFAULT 0,
     total DECIMAL(15,0) NOT NULL DEFAULT 0,
-    status ENUM('pending','paid') NOT NULL DEFAULT 'pending',
+    status ENUM('pending','submitted','paid') NOT NULL DEFAULT 'pending',
     paidAt DATETIME,
     createdAt DATETIME NOT NULL,
     updatedAt DATETIME NOT NULL,

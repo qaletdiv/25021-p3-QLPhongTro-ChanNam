@@ -5,7 +5,7 @@ exports.getInvoices = async (req, res, next) => {
     try {
         const { status, month } = req.query;
         const where = {};
-        if (status && ['pending', 'paid'].includes(status)) where.status = status;
+        if (status && ['pending', 'submitted', 'paid'].includes(status)) where.status = status;
         if (month) where.month = month;
 
         const invoices = await Invoice.findAll({

@@ -180,7 +180,7 @@ exports.submitMeter = async (req, res, next) => {
             serviceFee,
             otherFees: 0,
             total,
-            status: 'pending',
+            status: 'submitted',
             electricityPhoto: elecPhotoUrl,
             waterPhoto: waterPhotoUrl
         });
