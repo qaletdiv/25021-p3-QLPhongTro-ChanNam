@@ -14,7 +14,6 @@ module.exports = (sequelize, DataType) => {
         floor: { type: DataType.INTEGER, defaultValue: 1 },
         area: { type: DataType.DECIMAL(10, 2) },
         price: { type: DataType.DECIMAL(15, 0), allowNull: false },
-        default_payment_day: { type: DataType.INTEGER, allowNull: false, defaultValue: 5 },
         status: { type: DataType.ENUM('empty', 'rented'), allowNull: false, defaultValue: 'empty' },
         landlordId: { type: DataType.INTEGER, allowNull: false },
         buildingId: { type: DataType.INTEGER, allowNull: true }

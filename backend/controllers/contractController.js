@@ -118,7 +118,7 @@ exports.checkoutContract = async (req, res, next) => {
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Khong co quyen" });
 
         await contract.update({ status: 'ended' });
-        await contract.room.update({ status: 'empty', price: contract.price, default_payment_day: 5 });
+        await contract.room.update({ status: 'empty', price: contract.price });
         await ContractFurniture.destroy({ where: { contractId: contract.id } });
 
         res.json({ message: "Tra phong thanh cong" });

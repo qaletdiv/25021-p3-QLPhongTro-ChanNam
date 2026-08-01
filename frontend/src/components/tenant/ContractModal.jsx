@@ -40,7 +40,7 @@ export default function ContractModal({
                 getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
                 value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
                 onChange={(e, room) => {
-                  setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room?.default_payment_day || 5) });
+                  setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room ? contractForm.paymentDay : 5) });
                 }}
                 renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" sx={inputSx} />}
                 sx={inputSx}

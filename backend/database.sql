@@ -36,7 +36,6 @@ CREATE TABLE rooms (
     floor INT DEFAULT 1,
     area DECIMAL(10,2),
     price DECIMAL(15,0) NOT NULL,
-    default_payment_day INT NOT NULL DEFAULT 5,
     status ENUM('empty','rented') NOT NULL DEFAULT 'empty',
     landlordId INT NOT NULL,
     buildingId INT,

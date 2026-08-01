@@ -47,12 +47,12 @@ exports.getRoomById = async (req, res, next) => {
 
 exports.createRoom = async (req, res, next) => {
     try {
-        const { room_number, floor, area, price, default_payment_day, buildingId } = req.body;
+        const { room_number, floor, area, price, buildingId } = req.body;
         if (buildingId) {
             const building = await Building.findOne({ where: { id: buildingId, landlordId: req.user.id } });
             if (!building) return res.status(400).json({ message: "Nha khong ton tai hoac khong thuoc ve ban" });
         }
-        const room = await Room.create({ room_number, floor, area, price, default_payment_day: default_payment_day || 5, landlordId: req.user.id, buildingId: buildingId || null });
+        const room = await Room.create({ room_number, floor, area, price, landlordId: req.user.id, buildingId: buildingId || null });
         res.status(201).json({ message: "Them phong thanh cong", room });
     } catch (error) {
         next(error);
@@ -63,12 +63,12 @@ exports.updateRoom = async (req, res, next) => {
     try {
         const room = await Room.findOne({ where: { id: req.params.id, landlordId: req.user.id } });
         if (!room) return res.status(404).json({ message: "Khong tim thay phong" });
-        const { room_number, floor, area, price, default_payment_day, buildingId } = req.body;
+        const { room_number, floor, area, price, buildingId } = req.body;
         if (buildingId !== undefined && buildingId !== null) {
             const building = await Building.findOne({ where: { id: buildingId, landlordId: req.user.id } });
             if (!building) return res.status(400).json({ message: "Nha khong ton tai hoac khong thuoc ve ban" });
         }
-        await room.update({ room_number, floor, area, price, default_payment_day, buildingId: buildingId === undefined ? room.buildingId : buildingId });
+        await room.update({ room_number, floor, area, price, buildingId: buildingId === undefined ? room.buildingId : buildingId });
         res.json({ message: "Cap nhat phong thanh cong", room });
     } catch (error) {
         next(error);
