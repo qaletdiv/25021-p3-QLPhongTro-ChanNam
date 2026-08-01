@@ -95,7 +95,9 @@ export default function LoginRegister() {
           {tab === 0 && (
             <Box component="form" onSubmit={handleLogin}>
               <TextField fullWidth label="Email" margin="normal" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} required />
-              <TextField fullWidth label="Mật khẩu" type="password" margin="normal" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} required />
+              <TextField fullWidth label="Mật khẩu" type="password" margin="normal" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} required
+                InputLabelProps={{ shrink: true, sx: { top: -6 } }}
+                inputProps={{ sx: { pt: 2.5, pb: 2.5 } }} />
               <Button fullWidth variant="contained" type="submit" disabled={loading} sx={{ mt: 2, py: 1.5, fontSize: "0.8125rem" }}>
                 {loading ? <CircularProgress size={22} /> : "Đăng nhập"}
               </Button>
@@ -108,8 +110,12 @@ export default function LoginRegister() {
               <TextField fullWidth label="Email" type="email" margin="normal" value={regForm.email} onChange={(e) => setRegForm({ ...regForm, email: e.target.value })} required />
               <TextField fullWidth label="Số điện thoại" margin="normal" value={regForm.phone} onChange={(e) => setRegForm({ ...regForm, phone: e.target.value })} required />
               <TextField fullWidth label="CCCD" margin="normal" value={regForm.cccd} onChange={(e) => setRegForm({ ...regForm, cccd: e.target.value })} />
-              <TextField fullWidth label="Mật khẩu" type="password" margin="normal" value={regForm.password} onChange={(e) => setRegForm({ ...regForm, password: e.target.value })} required />
-              <TextField fullWidth label="Xác nhận mật khẩu" type="password" margin="normal" value={regForm.confirmPassword} onChange={(e) => setRegForm({ ...regForm, confirmPassword: e.target.value })} required />
+              <TextField fullWidth label="Mật khẩu" type="password" margin="normal" value={regForm.password} onChange={(e) => setRegForm({ ...regForm, password: e.target.value })} required
+                InputLabelProps={{ shrink: true, sx: { top: -6 } }}
+                inputProps={{ sx: { pt: 2.5, pb: 2.5 } }} />
+              <TextField fullWidth label="Xác nhận mật khẩu" type="password" margin="normal" value={regForm.confirmPassword} onChange={(e) => setRegForm({ ...regForm, confirmPassword: e.target.value })} required
+                InputLabelProps={{ shrink: true, sx: { top: -6 } }}
+                inputProps={{ sx: { pt: 2.5, pb: 2.5 } }} />
 
               <Box sx={{ mt: 2, mb: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Typography variant="subtitle2">Người đi kèm</Typography>
