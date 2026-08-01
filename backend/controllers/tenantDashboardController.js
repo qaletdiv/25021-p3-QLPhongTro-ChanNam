@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Tenant, Contract, Room, ContractFurniture, Furniture, Notification, Invoice } = require("../models");
+const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notification, Invoice } = require("../models");
 
 exports.getDashboard = async (req, res, next) => {
     try {
@@ -11,8 +11,10 @@ exports.getDashboard = async (req, res, next) => {
             include: [{ model: Furniture, as: "furniture" }]
         };
 
+        const buildingInclude = { model: Building, as: "building", attributes: ["id", "name", "address"] };
+
         const contractInclude = [
-            { model: Room, as: "room" },
+            { model: Room, as: "room", include: [buildingInclude] },
             furnituresInclude,
             { model: Invoice, as: "invoices", required: false, order: [['createdAt', 'DESC']] }
         ];
@@ -26,7 +28,7 @@ exports.getDashboard = async (req, res, next) => {
             contract = await Contract.findOne({
                 where: { status: 'active' },
                 include: [{
-                    model: Room, as: "room"
+                    model: Room, as: "room", include: [buildingInclude]
                 }, {
                     model: Tenant, as: "tenant",
                     where: { name: req.user.name, phone: req.user.phone }
