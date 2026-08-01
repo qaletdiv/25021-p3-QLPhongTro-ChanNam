@@ -195,9 +195,16 @@ export default function NotificationManagement() {
                         return `Phòng ${roomNames.join(", ")}`;
                       })()}
                     </Typography>
-                    <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
-                      Gửi thành công
-                    </Typography>
+                    <Box sx={{ display: "flex", gap: 0.75 }}>
+                      {log.source === "auto" && (
+                        <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#fef3c7", color: "#92400e", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #fde68a" }}>
+                          Tự động
+                        </Typography>
+                      )}
+                      <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
+                        Gửi thành công
+                      </Typography>
+                    </Box>
                   </Box>
                   <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>
                     Ngày gửi: {new Date(log.sentAt).toLocaleString("vi-VN")}

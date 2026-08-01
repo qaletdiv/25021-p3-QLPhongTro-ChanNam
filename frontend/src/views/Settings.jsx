@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, TextField, Button, MenuItem, InputAdornment,
+  Box, Typography, TextField, Button, MenuItem, InputAdornment, Checkbox, FormControlLabel,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -170,6 +170,15 @@ export default function Settings() {
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Nhắc Nợ Tự Động</Typography>
               <TextField fullWidth type="number" slotProps={{ htmlInput: { min: 1, max: 31 } }} value={form.defaultRemindDay || ""} onChange={(e) => set("defaultRemindDay", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
+          </Box>
+          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 0.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+            <FormControlLabel
+              control={<Checkbox size="small" checked={form.autoReminderEnabled !== "false"} onChange={(e) => set("autoReminderEnabled", e.target.checked ? "true" : "false")} />}
+              label={<Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>Bật Tự Động Nhắc Nợ Qua Telegram</Typography>}
+            />
+            <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", pl: 0.5 }}>
+              Hệ thống tự gửi nhắc nợ vào đúng ngày thu tiền của TỪNG PHÒNG (theo "Ngày thu" trong hợp đồng), mỗi tháng 1 lần cho mỗi phòng.
+            </Typography>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 2 }}>
             <Button variant="outlined" size="small" onClick={handleTestTelegram}

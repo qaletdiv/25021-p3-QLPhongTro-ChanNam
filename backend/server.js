@@ -22,6 +22,7 @@ const requestLoggerMiddleware = require("./middlewares/requestLogger");
 const errorHandlerMiddleware = require("./middlewares/errorHandler");
 
 const db = require("./models");
+const { startAutoReminderJob } = require("./jobs/autoReminderJob");
 
 const PORT = process.env.PORT || 3000;
 
@@ -56,3 +57,5 @@ db.sequelize.sync()
 app.listen(PORT, () => {
     console.log(`Server is listening at http://localhost:${PORT}`);
 });
+
+startAutoReminderJob();

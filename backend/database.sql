@@ -134,6 +134,7 @@ CREATE TABLE notifications (
     sentAt DATETIME,
     recipientCount INT NOT NULL DEFAULT 0,
     status ENUM('draft','sent') NOT NULL DEFAULT 'draft',
+    source ENUM('manual','auto') NOT NULL DEFAULT 'manual',
     landlordId INT NOT NULL,
     createdAt DATETIME NOT NULL,
     updatedAt DATETIME NOT NULL,
