@@ -4,7 +4,7 @@ import { Box, Paper, IconButton } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
 import { formatCurrency } from "../../utils/format";
 
-const HEADERS = ["Phòng / Khách", "Tiền Phòng", "Tiền Điện (kWh)", "Tiền Nước (m³)", "Dịch Vụ", "Tổng Cộng", "Trạng Thái", ""];
+const HEADERS = ["Phòng / Khách", "Tiền Phòng", "Tiền Điện (kWh)", "Hình Điện", "Tiền Nước (m³)", "Hình Nước", "Dịch Vụ", "Tổng Cộng", "Trạng Thái", ""];
 
 const StatusBadge = ({ status }) => {
   if (status === "paid") {
@@ -49,14 +49,32 @@ const InvoiceRow = ({ inv, onOpenReading, onMarkPaid, onRemind, onPrint }) => (
     <td style={{ padding: "12px 16px" }}>
       <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.electricityCost)}</div>
       <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
-        {inv.oldElectricity || 0} → {inv.newElectricity || 0} ({(inv.newElectricity || 0) - (inv.oldElectricity || 0)} kWh)
+        {inv.electricityOld || 0} → {inv.electricityNew || 0} ({(inv.electricityNew || 0) - (inv.electricityOld || 0)} kWh)
       </div>
+    </td>
+    <td style={{ padding: "12px 16px" }}>
+      {inv.electricityPhoto ? (
+        <a href={inv.electricityPhoto} target="_blank" rel="noreferrer">
+          <img src={inv.electricityPhoto} alt="Ảnh đồng hồ điện" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block" }} />
+        </a>
+      ) : (
+        <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
+      )}
     </td>
     <td style={{ padding: "12px 16px" }}>
       <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.waterCost)}</div>
       <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
-        {inv.oldWater || 0} → {inv.newWater || 0} ({(inv.newWater || 0) - (inv.oldWater || 0)} m³)
+        {inv.waterOld || 0} → {inv.waterNew || 0} ({(inv.waterNew || 0) - (inv.waterOld || 0)} m³)
       </div>
+    </td>
+    <td style={{ padding: "12px 16px" }}>
+      {inv.waterPhoto ? (
+        <a href={inv.waterPhoto} target="_blank" rel="noreferrer">
+          <img src={inv.waterPhoto} alt="Ảnh đồng hồ nước" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block" }} />
+        </a>
+      ) : (
+        <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
+      )}
     </td>
     <td style={{ padding: "12px 16px", color: "#475569" }}>{formatCurrency(inv.serviceFee + inv.otherFees)}</td>
     <td style={{ padding: "12px 16px", fontWeight: 800, color: "#2563eb", fontSize: "0.8125rem" }}>{formatCurrency(inv.total)}</td>
@@ -98,7 +116,7 @@ export default function InvoiceTable({ invoices, onOpenReading, onMarkPaid, onRe
             ))}
             {invoices.length === 0 && (
               <tr>
-                <td colSpan={8} style={{ padding: "32px", textAlign: "center", color: "#94a3b8", fontSize: "0.75rem" }}>Chưa có hóa đơn nào.</td>
+                <td colSpan={10} style={{ padding: "32px", textAlign: "center", color: "#94a3b8", fontSize: "0.75rem" }}>Chưa có hóa đơn nào.</td>
               </tr>
             )}
           </tbody>
