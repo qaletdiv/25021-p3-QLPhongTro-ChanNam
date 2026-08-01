@@ -61,19 +61,20 @@ export default function RoomFormModal({ open, editRoom, form, setForm, buildings
                 sx={inputSx} />
             </Box>
           </Box>
-          <Box>
-            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng)</Typography>
-            <TextField fullWidth size="small" type="number" value={form.price}
-              onChange={set("price")}
-              sx={inputSx} />
-          </Box>
-          <Box>
-            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Thu Tiền</Typography>
-            <TextField fullWidth size="small" type="number" disabled
-              value={editRoom?.contracts?.find((c) => c.status === "active")?.paymentDay || ""}
-              placeholder="Thiết lập trong màn hợp đồng"
-              sx={inputSx} />
-            <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.5 }}>Ngày thu được quản lý trong màn hợp đồng của khách thuê.</Typography>
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng)</Typography>
+              <TextField fullWidth size="small" type="number" value={form.price}
+                onChange={set("price")}
+                sx={inputSx} />
+            </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Thu Tiền</Typography>
+              <TextField fullWidth size="small" type="number" disabled
+                value={editRoom?.contracts?.find((c) => c.status === "active")?.paymentDay || ""}
+                placeholder="Thiết lập trong màn hợp đồng"
+                sx={inputSx} />
+            </Box>
           </Box>
         </Box>
       }
