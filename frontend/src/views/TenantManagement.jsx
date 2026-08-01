@@ -1,17 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  Box, Typography, TextField, CircularProgress, InputAdornment, Select, MenuItem, Paper,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { Box, Typography, TextField, CircularProgress, Paper } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
 import TenantTable from "../components/tenant/TenantTable";
 import ContractModal from "../components/tenant/ContractModal";
 import TenantEditModal from "../components/tenant/TenantEditModal";
 import CheckoutConfirmModal from "../components/tenant/CheckoutConfirmModal";
+import TenantManagementHeader from "../components/tenant/TenantManagementHeader";
+import TenantManagementFilter from "../components/tenant/TenantManagementFilter";
 import contractTemplateApi from "../api/contractTemplateApi";
 import tenantApi from "../api/tenantApi";
 import roomApi from "../api/roomApi";
@@ -272,82 +269,19 @@ export default function TenantManagement() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>
-            Quản Lý Khách & Hợp Đồng Cho Thuê
-          </Typography>
-          <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
-            Lập hợp đồng cho thuê, gán mã vân tay, chọn danh mục vật dụng và thanh lý hợp đồng.
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
-          <Box
-            onClick={openCreateContract}
-            sx={{
-              display: "inline-flex", alignItems: "center", gap: 1,
-              px: 2, py: 1.25, bgcolor: "#2563eb", color: "#fff",
-              borderRadius: "12px", fontSize: "0.75rem", fontWeight: 700,
-              cursor: "pointer", "&:hover": { bgcolor: "#1d4ed8" },
-              boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-            }}
-          >
-            <AddIcon sx={{ fontSize: 16 }} />
-            <span>Lập Hợp Đồng Mới</span>
-          </Box>
-        </Box>
-      </Box>
+      <TenantManagementHeader onCreateContract={openCreateContract} />
 
-      {/* Filter Panel: 2 rows x 2 columns */}
-      <Paper sx={{ p: 2.5, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
-          {/* Row 1: Status */}
-          <Box>
-            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Trạng Thái</Typography>
-            <Select
-              fullWidth size="small" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-              sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .MuiSelect-select": { fontSize: "0.75rem", py: 1.1 } }}
-            >
-              <MenuItem value="all">Tất cả</MenuItem>
-              <MenuItem value="renting">Đang Thuê</MenuItem>
-              <MenuItem value="ended">Hết Thuê</MenuItem>
-            </Select>
-          </Box>
-
-          {/* Row 1: Search */}
-          <Box>
-            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Tìm Kiếm</Typography>
-            <TextField
-              fullWidth size="small" placeholder="Tìm theo tên, SĐT hoặc phòng..." value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              slotProps={{ input: { startAdornment: (<InputAdornment position="start"><SearchIcon sx={{ color: "#94a3b8", fontSize: 16 }} /></InputAdornment>) } }}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontSize: "0.75rem", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
-            />
-          </Box>
-
-          {/* Row 2: Time range */}
-          <Box>
-            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Thời Gian</Typography>
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
-              <TextField
-                size="small" type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
-                label="Từ ngày" slotProps={{ inputLabel: { shrink: true } }}
-                sx={{ width: 150, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
-              />
-              <TextField
-                size="small" type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
-                label="Đến ngày" slotProps={{ inputLabel: { shrink: true } }}
-                sx={{ width: 150, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
-              />
-              {(dateFrom || dateTo) && (
-                <Box onClick={() => { setDateFrom(""); setDateTo(""); }}
-                  sx={{ px: 1.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, color: "#e11d48", borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#ffe4e6" } }}
-                >Xóa lọc ngày</Box>
-              )}
-            </Box>
-          </Box>
-        </Box>
-      </Paper>
+      {/* Filter Panel */}
+      <TenantManagementFilter
+        statusFilter={statusFilter} search={search} dateFrom={dateFrom} dateTo={dateTo}
+        onChange={(key, value) => {
+          if (key === "statusFilter") setStatusFilter(value);
+          else if (key === "search") setSearch(value);
+          else if (key === "dateFrom") setDateFrom(value);
+          else if (key === "dateTo") setDateTo(value);
+          else if (key === "clearDates") { setDateFrom(""); setDateTo(""); }
+        }}
+      />
 
       {loading ? <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box> : (
         <TenantTable
