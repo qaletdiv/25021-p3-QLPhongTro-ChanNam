@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Box, Paper, IconButton } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
 import { formatCurrency } from "../../utils/format";
@@ -36,19 +37,42 @@ const ActionButton = ({ label, bgcolor, hover, onClick, disabled }) => (
   </Box>
 );
 
-const PhotoCell = ({ photo, alt }) => (
+const PhotoCell = ({ photo, alt, onView }) => (
   <td style={{ padding: "12px 16px" }}>
     {photo ? (
-      <a href={photo} target="_blank" rel="noreferrer">
-        <img src={photo} alt={alt} style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block" }} />
-      </a>
+      <img
+        src={photo}
+        alt={alt}
+        onClick={() => onView(photo, alt)}
+        style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block", cursor: "zoom-in", transition: "transform 0.15s" }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+      />
     ) : (
       <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
     )}
   </td>
 );
 
-const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint }) => (
+const PhotoLightbox = ({ photo, alt, onClose }) => (
+  <Box
+    onClick={onClose}
+    sx={{ position: "fixed", inset: 0, zIndex: 1400, bgcolor: "rgba(2,6,23,0.8)", display: "flex", alignItems: "center", justifyContent: "center", p: 3 }}
+  >
+    <IconButton
+      onClick={onClose}
+      sx={{ position: "absolute", top: 16, right: 16, bgcolor: "#e11d48", color: "#fff", width: 40, height: 40, boxShadow: "0 4px 12px rgba(225,29,72,0.4)", "&:hover": { bgcolor: "#be123c" } }}
+      title="Đóng"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </IconButton>
+    <Box sx={{ maxWidth: "90vw", maxHeight: "85vh", overflow: "hidden", borderRadius: "16px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.6)" }}>
+      <img src={photo} alt={alt} style={{ maxWidth: "90vw", maxHeight: "85vh", objectFit: "contain", display: "block", background: "#0f172a" }} />
+    </Box>
+  </Box>
+);
+
+const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint, onViewPhoto }) => (
   <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
@@ -67,16 +91,16 @@ const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint }) => (
         {inv.electricityOld || 0} → {inv.electricityNew || 0} ({(inv.electricityNew || 0) - (inv.electricityOld || 0)} kWh)
       </div>
     </td>
-    <PhotoCell photo={inv.electricityPhoto} alt="Ảnh đồng hồ điện" />
-    <PhotoCell photo={prev?.electricityPhoto || inv.contract?.initialElectricityPhoto} alt="Ảnh đồng hồ điện tháng trước" />
+    <PhotoCell photo={inv.electricityPhoto} alt="Ảnh đồng hồ điện" onView={onViewPhoto} />
+    <PhotoCell photo={prev?.electricityPhoto || inv.contract?.initialElectricityPhoto} alt="Ảnh đồng hồ điện tháng trước" onView={onViewPhoto} />
     <td style={{ padding: "12px 16px" }}>
       <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.waterCost)}</div>
       <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
         {inv.waterOld || 0} → {inv.waterNew || 0} ({(inv.waterNew || 0) - (inv.waterOld || 0)} m³)
       </div>
     </td>
-    <PhotoCell photo={inv.waterPhoto} alt="Ảnh đồng hồ nước" />
-    <PhotoCell photo={prev?.waterPhoto || inv.contract?.initialWaterPhoto} alt="Ảnh đồng hồ nước tháng trước" />
+    <PhotoCell photo={inv.waterPhoto} alt="Ảnh đồng hồ nước" onView={onViewPhoto} />
+    <PhotoCell photo={prev?.waterPhoto || inv.contract?.initialWaterPhoto} alt="Ảnh đồng hồ nước tháng trước" onView={onViewPhoto} />
     <td style={{ padding: "12px 16px", color: "#475569" }}>{formatCurrency(inv.serviceFee + inv.otherFees)}</td>
     <td style={{ padding: "12px 16px", fontWeight: 800, color: "#2563eb", fontSize: "0.8125rem" }}>{formatCurrency(inv.total)}</td>
     <td style={{ padding: "12px 16px" }}>
@@ -97,6 +121,10 @@ const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint }) => (
 );
 
 export default function InvoiceTable({ invoices, onMarkPaid, onRemind, onPrint }) {
+  const [lightbox, setLightbox] = useState(null);
+
+  const handleViewPhoto = (photo, alt) => setLightbox({ photo, alt });
+
   return (
     <Paper sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
       <Box sx={{ overflowX: "auto" }}>
@@ -115,7 +143,7 @@ export default function InvoiceTable({ invoices, onMarkPaid, onRemind, onPrint }
                 if (invoices[j].contractId === inv.contractId) { prev = invoices[j]; break; }
               }
               return (
-                <InvoiceRow key={inv.id} inv={inv} prev={prev} onMarkPaid={onMarkPaid} onRemind={onRemind} onPrint={onPrint} />
+                <InvoiceRow key={inv.id} inv={inv} prev={prev} onMarkPaid={onMarkPaid} onRemind={onRemind} onPrint={onPrint} onViewPhoto={handleViewPhoto} />
               );
             })}
             {invoices.length === 0 && (
@@ -126,6 +154,9 @@ export default function InvoiceTable({ invoices, onMarkPaid, onRemind, onPrint }
           </tbody>
         </table>
       </Box>
+      {lightbox && (
+        <PhotoLightbox photo={lightbox.photo} alt={lightbox.alt} onClose={() => setLightbox(null)} />
+      )}
     </Paper>
   );
 }
