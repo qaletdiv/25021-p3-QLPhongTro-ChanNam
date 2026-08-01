@@ -15,6 +15,7 @@ router.get('/dashboard', ...auth, tenantDashboardController.getDashboard);
 
 router.get('/invoices', ...auth, tenantInvoiceController.getInvoices);
 router.get('/invoice-settings', ...auth, tenantInvoiceController.getSettings);
+router.post('/initial-readings', ...auth, tenantInvoiceController.saveInitialReadings);
 
 router.get('/issues', ...auth, tenantIssueController.getIssues);
 router.post('/issues', ...auth, tenantIssueController.createIssue);

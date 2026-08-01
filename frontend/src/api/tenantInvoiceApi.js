@@ -7,6 +7,9 @@ const tenantInvoiceApi = {
   getInvoiceSettings() {
     return axiosClient.get("/tenant/invoice-settings");
   },
+  saveInitialReadings(data) {
+    return axiosClient.post("/tenant/initial-readings", data);
+  },
 };
 
 export default tenantInvoiceApi;

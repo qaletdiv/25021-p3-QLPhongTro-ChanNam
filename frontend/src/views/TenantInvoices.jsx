@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
 import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
 import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
+import InitialMeterForm from "../components/tenant/InitialMeterForm";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { currentMonthLabel } from "../utils/format";
 
@@ -21,8 +22,9 @@ export default function TenantInvoices() {
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [warningMsg, setWarningMsg] = useState("");
 
-  useEffect(() => {
-    Promise.all([
+  const loadData = useCallback(() => {
+    setLoading(true);
+    return Promise.all([
       tenantInvoiceApi.getInvoices(),
       tenantInvoiceApi.getInvoiceSettings(),
     ])
@@ -30,19 +32,28 @@ export default function TenantInvoices() {
         setInvoices(invRes.data.invoices);
         setSettings(setRes.data);
         const last = invRes.data.invoices[0];
+        const base = setRes.data.contract;
         if (last) {
           setElecVal(Number(last.electricityNew) || 0);
           setWaterVal(Number(last.waterNew) || 0);
+        } else {
+          setElecVal(base ? Number(base.initialElectricity) || 0 : 0);
+          setWaterVal(base ? Number(base.initialWater) || 0 : 0);
         }
       })
       .catch(() => setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" }))
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => { loadData(); }, [loadData]);
+
   const lastInv = invoices.length > 0 ? invoices[0] : null;
+  const baseContract = settings?.contract;
+  const isNewTenant = invoices.length === 0 && !baseContract?.initialElectricityPhoto;
+
   const contract = {
-    lastElectricity: lastInv ? Number(lastInv.electricityNew) || 0 : 0,
-    lastWater: lastInv ? Number(lastInv.waterNew) || 0 : 0,
+    lastElectricity: lastInv ? Number(lastInv.electricityNew) || 0 : (baseContract ? Number(baseContract.initialElectricity) || 0 : 0),
+    lastWater: lastInv ? Number(lastInv.waterNew) || 0 : (baseContract ? Number(baseContract.initialWater) || 0 : 0),
   };
   const room = settings?.room;
   const s = settings?.settings || {};
@@ -100,6 +111,12 @@ export default function TenantInvoices() {
     setSubmitSuccess("Đã gửi chỉ số thành công! Hóa đơn đã được chốt.");
   };
 
+  const handleSaveInitial = async (payload) => {
+    await tenantInvoiceApi.saveInitialReadings(payload);
+    setSnack({ open: true, message: "Đã lưu chỉ số ban đầu thành công", severity: "success" });
+    await loadData();
+  };
+
   const getVietQRUrl = () => {
     const bankName = s.bankName || "MBBank";
     const accNo = s.bankAccount || "0988776655";
@@ -118,15 +135,19 @@ export default function TenantInvoices() {
         <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý chỉ số điện nước và theo dõi hóa đơn hàng tháng</Typography>
       </Box>
 
-      <MeterInvoiceTab
-        contract={contract} settings={settings} monthStr={currentMonthLabel()}
-        elecVal={elecVal} setElecVal={setElecVal} waterVal={waterVal} setWaterVal={setWaterVal}
-        ocrLoading={ocrLoading} ocrSuccessMsg={ocrSuccessMsg} warningMsg={warningMsg} submitSuccess={submitSuccess}
-        calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
-        calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
-        electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
-        handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit} getVietQRUrl={getVietQRUrl}
-      />
+      {isNewTenant ? (
+        <InitialMeterForm roomNumber={baseContract?.room?.room_number} onSaved={handleSaveInitial} />
+      ) : (
+        <MeterInvoiceTab
+          contract={contract} settings={settings} monthStr={currentMonthLabel()}
+          elecVal={elecVal} setElecVal={setElecVal} waterVal={waterVal} setWaterVal={setWaterVal}
+          ocrLoading={ocrLoading} ocrSuccessMsg={ocrSuccessMsg} warningMsg={warningMsg} submitSuccess={submitSuccess}
+          calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
+          calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
+          electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
+          handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit} getVietQRUrl={getVietQRUrl}
+        />
+      )}
 
       <Box sx={{ mt: 4 }}>
         <InvoiceHistoryTable invoices={invoices} />

@@ -19,6 +19,10 @@ module.exports = (sequelize, DataType) => {
         endDate: { type: DataType.DATEONLY, allowNull: false },
         paymentDay: { type: DataType.INTEGER, allowNull: false, defaultValue: 5 },
         fingerprintCode: { type: DataType.STRING(255) },
+        initialElectricity: { type: DataType.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
+        initialWater: { type: DataType.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
+        initialElectricityPhoto: { type: DataType.STRING(500), allowNull: true },
+        initialWaterPhoto: { type: DataType.STRING(500), allowNull: true },
         status: { type: DataType.ENUM('active', 'ended'), allowNull: false, defaultValue: 'active' }
     }, {
         sequelize, modelName: "Contract", tableName: "contracts", timestamps: true
