@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Box, Typography, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
+import { Box, Typography, Paper, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import SearchIcon from "@mui/icons-material/Search";
 import MessageDialog from "../components/MessageDialog";
-import FilterBar from "../components/ui/FilterBar";
 import InvoiceTable from "../components/invoice/InvoiceTable";
 import PrintableInvoiceModal from "../components/invoice/PrintableInvoiceModal";
 import invoiceApi from "../api/invoiceApi";
@@ -107,54 +107,67 @@ export default function InvoiceManagement() {
         </Typography>
       </Box>
 
-      <FilterBar
-        filters={[
-          { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
-          { key: "submitted", label: "Đã Gửi Chỉ Số", activeColor: "#d97706" },
-          { key: "paid", label: "Đã Thanh Toán", activeColor: "#059669" },
-          { key: "pending", label: "Chờ Thu Tiền", activeColor: "#334155" },
-        ]}
-        total={invoices.length}
-        counts={counts}
-        activeKey={filterStatus}
-        onFilterChange={setFilterStatus}
-        search={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchPlaceholder="Tìm số phòng, tên khách..."
-      />
+      {/* Filter Panel: 2 rows x 2 columns */}
+      <Paper sx={{ p: 2.5, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+          {/* Row 1: Building */}
+          <Box>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Nhà Trọ</Typography>
+            <TextField
+              select fullWidth size="small" value={buildingFilter} onChange={(e) => setBuildingFilter(e.target.value)}
+              slotProps={{ input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) } }}
+              sx={{ "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
+            >
+              <MenuItem value="all">Tất cả các nhà</MenuItem>
+              {buildings.map((b) => (
+                <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+              ))}
+            </TextField>
+          </Box>
 
-      {buildings.length > 0 && (
-        <TextField
-          select
-          size="small"
-          value={buildingFilter}
-          onChange={(e) => setBuildingFilter(e.target.value)}
-          slotProps={{
-            input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
-          }}
-          sx={{ maxWidth: 320, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
-        >
-          <MenuItem value="all">Tất cả các nhà</MenuItem>
-          {buildings.map((b) => (
-            <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
-          ))}
-        </TextField>
-      )}
+          {/* Row 1: Month */}
+          <Box>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Tháng</Typography>
+            <TextField
+              select fullWidth size="small" value={monthFilter} onChange={(e) => setMonthFilter(e.target.value)}
+              slotProps={{ input: { startAdornment: (<InputAdornment position="start"><CalendarMonthIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) } }}
+              sx={{ "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
+            >
+              {monthOptions().map((m) => (
+                <MenuItem key={m} value={m}>Tháng {m}</MenuItem>
+              ))}
+            </TextField>
+          </Box>
 
-      <TextField
-        select
-        size="small"
-        value={monthFilter}
-        onChange={(e) => setMonthFilter(e.target.value)}
-        slotProps={{
-          input: { startAdornment: (<InputAdornment position="start"><CalendarMonthIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
-        }}
-        sx={{ maxWidth: 220, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
-      >
-        {monthOptions().map((m) => (
-          <MenuItem key={m} value={m}>Tháng {m}</MenuItem>
-        ))}
-      </TextField>
+          {/* Row 2: Status */}
+          <Box>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Trạng Thái</Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, bgcolor: "#f1f5f9", p: 0.5, borderRadius: "12px" }}>
+              {[
+                { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
+                { key: "submitted", label: "Đã Gửi Chỉ Số", activeColor: "#d97706" },
+                { key: "paid", label: "Đã Thanh Toán", activeColor: "#059669" },
+                { key: "pending", label: "Chờ Thu Tiền", activeColor: "#334155" },
+              ].map((f) => (
+                <Box key={f.key} onClick={() => setFilterStatus(f.key)}
+                  sx={{ px: 1.75, py: 0.9, borderRadius: "8px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", bgcolor: filterStatus === f.key ? f.activeColor : "transparent", color: filterStatus === f.key ? "#fff" : "#475569", boxShadow: filterStatus === f.key ? "0 1px 2px rgba(0,0,0,0.05)" : "none", transition: "all 0.15s", whiteSpace: "nowrap" }}
+                >{f.label} ({counts[f.key] ?? invoices.length})</Box>
+              ))}
+            </Box>
+          </Box>
+
+          {/* Row 2: Search */}
+          <Box>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Tìm Kiếm</Typography>
+            <TextField
+              fullWidth size="small" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Số phòng, tên khách..."
+              slotProps={{ input: { startAdornment: (<InputAdornment position="start"><SearchIcon sx={{ fontSize: 16, color: "#94a3b8" }} /></InputAdornment>) } }}
+              sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
+            />
+          </Box>
+        </Box>
+      </Paper>
 
       {loading ? <CircularProgress /> : (
         <InvoiceTable
