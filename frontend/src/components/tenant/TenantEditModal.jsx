@@ -66,27 +66,27 @@ export default function TenantEditModal({
               )}
             </Box>
             <Grid container spacing={1.5}>
-              <Grid size={4}>
+              <Grid size={6}>
                 <TextField fullWidth size="small" label="Giá thuê (VND/tháng)" type="number" value={contractForm.price || ""} onChange={(e) => setContractForm({ ...contractForm, price: e.target.value })} required
                   sx={inputSx} />
               </Grid>
-              <Grid size={4}>
+              <Grid size={6}>
                 <TextField fullWidth size="small" label="Tiền cọc (VND)" type="number" value={contractForm.deposit} onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })} required
                   sx={inputSx} />
               </Grid>
-              <Grid size={4}>
+              <Grid size={6}>
                 <TextField fullWidth size="small" label="Ngày bắt đầu" type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} required
                   sx={inputSx} />
               </Grid>
-              <Grid size={4}>
+              <Grid size={6}>
                 <TextField fullWidth size="small" label="Ngày kết thúc" type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} required
                   sx={inputSx} />
               </Grid>
-              <Grid size={4}>
+              <Grid size={6}>
                 <TextField fullWidth size="small" label="Ngày thu tiền" type="number" value={contractForm.paymentDay} onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }} slotProps={{ htmlInput: { min: 1, max: 31 } }} required
                   sx={inputSx} />
               </Grid>
-              <Grid size={4}>
+              <Grid size={6}>
                 <TextField fullWidth size="small" label="Vân tay (khách chính)" value={contractForm.fingerprintCode} onChange={(e) => setContractForm({ ...contractForm, fingerprintCode: e.target.value })}
                   sx={inputSx} />
               </Grid>

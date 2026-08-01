@@ -50,7 +50,7 @@ export default function ContractModal({
 
           {/* Tenant Details */}
           <Grid container spacing={1.5}>
-            <Grid size={4}>
+            <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Khách *</Typography>
               <TextField
                 fullWidth size="small" placeholder="Nguyễn Văn A"
@@ -70,7 +70,7 @@ export default function ContractModal({
                 renderInput={(params) => <TextField {...params} placeholder="-- Chọn khách --" />}
               />
             </Grid>
-            <Grid size={4}>
+            <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
               <TextField
                 fullWidth size="small" placeholder="0912345678"
@@ -78,7 +78,7 @@ export default function ContractModal({
                 sx={inputSx}
               />
             </Grid>
-            <Grid size={4}>
+            <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email (Tùy chọn)</Typography>
               <TextField
                 fullWidth size="small" placeholder="email@gmail.com"
@@ -90,7 +90,7 @@ export default function ContractModal({
 
           {/* Financial & Fingerprint */}
           <Grid container spacing={1.5}>
-            <Grid size={4}>
+            <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng)</Typography>
               <TextField
                 fullWidth size="small" type="number"
@@ -99,7 +99,7 @@ export default function ContractModal({
                 sx={inputSx}
               />
             </Grid>
-            <Grid size={4}>
+            <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tiền Cọc (VND)</Typography>
               <TextField
                 fullWidth size="small" type="number"
@@ -108,7 +108,7 @@ export default function ContractModal({
                 sx={inputSx}
               />
             </Grid>
-            <Grid size={4}>
+            <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Thu Tiền</Typography>
               <TextField
                 fullWidth size="small" type="number" slotProps={{ htmlInput: { min: 1, max: 31 } }}
@@ -117,7 +117,7 @@ export default function ContractModal({
                 sx={inputSx}
               />
             </Grid>
-            <Grid size={4}>
+            <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Mã Vân Tay Khóa Cửa</Typography>
               <TextField
                 fullWidth size="small"
