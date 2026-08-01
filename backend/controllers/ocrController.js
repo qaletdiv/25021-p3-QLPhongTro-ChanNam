@@ -32,7 +32,7 @@ exports.recognizeMeter = async (req, res, next) => {
             return res.status(422).json({ message: "Khong tim thay chi so trong anh" });
         }
 
-        const reading = Math.max(...numbers.map(Number));
+        const reading = Math.floor(Math.max(...numbers.map(Number)) / 10);
 
         res.json({ reading, meterType });
     } catch (error) {
