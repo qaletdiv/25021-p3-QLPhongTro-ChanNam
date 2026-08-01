@@ -1,7 +1,9 @@
 "use client";
 
 import { Box, Typography, Chip, TextField, Paper, Button } from "@mui/material";
+import { VietQR } from "@viet-qr/react";
 import { formatCurrency } from "../../utils/format";
+import { resolveBankInfo } from "../../utils/vietqr";
 
 export default function MeterInvoiceTab({
   contract, settings, monthStr,
@@ -9,7 +11,8 @@ export default function MeterInvoiceTab({
   ocrLoading, ocrSuccessMsg, warningMsg, submitSuccess,
   calcElecUsage, calcWaterUsage, calcElecAmount, calcWaterAmount, calcTotal,
   electricityRate, waterRate, roomPrice,
-  handleOcrUpload, handleMeterSubmit, getVietQRUrl,
+  handleOcrUpload, handleMeterSubmit,
+  getVietQRContent,
   submitting, elecPhoto, waterPhoto,
 }) {
   const s = settings?.settings || {};
@@ -144,8 +147,15 @@ export default function MeterInvoiceTab({
           </Typography>
         </Box>
         <Box sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-          <Box component="img" src={getVietQRUrl()} alt="VietQR"
-            sx={{ width: 224, height: 224, objectFit: "contain", borderRadius: "12px", bgcolor: "#fff", p: 1, border: "1px solid #e2e8f0" }} />
+          <VietQR
+            bankId={resolveBankInfo(s.bankName)?.bin || "970422"}
+            accountNo={s.bankAccount || "0988776655"}
+            accountName={s.bankHolder || "CHU TRO"}
+            amount={calcTotal}
+            content={getVietQRContent()}
+            renderAs="svg"
+            size={224}
+          />
         </Box>
         <Box sx={{ width: "100%", fontSize: "0.75rem", bgcolor: "#f8fafc", p: 2.5, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>

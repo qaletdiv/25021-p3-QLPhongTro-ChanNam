@@ -2,8 +2,10 @@
 
 import { Box, Typography, Paper } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
+import { VietQR } from "@viet-qr/react";
 import ModalShell from "../ui/ModalShell";
 import { formatCurrency } from "../../utils/format";
+import { resolveBankInfo } from "../../utils/vietqr";
 
 const Row = (inv) => [
   { label: "Tiền phòng", detail: "1 Tháng", amount: inv.roomPrice },
@@ -74,15 +76,19 @@ export default function PrintableInvoiceModal({ invoice, settings, onClose }) {
               Quét Mã VietQR Chuyển Khoản Tự Động
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-              <Box component="img"
-                src={`https://img.vietqr.io/image/${settings?.bankName || "MBBank"}-${settings?.bankAccountNo || "0988776655"}-compact2.png?amount=${invoice.total}&addInfo=${encodeURIComponent(`Thanh toan phong ${invoice.contract?.room?.room_number || ""} thang ${invoice.month}`)}&accountName=${encodeURIComponent(settings?.bankAccountOwner || "")}`}
-                alt="VietQR"
-                sx={{ width: 180, height: 180, objectFit: "contain", border: "1px solid #e2e8f0", borderRadius: "16px", bgcolor: "#fff", p: 1 }}
+              <VietQR
+                bankId={resolveBankInfo(settings?.bankName)?.bin || "970422"}
+                accountNo={settings?.bankAccount || "0988776655"}
+                accountName={settings?.bankHolder || "CHU TRO"}
+                amount={invoice.total}
+                content={`Thanh toan phong ${invoice.contract?.room?.room_number || ""} thang ${invoice.month}`}
+                renderAs="svg"
+                size={180}
               />
             </Box>
             <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>
-              Ngân hàng: <strong style={{ color: "#0f172a" }}>{settings?.bankName || "MBBank"}</strong> | Số TK: <strong style={{ color: "#0f172a" }}>{settings?.bankAccountNo || "0988776655"}</strong><br />
-              Chủ TK: <strong style={{ color: "#0f172a" }}>{settings?.bankAccountOwner || "—"}</strong>
+              Ngân hàng: <strong style={{ color: "#0f172a" }}>{settings?.bankName || "MBBank"}</strong> | Số TK: <strong style={{ color: "#0f172a" }}>{settings?.bankAccount || "0988776655"}</strong><br />
+              Chủ TK: <strong style={{ color: "#0f172a" }}>{settings?.bankHolder || "—"}</strong>
             </Typography>
           </Box>
         </Box>

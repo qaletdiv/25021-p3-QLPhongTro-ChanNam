@@ -128,7 +128,7 @@ exports.submitMeter = async (req, res, next) => {
         settings.forEach(x => { s[x.key] = x.value; });
         const elecRate = Number(s.electricityRate) || 3500;
         const waterRate = Number(s.waterRate) || 15000;
-        const serviceFee = Number(s.serviceFee) || 100000;
+        const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
         const roomPrice = Number(contract.room.price) || 0;
 
         const lastInvoice = await Invoice.findOne({

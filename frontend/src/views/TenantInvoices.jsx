@@ -63,7 +63,7 @@ export default function TenantInvoices() {
   const s = settings?.settings || {};
   const electricityRate = Number(s.electricityRate) || 3500;
   const waterRate = Number(s.waterRate) || 15000;
-  const serviceFee = Number(s.serviceFee) || 100000;
+  const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
   const roomPrice = Number(settings?.roomPrice || 0) || 3200000;
 
   const calcElecUsage = Math.max(0, elecVal - (contract?.lastElectricity || 0));
@@ -142,13 +142,8 @@ export default function TenantInvoices() {
     await loadData();
   };
 
-  const getVietQRUrl = () => {
-    const bankName = s.bankName || "MBBank";
-    const accNo = s.bankAccount || "0988776655";
-    const holder = s.bankHolder || "CHU TRO";
-    const amt = calcTotal;
-    const addInfo = encodeURIComponent(`Thanh toan phong ${room?.room_number || ""} thang ${currentMonthLabel()}`);
-    return `https://img.vietqr.io/image/${bankName}-${accNo}-compact2.png?amount=${amt}&addInfo=${addInfo}&accountName=${encodeURIComponent(holder)}`;
+  const getVietQRContent = () => {
+    return `Thanh toan phong ${room?.room_number || ""} thang ${currentMonthLabel()}`;
   };
 
   if (loading) return <CircularProgress />;
@@ -170,7 +165,8 @@ export default function TenantInvoices() {
           calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
           calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
           electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
-          handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit} getVietQRUrl={getVietQRUrl}
+          handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit}
+          getVietQRContent={getVietQRContent}
           submitting={submitting} elecPhoto={elecPhoto} waterPhoto={waterPhoto}
         />
       )}
