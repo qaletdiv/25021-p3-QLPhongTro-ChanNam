@@ -8,7 +8,7 @@ import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
 import InitialMeterForm from "../components/tenant/InitialMeterForm";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
-import { currentMonthLabel } from "../utils/format";
+import { nextMonthLabel } from "../utils/format";
 
 export default function TenantInvoices() {
   const [invoices, setInvoices] = useState([]);
@@ -145,7 +145,7 @@ export default function TenantInvoices() {
   };
 
   const getVietQRContent = () => {
-    return `Thanh toan phong ${room?.room_number || ""} thang ${currentMonthLabel()}`;
+    return `Thanh toan phong ${room?.room_number || ""} thang ${nextMonthLabel()}`;
   };
 
   if (loading) return <CircularProgress />;
@@ -161,7 +161,7 @@ export default function TenantInvoices() {
         <InitialMeterForm roomNumber={baseContract?.room?.room_number} onSaved={handleSaveInitial} />
       ) : (
         <MeterInvoiceTab
-          contract={contract} settings={settings} monthStr={currentMonthLabel()}
+          contract={contract} settings={settings} monthStr={nextMonthLabel()}
           elecVal={elecVal} setElecVal={setElecVal} waterVal={waterVal} setWaterVal={setWaterVal}
           ocrLoading={ocrLoading} ocrSuccessMsg={ocrSuccessMsg} warningMsg={warningMsg} submitSuccess={submitSuccess}
           calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}

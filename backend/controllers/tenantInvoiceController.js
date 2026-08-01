@@ -117,7 +117,8 @@ exports.submitMeter = async (req, res, next) => {
         const { Setting, Invoice } = require("../models");
 
         const now = new Date();
-        const month = `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+        const monthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const month = `${String(monthDate.getMonth() + 1).padStart(2, "0")}/${monthDate.getFullYear()}`;
         const existing = await Invoice.findOne({ where: { contractId: contract.id, month } });
         if (existing) {
             return res.status(400).json({ message: "Hoa don thang nay da ton tai" });
