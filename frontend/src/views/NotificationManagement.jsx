@@ -169,7 +169,10 @@ export default function NotificationManagement() {
                 <Paper key={log.id} sx={{ p: 1.75, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
                     <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.75rem" }}>
-                      {log.targetRoomIds?.length > 0 ? `Phòng ${log.targetRoomIds.join(", ")}` : "Tất cả phòng"}
+                      {(() => {
+                        const roomIds = typeof log.targetRoomIds === "string" ? JSON.parse(log.targetRoomIds) : log.targetRoomIds || [];
+                        return roomIds.length > 0 ? `Phòng ${roomIds.join(", ")}` : "Tất cả phòng";
+                      })()}
                     </Typography>
                     <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
                       Gửi thành công
