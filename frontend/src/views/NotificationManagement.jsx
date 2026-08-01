@@ -71,8 +71,15 @@ export default function NotificationManagement() {
   const sentNotifications = (notifications || []).filter(n => n.status === "sent");
 
   const resolveLogContent = (log) => {
+    const monthStr = (() => {
+      const d = log.sentAt || log.createdAt;
+      if (!d) return "";
+      const dt = new Date(d);
+      const mm = String(dt.getMonth() + 1).padStart(2, "0");
+      return `${mm}/${dt.getFullYear()}`;
+    })();
     const roomIds = typeof log.targetRoomIds === "string" ? JSON.parse(log.targetRoomIds) : log.targetRoomIds || [];
-    if (roomIds.length === 0) return log.content;
+    if (roomIds.length === 0) return resolveNotificationTemplate(log.content, { THANG: monthStr });
     return roomIds.map((id) => {
       const room = rooms.find((r) => String(r.id) === String(id));
       const activeContract = room?.contracts?.find((c) => c.status === "active");
@@ -80,6 +87,7 @@ export default function NotificationManagement() {
         TENKHACH: activeContract?.tenant?.name || "",
         MAPHONG: room?.room_number || "",
         TONG_TIEN: room?.price != null ? String(room.price) : "",
+        THANG: monthStr,
         HAN_THANH_TOAN: activeContract?.paymentDay ? `Ngày ${activeContract.paymentDay + 5}` : "",
       });
     }).join("\n\n─────\n\n");
@@ -110,7 +118,9 @@ export default function NotificationManagement() {
       </Box>
 
       {loading ? <CircularProgress /> : (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" }, gap: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: 3 }}>
+          {/* Left column: Form + Auto template */}
+          <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
           {/* Left: Form */}
           <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
@@ -190,8 +200,49 @@ export default function NotificationManagement() {
             </Box>
           </Box>
 
-          {/* Right: History */}
+          {/* Auto reminder template editor (left column) */}
           <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 2.5 }}>
+              <BoltIcon sx={{ fontSize: 18, color: "#d97706" }} />
+              <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>Mẫu Thông Báo Nhắc Nợ Tự Động</Typography>
+            </Box>
+            <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 2 }}>
+              Nội dung này sẽ được hệ thống dùng để <b>tự động gửi nhắc nợ</b> qua Telegram vào đúng <b>ngày thu tiền</b> của từng phòng. Nếu để trống, hệ thống dùng mẫu mặc định.
+            </Typography>
+
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mb: 1.5 }}>
+              {AUTO_VARIABLES.map((v) => (
+                <Box key={v} onClick={() => insertAutoVariable(v)}
+                  sx={{ px: 1.25, py: 0.5, bgcolor: "#fff7ed", color: "#b45309", border: "1px solid #fed7aa", fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#ffedd5" } }}
+                >
+                  + {`{{${v}}}`}
+                </Box>
+              ))}
+            </Box>
+
+            <TextField
+              fullWidth multiline minRows={4} value={autoTemplate} onChange={(e) => setAutoTemplate(e.target.value)}
+              placeholder="Kính gửi {{TENKHACH}} (Phòng {{MAPHONG}}), đến kỳ thu tiền nhà tháng {{THANG}}. Vui lòng thanh toán trước ngày {{HAN_THANH_TOAN}}. Cảm ơn!"
+              sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, lineHeight: 1.6 } }}
+            />
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+              <Button variant="contained" onClick={handleSaveAutoTemplate}
+                sx={{ py: 1, px: 3, fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", textTransform: "none", bgcolor: "#d97706", "&:hover": { bgcolor: "#b45309" } }}>
+                Lưu Mẫu Nhắc Nợ Tự Động
+              </Button>
+              {autoSavedMsg && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, bgcolor: "#d1fae5", color: "#065f46", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", border: "1px solid #a7f3d0" }}>
+                  <CheckCircleIcon sx={{ fontSize: 16 }} />
+                  <span>{autoSavedMsg}</span>
+                </Box>
+              )}
+            </Box>
+          </Box>
+          </Box>
+
+          {/* Right: History (stretches to match left column height) */}
+          <Box sx={{ flex: 1, minWidth: 0, bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <HistoryIcon sx={{ fontSize: 18, color: "#64748b" }} />
               <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>
@@ -199,7 +250,7 @@ export default function NotificationManagement() {
               </Typography>
             </Box>
 
-            <Box sx={{ maxHeight: 440, overflow: "auto", display: "flex", flexDirection: "column", gap: 1.5, pr: 0.5 }}>
+            <Box sx={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 1.5, pr: 0.5 }}>
               {sentNotifications.map((log) => (
                 <Paper key={log.id} sx={{ p: 1.75, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
@@ -243,46 +294,6 @@ export default function NotificationManagement() {
           </Box>
         </Box>
       )}
-
-      {/* Auto reminder template editor */}
-      <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 2.5 }}>
-          <BoltIcon sx={{ fontSize: 18, color: "#d97706" }} />
-          <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>Mẫu Thông Báo Nhắc Nợ Tự Động</Typography>
-        </Box>
-        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 2 }}>
-          Nội dung này sẽ được hệ thống dùng để <b>tự động gửi nhắc nợ</b> qua Telegram vào đúng <b>ngày thu tiền</b> của từng phòng. Nếu để trống, hệ thống dùng mẫu mặc định.
-        </Typography>
-
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mb: 1.5 }}>
-          {AUTO_VARIABLES.map((v) => (
-            <Box key={v} onClick={() => insertAutoVariable(v)}
-              sx={{ px: 1.25, py: 0.5, bgcolor: "#fff7ed", color: "#b45309", border: "1px solid #fed7aa", fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#ffedd5" } }}
-            >
-              + {`{{${v}}}`}
-            </Box>
-          ))}
-        </Box>
-
-        <TextField
-          fullWidth multiline minRows={4} value={autoTemplate} onChange={(e) => setAutoTemplate(e.target.value)}
-          placeholder="Kính gửi {{TENKHACH}} (Phòng {{MAPHONG}}), đến kỳ thu tiền nhà tháng {{THANG}}. Vui lòng thanh toán trước ngày {{HAN_THANH_TOAN}}. Cảm ơn!"
-          sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, lineHeight: 1.6 } }}
-        />
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
-          <Button variant="contained" onClick={handleSaveAutoTemplate}
-            sx={{ py: 1, px: 3, fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", textTransform: "none", bgcolor: "#d97706", "&:hover": { bgcolor: "#b45309" } }}>
-            Lưu Mẫu Nhắc Nợ Tự Động
-          </Button>
-          {autoSavedMsg && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, bgcolor: "#d1fae5", color: "#065f46", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", border: "1px solid #a7f3d0" }}>
-              <CheckCircleIcon sx={{ fontSize: 16 }} />
-              <span>{autoSavedMsg}</span>
-            </Box>
-          )}
-        </Box>
-      </Box>
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
