@@ -29,7 +29,8 @@ export default function TenantDashboard() {
   const s = settings?.settings || {};
   const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
   const roomPrice = Number(settings?.roomPrice || 0) || 3200000;
-  const calcTotal = roomPrice + serviceFee;
+  const latestInvoice = contract?.invoices?.[0] || null;
+  const calcTotal = latestInvoice ? Number(latestInvoice.total) || 0 : roomPrice + serviceFee;
 
   if (loading) return <CircularProgress />;
 
@@ -38,7 +39,9 @@ export default function TenantDashboard() {
       <TenantOverviewTab
         room={room} tenant={tenant} contract={contract} daysLeft={daysLeft}
         notifications={notifications} calcTotal={calcTotal}
-        monthStr={currentMonthLabel()} roomPrice={roomPrice}
+        monthStr={latestInvoice?.month || currentMonthLabel()}
+        latestInvoice={latestInvoice}
+        roomPrice={roomPrice}
       />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />

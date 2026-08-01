@@ -5,9 +5,17 @@ import { Box, Typography, Chip, Paper } from "@mui/material";
 import { formatCurrency, formatDate } from "../../utils/format";
 import ModalShell from "../ui/ModalShell";
 
-export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice }) {
+export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice }) {
   const [furnitureOpen, setFurnitureOpen] = useState(false);
   const handoverItems = contract?.contractFurnitures || [];
+
+  const statusInfo = latestInvoice
+    ? latestInvoice.status === "paid"
+      ? { label: "● Đã Thanh Toán", bgcolor: "#d1fae5", color: "#065f46", border: "1px solid #a7f3d0" }
+      : latestInvoice.status === "submitted"
+        ? { label: "● Đã Gửi Chỉ Số", bgcolor: "#fef3c7", color: "#92400e", border: "1px solid #fde68a" }
+        : { label: "● Chờ Thu Tiền", bgcolor: "#f1f5f9", color: "#475569", border: "1px solid #e2e8f0" }
+    : { label: "● Chờ Nhập Điện Nước", bgcolor: "#f1f5f9", color: "#475569", border: "1px solid #e2e8f0" };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -56,8 +64,8 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Trạng Thái Hóa Đơn Tháng {monthStr}</Typography>
           <Box>
-            <Chip label="● Chờ Nhập Điện Nước" size="small"
-              sx={{ bgcolor: "#f1f5f9", color: "#475569", fontWeight: 800, fontSize: "0.6875rem", borderRadius: "9999px", border: "1px solid #e2e8f0" }} />
+            <Chip label={statusInfo.label} size="small"
+              sx={{ bgcolor: statusInfo.bgcolor, color: statusInfo.color, fontWeight: 800, fontSize: "0.6875rem", borderRadius: "9999px", border: statusInfo.border }} />
           </Box>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mt: 0.5 }}>
             Tổng cộng: {formatCurrency(calcTotal)}
