@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Box, Typography, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import MessageDialog from "../components/MessageDialog";
 import FilterBar from "../components/ui/FilterBar";
 import InvoiceTable from "../components/invoice/InvoiceTable";
@@ -11,6 +12,21 @@ import invoiceApi from "../api/invoiceApi";
 import settingApi from "../api/settingApi";
 import buildingApi from "../api/buildingApi";
 
+const currentMonthLabel = () => {
+  const d = new Date();
+  return `${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+};
+
+const monthOptions = () => {
+  const options = [];
+  const d = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
+    options.push(`${String(m.getMonth() + 1).padStart(2, "0")}/${m.getFullYear()}`);
+  }
+  return options;
+};
+
 export default function InvoiceManagement() {
   const [invoices, setInvoices] = useState([]);
   const [buildings, setBuildings] = useState([]);
@@ -18,6 +34,7 @@ export default function InvoiceManagement() {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
   const [buildingFilter, setBuildingFilter] = useState("all");
+  const [monthFilter, setMonthFilter] = useState(currentMonthLabel());
   const [searchQuery, setSearchQuery] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
@@ -26,14 +43,18 @@ export default function InvoiceManagement() {
 
   const fetchInvoices = useCallback(async () => {
     try {
-      const [invRes, setRes, bRes] = await Promise.all([invoiceApi.getAll(), settingApi.getAll(), buildingApi.getAll()]);
+      const [invRes, setRes, bRes] = await Promise.all([
+        invoiceApi.getAll({ month: monthFilter }),
+        settingApi.getAll(),
+        buildingApi.getAll()
+      ]);
       setInvoices(invRes.data.invoices);
       setSettings(setRes.data);
       setBuildings(bRes.data.buildings || []);
     } catch {
       setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" });
     } finally { setLoading(false); }
-  }, []);
+  }, [monthFilter]);
 
   useEffect(() => { fetchInvoices(); }, [fetchInvoices]);
 
@@ -119,6 +140,21 @@ export default function InvoiceManagement() {
           ))}
         </TextField>
       )}
+
+      <TextField
+        select
+        size="small"
+        value={monthFilter}
+        onChange={(e) => setMonthFilter(e.target.value)}
+        slotProps={{
+          input: { startAdornment: (<InputAdornment position="start"><CalendarMonthIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
+        }}
+        sx={{ maxWidth: 220, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
+      >
+        {monthOptions().map((m) => (
+          <MenuItem key={m} value={m}>Tháng {m}</MenuItem>
+        ))}
+      </TextField>
 
       {loading ? <CircularProgress /> : (
         <InvoiceTable

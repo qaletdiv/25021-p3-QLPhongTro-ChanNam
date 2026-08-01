@@ -5,7 +5,7 @@ import { Box, Paper, IconButton } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
 import { formatCurrency } from "../../utils/format";
 
-const HEADERS = ["Phòng / Khách", "Tiền Phòng", "Tiền Điện (kWh)", "Hình Điện", "Hình Điện T.Trước", "Tiền Nước (m³)", "Hình Nước", "Hình Nước T.Trước", "Dịch Vụ", "Tổng Cộng", "Trạng Thái", ""];
+const HEADERS = ["Phòng / Khách", "Tiền Phòng", "Tiền Điện (kWh)", "Hình Điện T.Này", "Hình Điện T.Trước", "Tiền Nước (m³)", "Hình Nước T.Này", "Hình Nước T.Trước", "Dịch Vụ", "Tổng Cộng", "Trạng Thái", ""];
 
 const StatusBadge = ({ status }) => {
   if (status === "paid") {
