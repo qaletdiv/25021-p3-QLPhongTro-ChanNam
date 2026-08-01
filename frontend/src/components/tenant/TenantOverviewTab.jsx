@@ -1,9 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { Box, Typography, Chip, Paper } from "@mui/material";
 import { formatCurrency, formatDate } from "../../utils/format";
+import ModalShell from "../ui/ModalShell";
 
 export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice }) {
+  const [furnitureOpen, setFurnitureOpen] = useState(false);
+  const handoverItems = contract?.contractFurnitures || [];
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Gradient Banner */}
@@ -63,7 +68,12 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
           <Box sx={{ fontSize: "0.8125rem", fontFamily: "monospace", fontWeight: 800, color: "#2563eb", bgcolor: "#f8fafc", p: 1.5, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
             Mã Vân Tay: {contract?.fingerprintCode || "FP-101-88"}
           </Box>
-          <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>Vật dụng bàn giao: {contract?.contractFurnitures?.length || 0} món</Typography>
+          <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>
+            Vật dụng bàn giao:{" "}
+            <Box component="span" onClick={() => setFurnitureOpen(true)} sx={{ color: "#2563eb", fontWeight: 700, textDecoration: "underline", cursor: "pointer" }}>
+              {handoverItems.length} món
+            </Box>
+          </Typography>
         </Paper>
       </Box>
 
@@ -91,6 +101,40 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
           </Box>
         )}
       </Paper>
+
+      <ModalShell open={furnitureOpen} onClose={() => setFurnitureOpen(false)} maxWidth={480}
+        headerBg="#059669"
+        header={
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 7V5a2 2 0 0 1 2-2h4l2 3h6a2 2 0 0 1 2 2v2"/></svg>
+            <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+              Vật Dụng Bàn Giao - Phòng {room?.room_number || "—"}
+            </Typography>
+          </Box>
+        }
+        body={
+          <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 1.5 }}>
+            {handoverItems.length === 0 ? (
+              <Typography sx={{ fontSize: "0.75rem", color: "#64748b", textAlign: "center", py: 3 }}>
+                Không có vật dụng bàn giao.
+              </Typography>
+            ) : (
+              handoverItems.map((item) => (
+                <Paper key={item.id} sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
+                  <Box>
+                    <Typography sx={{ fontSize: "0.8125rem", fontWeight: 800, color: "#0f172a" }}>{item.furniture?.name || "—"}</Typography>
+                    {item.furniture?.note && (
+                      <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", mt: 0.25 }}>{item.furniture.note}</Typography>
+                    )}
+                  </Box>
+                  <Chip label={`x${item.quantity || 1}`} size="small"
+                    sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 800, fontSize: "0.6875rem", borderRadius: "9999px", border: "1px solid #bfdbfe", flexShrink: 0 }} />
+                </Paper>
+              ))
+            )}
+          </Box>
+        }
+      />
     </Box>
   );
 }
