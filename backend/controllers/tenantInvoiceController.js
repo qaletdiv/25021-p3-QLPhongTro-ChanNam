@@ -101,6 +101,9 @@ exports.submitMeter = async (req, res, next) => {
         if (electricity === undefined || water === undefined) {
             return res.status(400).json({ message: "Thieu chi so dien/nuoc" });
         }
+        if (!electricityPhoto || !waterPhoto) {
+            return res.status(400).json({ message: "Vui long upload anh dong ho dien va nuoc" });
+        }
 
         const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
