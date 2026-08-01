@@ -5,6 +5,7 @@ import { Box, Typography, TextField, Button, Paper } from "@mui/material";
 import GaugeIcon from "@mui/icons-material/Speed";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { resizeImage } from "../../utils/image";
 
 const cardSx = {
   bgcolor: "#fff",
@@ -14,17 +15,7 @@ const cardSx = {
   mb: 3,
 };
 
-function readFileAsBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-export default function InitialMeterForm({ roomNumber, onSaved }) {
-  const [elec, setElec] = useState("");
+export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec, setElec] = useState("");
   const [water, setWater] = useState("");
   const [elecPreview, setElecPreview] = useState("");
   const [waterPreview, setWaterPreview] = useState("");
@@ -36,9 +27,9 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {
   const handleFile = async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const base64 = await readFileAsBase64(file);
-    if (type === "elec") setElecPreview(base64);
-    else setWaterPreview(base64);
+    const resized = await resizeImage(file);
+    if (type === "elec") setElecPreview(resized);
+    else setWaterPreview(resized);
 
     setOcrLoading(type);
     setOcrMsg("");
@@ -46,7 +37,7 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {
       const res = await fetch("/api/ocr-meter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: base64, meterType: type === "elec" ? "electricity" : "water" }),
+        body: JSON.stringify({ imageBase64: resized, meterType: type === "elec" ? "electricity" : "water" }),
       });
       const d = await res.json();
       if (d?.reading) {

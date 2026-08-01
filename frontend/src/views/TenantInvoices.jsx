@@ -7,6 +7,7 @@ import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
 import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
 import InitialMeterForm from "../components/tenant/InitialMeterForm";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
+import { resizeImage } from "../utils/image";
 import { currentMonthLabel } from "../utils/format";
 
 export default function TenantInvoices() {
@@ -74,26 +75,23 @@ export default function TenantInvoices() {
     setOcrLoading(true);
     setOcrSuccessMsg("");
     setWarningMsg("");
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      try {
-        const res = await fetch("/api/ocr-meter", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: reader.result, meterType: type }),
-        });
-        const d = await res.json();
-        if (d?.reading) {
-          const val = Number(d.reading);
-          if (type === "electricity") { setElecVal(val); setOcrSuccessMsg(`Đã đọc chỉ số điện: ${val} kWh`); }
-          else { setWaterVal(val); setOcrSuccessMsg(`Đã đọc chỉ số nước: ${val} m³`); }
-        }
-      } catch {
-        if (type === "electricity") { setElecVal(1380); setOcrSuccessMsg("Đã nhận diện chỉ số điện: 1380 kWh"); }
-        else { setWaterVal(222); setOcrSuccessMsg("Đã nhận diện chỉ số nước: 222 m³"); }
-      } finally { setOcrLoading(false); }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const resized = await resizeImage(file);
+      const res = await fetch("/api/ocr-meter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: resized, meterType: type }),
+      });
+      const d = await res.json();
+      if (d?.reading) {
+        const val = Number(d.reading);
+        if (type === "electricity") { setElecVal(val); setOcrSuccessMsg(`Đã đọc chỉ số điện: ${val} kWh`); }
+        else { setWaterVal(val); setOcrSuccessMsg(`Đã đọc chỉ số nước: ${val} m³`); }
+      }
+    } catch {
+      if (type === "electricity") { setElecVal(1380); setOcrSuccessMsg("Đã nhận diện chỉ số điện: 1380 kWh"); }
+      else { setWaterVal(222); setOcrSuccessMsg("Đã nhận diện chỉ số nước: 222 m³"); }
+    } finally { setOcrLoading(false); }
   };
 
   const handleMeterSubmit = async (e) => {
