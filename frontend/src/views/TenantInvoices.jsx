@@ -135,19 +135,19 @@ export default function TenantInvoices() {
         <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý chỉ số điện nước và theo dõi hóa đơn hàng tháng</Typography>
       </Box>
 
-      {isNewTenant ? (
+      {isNewTenant && (
         <InitialMeterForm roomNumber={baseContract?.room?.room_number} onSaved={handleSaveInitial} />
-      ) : (
-        <MeterInvoiceTab
-          contract={contract} settings={settings} monthStr={currentMonthLabel()}
-          elecVal={elecVal} setElecVal={setElecVal} waterVal={waterVal} setWaterVal={setWaterVal}
-          ocrLoading={ocrLoading} ocrSuccessMsg={ocrSuccessMsg} warningMsg={warningMsg} submitSuccess={submitSuccess}
-          calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
-          calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
-          electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
-          handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit} getVietQRUrl={getVietQRUrl}
-        />
       )}
+
+      <MeterInvoiceTab
+        contract={contract} settings={settings} monthStr={currentMonthLabel()}
+        elecVal={elecVal} setElecVal={setElecVal} waterVal={waterVal} setWaterVal={setWaterVal}
+        ocrLoading={ocrLoading} ocrSuccessMsg={ocrSuccessMsg} warningMsg={warningMsg} submitSuccess={submitSuccess}
+        calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
+        calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
+        electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
+        handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit} getVietQRUrl={getVietQRUrl}
+      />
 
       <Box sx={{ mt: 4 }}>
         <InvoiceHistoryTable invoices={invoices} />
