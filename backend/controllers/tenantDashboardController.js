@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Tenant, Contract, Room, Notification } = require("../models");
+const { Tenant, Contract, Room, ContractFurniture, Notification } = require("../models");
 
 exports.getDashboard = async (req, res, next) => {
     try {
@@ -8,7 +8,10 @@ exports.getDashboard = async (req, res, next) => {
 
         let contract = await Contract.findOne({
             where: { tenantId: tenant.id, status: 'active' },
-            include: [{ model: Room, as: "room" }]
+            include: [
+                { model: Room, as: "room" },
+                { model: ContractFurniture, as: "contractFurnitures" }
+            ]
         });
 
         if (!contract) {
@@ -19,6 +22,8 @@ exports.getDashboard = async (req, res, next) => {
                 }, {
                     model: Tenant, as: "tenant",
                     where: { name: req.user.name, phone: req.user.phone }
+                }, {
+                    model: ContractFurniture, as: "contractFurnitures"
                 }]
             });
             if (contract) tenant = contract.tenant;
