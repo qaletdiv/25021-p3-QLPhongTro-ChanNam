@@ -13,14 +13,14 @@ const StatusBadge = ({ active, ended }) => {
     return (
       <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 800, borderRadius: "9999px", backgroundColor: "#d1fae5", color: "#065f46", border: "1px solid #a7f3d0" }}>
         <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#059669", display: "inline-block" }} />
-        Đang Cho Thuê
+        Đang Thuê
       </span>
     );
   }
   if (ended) {
     return (
       <span style={{ padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 600, borderRadius: "9999px", backgroundColor: "#f1f5f9", color: "#64748b", border: "1px solid #e2e8f0" }}>
-        ○ Đã Kết Thúc
+        ○ Hết Thuê
       </span>
     );
   }
@@ -47,7 +47,7 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
             {tenants.map((tenant) => {
               const active = tenant.contracts?.find((c) => c.status === "active");
               const ended = !active && tenant.contracts?.some(c => c.status === "ended");
-              const displayContract = active || tenant.contracts?.[0];
+              const displayContract = active || [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0];
               return (
                 <tr key={tenant.id} style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
@@ -63,13 +63,13 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                     {tenant.phone || "-"}
                   </td>
                   <td style={{ padding: "12px 16px", fontWeight: 700, color: "#2563eb" }}>
-                    {active ? formatCurrency(active.deposit) : "-"}
+                    {displayContract ? formatCurrency(displayContract.deposit) : "-"}
                   </td>
                   <td style={{ padding: "12px 16px", color: "#475569" }}>
                     {displayContract ? `${formatDate(displayContract.startDate)} - ${formatDate(displayContract.endDate)}` : "-"}
                   </td>
                   <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f172a" }}>
-                    {active ? `Ngày ${active.paymentDay}` : "-"}
+                    {displayContract ? `Ngày ${displayContract.paymentDay}` : "-"}
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     {displayContract?.fingerprintCode ? (

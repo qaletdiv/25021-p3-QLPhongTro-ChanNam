@@ -21,6 +21,9 @@ export default function TenantManagement() {
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const [editTenantId, setEditTenantId] = useState(null);
@@ -47,6 +50,21 @@ export default function TenantManagement() {
   }, [search]);
 
   useEffect(() => { fetchTenants(); }, [fetchTenants]);
+
+  const filteredTenants = tenants.filter((tenant) => {
+    const active = tenant.contracts?.find((c) => c.status === "active");
+    if (statusFilter === "renting" && !active) return false;
+    if (statusFilter === "ended" && active) return false;
+    if (dateFrom || dateTo) {
+      const latest = active || [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0];
+      if (!latest) return false;
+      const start = new Date(latest.startDate);
+      const end = new Date(latest.endDate);
+      if (dateFrom && end < new Date(dateFrom)) return false;
+      if (dateTo && start > new Date(dateTo)) return false;
+    }
+    return true;
+  });
 
   const openEdit = async (tenant) => {
     setEditTenantId(tenant.id);
@@ -288,9 +306,43 @@ export default function TenantManagement() {
         </Box>
       </Box>
 
+      {/* Filter bar */}
+      <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap" }}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, bgcolor: "#f1f5f9", p: 0.5, borderRadius: "12px" }}>
+          {[
+            { key: "all", label: "Tất Cả", color: "#2563eb" },
+            { key: "renting", label: "Đang Thuê", color: "#059669" },
+            { key: "ended", label: "Hết Thuê", color: "#64748b" },
+          ].map((f) => (
+            <Box key={f.key} onClick={() => setStatusFilter(f.key)}
+              sx={{ px: 2, py: 0.9, borderRadius: "8px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", bgcolor: statusFilter === f.key ? f.color : "transparent", color: statusFilter === f.key ? "#fff" : "#475569", boxShadow: statusFilter === f.key ? "0 1px 2px rgba(0,0,0,0.05)" : "none", transition: "all 0.15s", whiteSpace: "nowrap" }}
+            >{f.label}</Box>
+          ))}
+        </Box>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
+          <TextField
+            size="small" type="date" value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            label="Từ ngày" slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ width: 150, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
+          />
+          <TextField
+            size="small" type="date" value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            label="Đến ngày" slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ width: 150, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
+          />
+          {(dateFrom || dateTo) && (
+            <Box onClick={() => { setDateFrom(""); setDateTo(""); }}
+              sx={{ px: 1.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, color: "#e11d48", borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#ffe4e6" } }}
+            >Xóa lọc ngày</Box>
+          )}
+        </Box>
+      </Box>
+
       {loading ? <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box> : (
         <TenantTable
-          tenants={tenants}
+          tenants={filteredTenants}
           onEdit={openEdit}
           onCheckout={openCheckoutConfirm}
           onPrint={(id) => window.open(contractTemplateApi.getPdfUrl(id), "_blank")}
