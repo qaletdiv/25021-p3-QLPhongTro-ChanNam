@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Box, Typography, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
+import { Box, Typography, Paper, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ApartmentIcon from "@mui/icons-material/Apartment";
+import SearchIcon from "@mui/icons-material/Search";
 import MessageDialog from "../components/MessageDialog";
-import FilterBar from "../components/ui/FilterBar";
 import RoomCard from "../components/room/RoomCard";
 import RoomFormModal from "../components/room/RoomFormModal";
 import RoomDetailModal from "../components/room/RoomDetailModal";
@@ -162,38 +162,52 @@ export default function RoomManagement() {
         </Box>
       </Box>
 
-      <FilterBar
-        filters={[
-          { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
-          { key: "empty", label: "Trống", activeColor: "#d97706" },
-          { key: "rented", label: "Đã Thuê", activeColor: "#059669" },
-        ]}
-        total={rooms.length}
-        counts={roomCounts}
-        activeKey={filter}
-        onFilterChange={setFilter}
-        search={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Tìm theo số phòng hoặc tên khách..."
-      />
+      {/* Filter Panel: 2 rows x 2 columns */}
+      <Paper sx={{ p: 2.5, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+          {/* Row 1: Building */}
+          <Box>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Nhà Trọ</Typography>
+            <TextField
+              select fullWidth size="small" value={buildingFilter} onChange={(e) => setBuildingFilter(e.target.value)}
+              slotProps={{ input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) } }}
+              sx={{ "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
+            >
+              <MenuItem value="all">Tất cả các nhà</MenuItem>
+              {buildings.map((b) => (
+                <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+              ))}
+            </TextField>
+          </Box>
 
-      {buildings.length > 0 && (
-        <TextField
-          select
-          size="small"
-          value={buildingFilter}
-          onChange={(e) => setBuildingFilter(e.target.value)}
-          slotProps={{
-            input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
-          }}
-          sx={{ maxWidth: 320, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
-        >
-          <MenuItem value="all">Tất cả các nhà</MenuItem>
-          {buildings.map((b) => (
-            <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
-          ))}
-        </TextField>
-      )}
+          {/* Row 1: Status */}
+          <Box>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Trạng Thái</Typography>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, bgcolor: "#f1f5f9", p: 0.5, borderRadius: "12px" }}>
+              {[
+                { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
+                { key: "empty", label: "Trống", activeColor: "#d97706" },
+                { key: "rented", label: "Đã Thuê", activeColor: "#059669" },
+              ].map((f) => (
+                <Box key={f.key} onClick={() => setFilter(f.key)}
+                  sx={{ px: 1.75, py: 0.9, borderRadius: "8px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", bgcolor: filter === f.key ? f.activeColor : "transparent", color: filter === f.key ? "#fff" : "#475569", boxShadow: filter === f.key ? "0 1px 2px rgba(0,0,0,0.05)" : "none", transition: "all 0.15s", whiteSpace: "nowrap" }}
+                >{f.label} ({roomCounts[f.key] ?? rooms.length})</Box>
+              ))}
+            </Box>
+          </Box>
+
+          {/* Row 2: Search */}
+          <Box sx={{ gridColumn: { xs: "auto", md: "1 / -1" } }}>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Tìm Kiếm</Typography>
+            <TextField
+              fullWidth size="small" value={search} onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm theo số phòng hoặc tên khách..."
+              slotProps={{ input: { startAdornment: (<InputAdornment position="start"><SearchIcon sx={{ fontSize: 16, color: "#94a3b8" }} /></InputAdornment>) } }}
+              sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
+            />
+          </Box>
+        </Box>
+      </Paper>
 
       {/* Room Cards Grid */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" }, gap: 2.5 }}>
