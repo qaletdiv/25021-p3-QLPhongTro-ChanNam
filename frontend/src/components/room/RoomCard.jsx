@@ -67,7 +67,7 @@ export default function RoomCard({ room, onOpenDetail, onOpenEdit, onDelete }) {
         </Box>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>Ngày thu tiền:</Typography>
-          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>Ngày {room.default_payment_day} hàng tháng</Typography>
+          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>Ngày {contract?.paymentDay || room.default_payment_day} hàng tháng</Typography>
         </Box>
         {room.status === "rented" && tenant && (
           <>
