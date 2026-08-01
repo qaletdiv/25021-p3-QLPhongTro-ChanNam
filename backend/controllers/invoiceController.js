@@ -55,7 +55,7 @@ exports.sendReminder = async (req, res, next) => {
             return res.status(400).json({ message: "Khach thue chua cung cap Telegram Chat ID" });
         }
 
-        const total = Number(invoice.totalAmount);
+        const total = Number(invoice.total);
         const totalStr = new Intl.NumberFormat("vi-VN").format(total) + " VND";
         const text = telegram.formatMessage(
             `Nhac no tien phong ${invoice.month}\n\n` +
