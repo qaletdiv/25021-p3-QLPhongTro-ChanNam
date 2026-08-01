@@ -45,9 +45,10 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
           </thead>
           <tbody style={{ borderBottom: "1px solid #f1f5f9" }}>
             {tenants.map((tenant) => {
-              const active = tenant.contracts?.find((c) => c.status === "active");
-              const ended = !active && tenant.contracts?.some(c => c.status === "ended");
-              const displayContract = active || [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0];
+              const contracts = [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+              const active = contracts.find((c) => c.status === "active");
+              const ended = !active && contracts.some((c) => c.status === "ended");
+              const displayContract = active || contracts[0];
               return (
                 <tr key={tenant.id} style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
@@ -90,8 +91,8 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                         <ExitToAppIcon sx={{ fontSize: 16 }} />
                       </IconButton>
                     )}
-                    {active && (
-                      <IconButton size="small" onClick={() => onPrint(active.id)} title="In hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#059669", bgcolor: "#d1fae5" } }}>
+                    {displayContract && (
+                      <IconButton size="small" onClick={() => onPrint(displayContract.id)} title="In hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#059669", bgcolor: "#d1fae5" } }}>
                         <PrintIcon sx={{ fontSize: 16 }} />
                       </IconButton>
                     )}

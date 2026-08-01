@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  Box, Typography, TextField, CircularProgress, InputAdornment,
+  Box, Typography, TextField, CircularProgress, InputAdornment, Select, MenuItem,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
@@ -308,17 +308,17 @@ export default function TenantManagement() {
 
       {/* Filter bar */}
       <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap" }}>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, bgcolor: "#f1f5f9", p: 0.5, borderRadius: "12px" }}>
-          {[
-            { key: "all", label: "Tất Cả", color: "#2563eb" },
-            { key: "renting", label: "Đang Thuê", color: "#059669" },
-            { key: "ended", label: "Hết Thuê", color: "#64748b" },
-          ].map((f) => (
-            <Box key={f.key} onClick={() => setStatusFilter(f.key)}
-              sx={{ px: 2, py: 0.9, borderRadius: "8px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", bgcolor: statusFilter === f.key ? f.color : "transparent", color: statusFilter === f.key ? "#fff" : "#475569", boxShadow: statusFilter === f.key ? "0 1px 2px rgba(0,0,0,0.05)" : "none", transition: "all 0.15s", whiteSpace: "nowrap" }}
-            >{f.label}</Box>
-          ))}
-        </Box>
+        <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155" }}>Trạng thái thuê</Typography>
+        <Select
+          size="small" value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          sx={{ minWidth: 150, "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .MuiSelect-select": { fontSize: "0.75rem", py: 1 }, "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e2e8f0" } }}
+        >
+          <MenuItem value="all">Tất cả</MenuItem>
+          <MenuItem value="renting">Đang Thuê</MenuItem>
+          <MenuItem value="ended">Hết Thuê</MenuItem>
+        </Select>
+        <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", ml: 1 }}>Thời gian</Typography>
         <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
           <TextField
             size="small" type="date" value={dateFrom}
