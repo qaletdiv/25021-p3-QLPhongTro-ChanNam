@@ -66,8 +66,8 @@ const PhotoLightbox = ({ photo, alt, onClose }) => (
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </IconButton>
-    <Box sx={{ maxWidth: "90vw", maxHeight: "85vh", overflow: "hidden", borderRadius: "16px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.6)" }}>
-      <img src={photo} alt={alt} style={{ maxWidth: "90vw", maxHeight: "85vh", objectFit: "contain", display: "block", background: "#0f172a" }} />
+    <Box sx={{ maxWidth: "min(85vw, 640px)", maxHeight: "min(80vh, 520px)", overflow: "hidden", borderRadius: "16px", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.6)" }}>
+      <img src={photo} alt={alt} style={{ maxWidth: "min(85vw, 640px)", maxHeight: "min(80vh, 520px)", objectFit: "contain", display: "block", background: "#0f172a" }} />
     </Box>
   </Box>
 );
