@@ -45,7 +45,7 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
         else setWater(String(d.reading));
         setOcrMsg(`✓ Đã nhận diện chỉ số: ${d.reading}`);
       } else {
-        setOcrMsg("Không nhận diện được, vui lòng nhập tay");
+        setOcrMsg(`Không nhận diện được (${d?.message || "OCR không đọc được"})`);
       }
     } catch {
       setOcrMsg("Lỗi nhận diện, vui lòng nhập tay");
