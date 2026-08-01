@@ -8,9 +8,9 @@ const statusLabel = { pending: "Chờ thu tiền", submitted: "Đã gửi chỉ 
 
 const MeterCell = ({ cost, oldVal, newVal, unit }) => (
   <TableCell align="right">
-    <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>{formatCurrency(cost)}</div>
+    <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>{formatCurrency(Math.round(Number(cost || 0)))}</div>
     <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
-      {oldVal || 0} → {newVal || 0} ({(newVal || 0) - (oldVal || 0)} {unit})
+      {Math.round(Number(oldVal || 0))} → {Math.round(Number(newVal || 0))} ({Math.round(Number(newVal || 0)) - Math.round(Number(oldVal || 0))} {unit})
     </div>
   </TableCell>
 );
