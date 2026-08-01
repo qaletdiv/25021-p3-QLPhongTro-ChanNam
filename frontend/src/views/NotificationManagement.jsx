@@ -11,6 +11,7 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import MessageDialog from "../components/MessageDialog";
 import notificationApi from "../api/notificationApi";
 import roomApi from "../api/roomApi";
+import { resolveNotificationTemplate } from "../utils/notificationTemplate";
 
 const VARIABLES = ["TENKHACH", "MAPHONG", "TONG_TIEN", "HAN_THANH_TOAN"];
 
@@ -63,6 +64,21 @@ export default function NotificationManagement() {
 
   const rentedRooms = (rooms || []).filter(r => r.status === "rented");
   const sentNotifications = (notifications || []).filter(n => n.status === "sent");
+
+  const resolveLogContent = (log) => {
+    const roomIds = typeof log.targetRoomIds === "string" ? JSON.parse(log.targetRoomIds) : log.targetRoomIds || [];
+    if (roomIds.length === 0) return log.content;
+    return roomIds.map((id) => {
+      const room = rooms.find((r) => String(r.id) === String(id));
+      const activeContract = room?.contracts?.find((c) => c.status === "active");
+      return resolveNotificationTemplate(log.content, {
+        TENKHACH: activeContract?.tenant?.name || "",
+        MAPHONG: room?.room_number || "",
+        TONG_TIEN: room?.price != null ? String(room.price) : "",
+        HAN_THANH_TOAN: activeContract?.paymentDay ? `Ngày ${activeContract.paymentDay}` : "",
+      });
+    }).join("\n\n─────\n\n");
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -188,7 +204,7 @@ export default function NotificationManagement() {
                   </Typography>
                   <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.6875rem", mt: 0.5 }}>{log.title}</Typography>
                   <Typography sx={{ fontSize: "0.6875rem", color: "#475569", fontStyle: "italic", bgcolor: "#fff", p: 1.25, borderRadius: "12px", border: "1px solid #e2e8f0", mt: 0.75, lineHeight: 1.5 }}>
-                    "{log.content}"
+                    "{resolveLogContent(log)}"
                   </Typography>
                 </Paper>
               ))}

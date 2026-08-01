@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Box, Typography, Chip, Paper } from "@mui/material";
 import { formatCurrency, formatDate } from "../../utils/format";
+import { resolveNotificationTemplate } from "../../utils/notificationTemplate";
 import ModalShell from "../ui/ModalShell";
 
 export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice, landlordAddress }) {
@@ -16,6 +17,13 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
         ? { label: "● Đã Gửi Chỉ Số", bgcolor: "#fef3c7", color: "#92400e", border: "1px solid #fde68a" }
         : { label: "● Chờ Thu Tiền", bgcolor: "#f1f5f9", color: "#475569", border: "1px solid #e2e8f0" }
     : { label: "● Chờ Nhập Điện Nước", bgcolor: "#f1f5f9", color: "#475569", border: "1px solid #e2e8f0" };
+
+  const resolveContent = (content) => resolveNotificationTemplate(content, {
+    TENKHACH: tenant?.name || "",
+    MAPHONG: room?.room_number || "",
+    TONG_TIEN: contract?.price != null ? String(contract.price) : room?.price != null ? String(room.price) : "",
+    HAN_THANH_TOAN: contract?.paymentDay ? `Ngày ${contract.paymentDay}` : "",
+  });
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -103,7 +111,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
                   <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.75rem" }}>{n.title}</Typography>
                   <Typography sx={{ fontSize: "0.625rem", color: "#94a3b8", fontWeight: 500 }}>{n.createdAt ? formatDate(n.createdAt) : ""}</Typography>
                 </Box>
-                <Typography sx={{ fontSize: "0.6875rem", color: "#475569", lineHeight: 1.6 }}>{n.content}</Typography>
+                <Typography sx={{ fontSize: "0.6875rem", color: "#475569", lineHeight: 1.6 }}>{resolveContent(n.content)}</Typography>
               </Paper>
             ))}
           </Box>
