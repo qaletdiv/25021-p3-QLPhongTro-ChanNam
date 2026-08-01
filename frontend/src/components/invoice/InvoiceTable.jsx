@@ -4,7 +4,7 @@ import { Box, Paper, IconButton } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
 import { formatCurrency } from "../../utils/format";
 
-const HEADERS = ["Phòng / Khách", "Tiền Phòng", "Tiền Điện (kWh)", "Hình Điện", "Tiền Nước (m³)", "Hình Nước", "Dịch Vụ", "Tổng Cộng", "Trạng Thái", ""];
+const HEADERS = ["Phòng / Khách", "Tiền Phòng", "Tiền Điện (kWh)", "Hình Điện", "Hình Điện T.Trước", "Tiền Nước (m³)", "Hình Nước", "Hình Nước T.Trước", "Dịch Vụ", "Tổng Cộng", "Trạng Thái", ""];
 
 const StatusBadge = ({ status }) => {
   if (status === "paid") {
@@ -36,7 +36,19 @@ const ActionButton = ({ label, bgcolor, hover, onClick, disabled }) => (
   </Box>
 );
 
-const InvoiceRow = ({ inv, onOpenReading, onMarkPaid, onRemind, onPrint }) => (
+const PhotoCell = ({ photo, alt }) => (
+  <td style={{ padding: "12px 16px" }}>
+    {photo ? (
+      <a href={photo} target="_blank" rel="noreferrer">
+        <img src={photo} alt={alt} style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block" }} />
+      </a>
+    ) : (
+      <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
+    )}
+  </td>
+);
+
+const InvoiceRow = ({ inv, prev, onOpenReading, onMarkPaid, onRemind, onPrint }) => (
   <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
@@ -52,30 +64,16 @@ const InvoiceRow = ({ inv, onOpenReading, onMarkPaid, onRemind, onPrint }) => (
         {inv.electricityOld || 0} → {inv.electricityNew || 0} ({(inv.electricityNew || 0) - (inv.electricityOld || 0)} kWh)
       </div>
     </td>
-    <td style={{ padding: "12px 16px" }}>
-      {inv.electricityPhoto ? (
-        <a href={inv.electricityPhoto} target="_blank" rel="noreferrer">
-          <img src={inv.electricityPhoto} alt="Ảnh đồng hồ điện" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block" }} />
-        </a>
-      ) : (
-        <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
-      )}
-    </td>
+    <PhotoCell photo={inv.electricityPhoto} alt="Ảnh đồng hồ điện" />
+    <PhotoCell photo={prev?.electricityPhoto} alt="Ảnh đồng hồ điện tháng trước" />
     <td style={{ padding: "12px 16px" }}>
       <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.waterCost)}</div>
       <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
         {inv.waterOld || 0} → {inv.waterNew || 0} ({(inv.waterNew || 0) - (inv.waterOld || 0)} m³)
       </div>
     </td>
-    <td style={{ padding: "12px 16px" }}>
-      {inv.waterPhoto ? (
-        <a href={inv.waterPhoto} target="_blank" rel="noreferrer">
-          <img src={inv.waterPhoto} alt="Ảnh đồng hồ nước" style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block" }} />
-        </a>
-      ) : (
-        <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
-      )}
-    </td>
+    <PhotoCell photo={inv.waterPhoto} alt="Ảnh đồng hồ nước" />
+    <PhotoCell photo={prev?.waterPhoto} alt="Ảnh đồng hồ nước tháng trước" />
     <td style={{ padding: "12px 16px", color: "#475569" }}>{formatCurrency(inv.serviceFee + inv.otherFees)}</td>
     <td style={{ padding: "12px 16px", fontWeight: 800, color: "#2563eb", fontSize: "0.8125rem" }}>{formatCurrency(inv.total)}</td>
     <td style={{ padding: "12px 16px" }}>
@@ -111,12 +109,18 @@ export default function InvoiceTable({ invoices, onOpenReading, onMarkPaid, onRe
             </tr>
           </thead>
           <tbody>
-            {invoices.map((inv) => (
-              <InvoiceRow key={inv.id} inv={inv} onOpenReading={onOpenReading} onMarkPaid={onMarkPaid} onRemind={onRemind} onPrint={onPrint} />
-            ))}
+            {invoices.map((inv, idx) => {
+              let prev = null;
+              for (let j = idx + 1; j < invoices.length; j++) {
+                if (invoices[j].contractId === inv.contractId) { prev = invoices[j]; break; }
+              }
+              return (
+                <InvoiceRow key={inv.id} inv={inv} prev={prev} onOpenReading={onOpenReading} onMarkPaid={onMarkPaid} onRemind={onRemind} onPrint={onPrint} />
+              );
+            })}
             {invoices.length === 0 && (
               <tr>
-                <td colSpan={10} style={{ padding: "32px", textAlign: "center", color: "#94a3b8", fontSize: "0.75rem" }}>Chưa có hóa đơn nào.</td>
+                <td colSpan={12} style={{ padding: "32px", textAlign: "center", color: "#94a3b8", fontSize: "0.75rem" }}>Chưa có hóa đơn nào.</td>
               </tr>
             )}
           </tbody>
