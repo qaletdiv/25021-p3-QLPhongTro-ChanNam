@@ -34,7 +34,7 @@ exports.getSettings = async (req, res, next) => {
         const settings = await Setting.findAll({ where: { landlordId: contract.room.landlordId } });        const result = {};
         settings.forEach(s => { result[s.key] = s.value; });
 
-        res.json({ settings: result, roomPrice: contract.room.price });
+        res.json({ settings: result, roomPrice: contract.room.price, room: contract.room });
     } catch (error) {
         next(error);
     }
