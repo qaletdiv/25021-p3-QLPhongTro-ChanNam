@@ -149,9 +149,11 @@ export default function TenantInvoices() {
         />
       )}
 
-      <Box sx={{ mt: 4 }}>
-        <InvoiceHistoryTable invoices={invoices} />
-      </Box>
+      {!isNewTenant && (
+        <Box sx={{ mt: 4 }}>
+          <InvoiceHistoryTable invoices={invoices} />
+        </Box>
+      )}
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
