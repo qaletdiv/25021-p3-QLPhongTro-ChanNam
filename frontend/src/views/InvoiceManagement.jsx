@@ -5,7 +5,6 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
 import FilterBar from "../components/ui/FilterBar";
 import InvoiceTable from "../components/invoice/InvoiceTable";
-import ReadingModal from "../components/invoice/ReadingModal";
 import PrintableInvoiceModal from "../components/invoice/PrintableInvoiceModal";
 import invoiceApi from "../api/invoiceApi";
 import settingApi from "../api/settingApi";
@@ -17,9 +16,6 @@ export default function InvoiceManagement() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
-
-  // Reading modal
-  const [editingInvoice, setEditingInvoice] = useState(null);
 
   // Print modal
   const [printableInvoice, setPrintableInvoice] = useState(null);
@@ -73,13 +69,6 @@ export default function InvoiceManagement() {
     }
   };
 
-  const handleSaveReading = async (id, elec, water) => {
-    await invoiceApi.submitReading(id, { electricity: elec, water });
-    setEditingInvoice(null);
-    fetchInvoices();
-    setTimeout(() => setSnack({ open: true, message: "Nhập chỉ số thành công", severity: "success" }), 300);
-  };
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
 
@@ -110,14 +99,11 @@ export default function InvoiceManagement() {
       {loading ? <CircularProgress /> : (
         <InvoiceTable
           invoices={filteredInvoices}
-          onOpenReading={setEditingInvoice}
           onMarkPaid={handleMarkAsPaid}
           onRemind={handleSendReminder}
           onPrint={setPrintableInvoice}
         />
       )}
-
-      <ReadingModal invoice={editingInvoice} onClose={() => setEditingInvoice(null)} onSave={handleSaveReading} />
 
       <PrintableInvoiceModal invoice={printableInvoice} settings={settings} onClose={() => setPrintableInvoice(null)} />
 

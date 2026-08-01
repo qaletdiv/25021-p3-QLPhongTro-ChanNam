@@ -48,7 +48,7 @@ const PhotoCell = ({ photo, alt }) => (
   </td>
 );
 
-const InvoiceRow = ({ inv, prev, onOpenReading, onMarkPaid, onRemind, onPrint }) => (
+const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint }) => (
   <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
@@ -80,9 +80,6 @@ const InvoiceRow = ({ inv, prev, onOpenReading, onMarkPaid, onRemind, onPrint })
       <StatusBadge status={inv.status} />
     </td>
     <td style={{ padding: "12px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
-      {inv.status === "pending" && (
-        <ActionButton label="Nhập Chỉ Số" bgcolor="#2563eb" hover="#1d4ed8" onClick={() => onOpenReading(inv)} />
-      )}
       {inv.status !== "paid" && (
         <>
           <ActionButton label="Thu Tiền" bgcolor="#059669" hover="#047857" onClick={() => onMarkPaid(inv.id)} />
@@ -96,7 +93,7 @@ const InvoiceRow = ({ inv, prev, onOpenReading, onMarkPaid, onRemind, onPrint })
   </tr>
 );
 
-export default function InvoiceTable({ invoices, onOpenReading, onMarkPaid, onRemind, onPrint }) {
+export default function InvoiceTable({ invoices, onMarkPaid, onRemind, onPrint }) {
   return (
     <Paper sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
       <Box sx={{ overflowX: "auto" }}>
@@ -115,7 +112,7 @@ export default function InvoiceTable({ invoices, onOpenReading, onMarkPaid, onRe
                 if (invoices[j].contractId === inv.contractId) { prev = invoices[j]; break; }
               }
               return (
-                <InvoiceRow key={inv.id} inv={inv} prev={prev} onOpenReading={onOpenReading} onMarkPaid={onMarkPaid} onRemind={onRemind} onPrint={onPrint} />
+                <InvoiceRow key={inv.id} inv={inv} prev={prev} onMarkPaid={onMarkPaid} onRemind={onRemind} onPrint={onPrint} />
               );
             })}
             {invoices.length === 0 && (
