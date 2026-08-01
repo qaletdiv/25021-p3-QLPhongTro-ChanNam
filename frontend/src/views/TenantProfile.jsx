@@ -37,8 +37,8 @@ export default function TenantProfile() {
       setSaving(true);
       await tenantProfileApi.updateProfile(profile);
       setSnack({ open: true, message: "Cập nhật thông tin thành công", severity: "success" });
-    } catch {
-      setSnack({ open: true, message: "Lỗi cập nhật", severity: "error" });
+    } catch (err) {
+      setSnack({ open: true, message: err.response?.data?.message || "Lỗi cập nhật", severity: "error" });
     } finally {
       setSaving(false);
     }

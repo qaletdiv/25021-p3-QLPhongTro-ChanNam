@@ -39,6 +39,15 @@ exports.updateProfile = async (req, res, next) => {
 
         res.json({ message: "Cap nhat thong tin thanh cong" });
     } catch (error) {
+        if (error.name === "SequelizeUniqueConstraintError") {
+            const field = error.errors && error.errors[0] && error.errors[0].path;
+            const message = field === "phone"
+                ? "So dien thoai da duoc su dung boi nguoi dung khac"
+                : field === "email"
+                    ? "Email da duoc su dung boi nguoi dung khac"
+                    : "Thong tin da ton tai";
+            return res.status(409).json({ message });
+        }
         next(error);
     }
 };
