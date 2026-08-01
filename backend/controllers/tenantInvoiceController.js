@@ -11,7 +11,7 @@ exports.getInvoices = async (req, res, next) => {
                 model: Contract, as: "contract", required: true,
                 where: { tenantId: tenant.id }
             }],
-            order: [['month', 'DESC']]
+            order: [['createdAt', 'DESC']]
         });
 
         res.json({ invoices });
@@ -90,6 +90,98 @@ exports.saveInitialReadings = async (req, res, next) => {
             message: "Da luu chi so ban dau thanh cong",
             contract
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.submitMeter = async (req, res, next) => {
+    try {
+        const { electricity, water, electricityPhoto, waterPhoto } = req.body;
+        if (electricity === undefined || water === undefined) {
+            return res.status(400).json({ message: "Thieu chi so dien/nuoc" });
+        }
+
+        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+
+        const contract = await Contract.findOne({
+            where: { tenantId: tenant.id, status: 'active' },
+            include: [{ model: Room, as: "room" }]
+        });
+        if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
+
+        const { Setting, Invoice } = require("../models");
+
+        const now = new Date();
+        const month = `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+        const existing = await Invoice.findOne({ where: { contractId: contract.id, month } });
+        if (existing) {
+            return res.status(400).json({ message: "Hoa don thang nay da ton tai" });
+        }
+
+        const settings = await Setting.findAll({ where: { landlordId: contract.room.landlordId } });
+        const s = {};
+        settings.forEach(x => { s[x.key] = x.value; });
+        const elecRate = Number(s.electricityRate) || 3500;
+        const waterRate = Number(s.waterRate) || 15000;
+        const serviceFee = Number(s.serviceFee) || 100000;
+        const roomPrice = Number(contract.room.price) || 0;
+
+        const lastInvoice = await Invoice.findOne({
+            where: { contractId: contract.id },
+            order: [['createdAt', 'DESC']]
+        });
+        const elecOld = lastInvoice ? Number(lastInvoice.electricityNew) : (Number(contract.initialElectricity) || 0);
+        const waterOld = lastInvoice ? Number(lastInvoice.waterNew) : (Number(contract.initialWater) || 0);
+        const elecNew = Number(electricity);
+        const waterNew = Number(water);
+
+        if (elecNew < elecOld) return res.status(400).json({ message: "Chi so dien moi nho hon chi so cu" });
+        if (waterNew < waterOld) return res.status(400).json({ message: "Chi so nuoc moi nho hon chi so cu" });
+
+        let elecPhotoUrl = null;
+        let waterPhotoUrl = null;
+        if (electricityPhoto) {
+            const r = await cloudinary.uploader.upload(electricityPhoto, {
+                folder: `phongtro/${contract.room.room_number}/invoices/${month}`,
+                public_id: `elec_${contract.id}`,
+                overwrite: true
+            });
+            elecPhotoUrl = r.secure_url;
+        }
+        if (waterPhoto) {
+            const r = await cloudinary.uploader.upload(waterPhoto, {
+                folder: `phongtro/${contract.room.room_number}/invoices/${month}`,
+                public_id: `water_${contract.id}`,
+                overwrite: true
+            });
+            waterPhotoUrl = r.secure_url;
+        }
+
+        const elecCost = (elecNew - elecOld) * elecRate;
+        const waterCost = (waterNew - waterOld) * waterRate;
+        const total = roomPrice + elecCost + waterCost + serviceFee;
+
+        const invoice = await Invoice.create({
+            contractId: contract.id,
+            month,
+            roomPrice,
+            electricityOld: elecOld,
+            electricityNew: elecNew,
+            electricityCost: elecCost,
+            waterOld,
+            waterNew,
+            waterCost,
+            serviceFee,
+            otherFees: 0,
+            total,
+            status: 'pending',
+            electricityPhoto: elecPhotoUrl,
+            waterPhoto: waterPhotoUrl
+        });
+
+        res.json({ message: "Da gui chi so va chot hoa don thanh cong", invoice });
     } catch (error) {
         next(error);
     }

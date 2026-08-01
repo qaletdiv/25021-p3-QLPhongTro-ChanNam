@@ -10,6 +10,9 @@ const tenantInvoiceApi = {
   saveInitialReadings(data) {
     return axiosClient.post("/tenant/initial-readings", data);
   },
+  submitMeter(data) {
+    return axiosClient.post("/tenant/meter-submit", data);
+  },
 };
 
 export default tenantInvoiceApi;

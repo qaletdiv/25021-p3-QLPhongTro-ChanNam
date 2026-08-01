@@ -10,6 +10,7 @@ export default function MeterInvoiceTab({
   calcElecUsage, calcWaterUsage, calcElecAmount, calcWaterAmount, calcTotal,
   electricityRate, waterRate, roomPrice,
   handleOcrUpload, handleMeterSubmit, getVietQRUrl,
+  submitting, elecPhoto, waterPhoto,
 }) {
   const s = settings?.settings || {};
 
@@ -69,6 +70,12 @@ export default function MeterInvoiceTab({
                 <input type="file" accept="image/*" hidden onChange={(e) => handleOcrUpload(e, "electricity")} />
               </Button>
             </Box>
+            {elecPhoto && (
+              <Typography sx={{ mt: 1, fontSize: "0.625rem", color: "#059669", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.5 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Đã có ảnh đồng hồ điện
+              </Typography>
+            )}
           </Box>
 
           {/* Water */}
@@ -92,6 +99,12 @@ export default function MeterInvoiceTab({
                 <input type="file" accept="image/*" hidden onChange={(e) => handleOcrUpload(e, "water")} />
               </Button>
             </Box>
+            {waterPhoto && (
+              <Typography sx={{ mt: 1, fontSize: "0.625rem", color: "#059669", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.5 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Đã có ảnh đồng hồ nước
+              </Typography>
+            )}
           </Box>
 
           {/* Estimate */}
@@ -114,10 +127,10 @@ export default function MeterInvoiceTab({
             </Box>
           </Box>
 
-          <Button type="submit" variant="contained"
+          <Button type="submit" variant="contained" disabled={submitting}
             sx={{ width: "100%", py: 1.5, fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Gửi Chỉ Số & Chốt Hóa Đơn Mới
+            {submitting ? "Đang gửi..." : "Gửi Chỉ Số & Chốt Hóa Đơn Mới"}
           </Button>
         </Box>
       </Paper>

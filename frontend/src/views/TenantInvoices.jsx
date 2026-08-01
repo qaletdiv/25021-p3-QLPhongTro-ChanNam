@@ -22,6 +22,9 @@ export default function TenantInvoices() {
   const [ocrSuccessMsg, setOcrSuccessMsg] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [warningMsg, setWarningMsg] = useState("");
+  const [elecPhoto, setElecPhoto] = useState("");
+  const [waterPhoto, setWaterPhoto] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -77,6 +80,8 @@ export default function TenantInvoices() {
     setWarningMsg("");
     try {
       const resized = await resizeImage(file);
+      if (type === "electricity") setElecPhoto(resized);
+      else setWaterPhoto(resized);
       const res = await fetch("/api/ocr-meter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,6 +92,8 @@ export default function TenantInvoices() {
         const val = Number(d.reading);
         if (type === "electricity") { setElecVal(val); setOcrSuccessMsg(`Đã đọc chỉ số điện: ${val} kWh`); }
         else { setWaterVal(val); setOcrSuccessMsg(`Đã đọc chỉ số nước: ${val} m³`); }
+      } else {
+        setWarningMsg(type === "electricity" ? "Không đọc được chỉ số điện, vui lòng nhập tay" : "Không đọc được chỉ số nước, vui lòng nhập tay");
       }
     } catch {
       if (type === "electricity") { setElecVal(1380); setOcrSuccessMsg("Đã nhận diện chỉ số điện: 1380 kWh"); }
@@ -106,7 +113,27 @@ export default function TenantInvoices() {
       setWarningMsg("⚠ Chỉ số nước mới nhỏ hơn chỉ số cũ!");
       return;
     }
-    setSubmitSuccess("Đã gửi chỉ số thành công! Hóa đơn đã được chốt.");
+    if (!elecPhoto || !waterPhoto) {
+      setWarningMsg("⚠ Vui lòng chụp ảnh đồng hồ điện và nước làm bằng chứng!");
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await tenantInvoiceApi.submitMeter({
+        electricity: elecVal,
+        water: waterVal,
+        electricityPhoto: elecPhoto,
+        waterPhoto: waterPhoto,
+      });
+      setSubmitSuccess("Đã gửi chỉ số thành công! Hóa đơn đã được chốt.");
+      setElecPhoto("");
+      setWaterPhoto("");
+      await loadData();
+    } catch (err) {
+      setWarningMsg(err.response?.data?.message || "Gửi thất bại, vui lòng thử lại");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleSaveInitial = async (payload) => {
@@ -144,6 +171,7 @@ export default function TenantInvoices() {
           calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
           electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
           handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit} getVietQRUrl={getVietQRUrl}
+          submitting={submitting} elecPhoto={elecPhoto} waterPhoto={waterPhoto}
         />
       )}
 

@@ -21,6 +21,8 @@ module.exports = (sequelize, DataType) => {
         otherFees: { type: DataType.DECIMAL(15, 0), allowNull: false, defaultValue: 0 },
         total: { type: DataType.DECIMAL(15, 0), allowNull: false, defaultValue: 0 },
         status: { type: DataType.ENUM('pending', 'paid'), allowNull: false, defaultValue: 'pending' },
+        electricityPhoto: { type: DataType.STRING(500), allowNull: true },
+        waterPhoto: { type: DataType.STRING(500), allowNull: true },
         paidAt: { type: DataType.DATE, allowNull: true }
     }, {
         sequelize, modelName: "Invoice", tableName: "invoices", timestamps: true
