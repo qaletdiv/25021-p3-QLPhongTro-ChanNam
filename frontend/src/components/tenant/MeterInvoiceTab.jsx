@@ -60,7 +60,7 @@ export default function MeterInvoiceTab({
                 Chỉ Số Điện (kWh)
               </Typography>
               <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>
-                Chỉ số cũ: <Box component="span" sx={{ fontWeight: 700, color: "#0f172a" }}>{contract?.lastElectricity || 0}</Box>
+                Chỉ số cũ: <Box component="span" sx={{ fontWeight: 700, color: "#0f172a" }}>{Math.round(Number(contract?.lastElectricity || 0))}</Box>
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
@@ -89,7 +89,7 @@ export default function MeterInvoiceTab({
                 Chỉ Số Nước (m³)
               </Typography>
               <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>
-                Chỉ số cũ: <Box component="span" sx={{ fontWeight: 700, color: "#0f172a" }}>{contract?.lastWater || 0}</Box>
+                Chỉ số cũ: <Box component="span" sx={{ fontWeight: 700, color: "#0f172a" }}>{Math.round(Number(contract?.lastWater || 0))}</Box>
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
@@ -117,12 +117,12 @@ export default function MeterInvoiceTab({
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(roomPrice)}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
-              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền điện ({calcElecUsage} kWh x {electricityRate}đ):</Typography>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(calcElecAmount)}</Typography>
+              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền điện ({Math.round(calcElecUsage)} kWh x {electricityRate}đ):</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(Math.round(calcElecAmount))}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
-              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền nước ({calcWaterUsage} m³ x {waterRate}đ):</Typography>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(calcWaterAmount)}</Typography>
+              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền nước ({Math.round(calcWaterUsage)} m³ x {waterRate}đ):</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(Math.round(calcWaterAmount))}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #bfdbfe", pt: 1 }}>
               <Typography sx={{ fontSize: "0.875rem", fontWeight: 900, color: "#0f172a" }}>TỔNG CỘNG DỰ TÍNH:</Typography>

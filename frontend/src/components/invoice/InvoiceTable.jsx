@@ -86,17 +86,17 @@ const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint, onViewPhoto }) =
     </td>
     <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.roomPrice)}</td>
     <td style={{ padding: "12px 16px" }}>
-      <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.electricityCost)}</div>
+      <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(Math.round(Number(inv.electricityCost || 0)))}</div>
       <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
-        {inv.electricityOld || 0} → {inv.electricityNew || 0} ({(inv.electricityNew || 0) - (inv.electricityOld || 0)} kWh)
+        {Math.round(Number(inv.electricityOld || 0))} → {Math.round(Number(inv.electricityNew || 0))} ({Math.round(Number(inv.electricityNew || 0)) - Math.round(Number(inv.electricityOld || 0))} kWh)
       </div>
     </td>
     <PhotoCell photo={inv.electricityPhoto} alt="Ảnh đồng hồ điện" onView={onViewPhoto} />
     <PhotoCell photo={prev?.electricityPhoto || inv.contract?.initialElectricityPhoto} alt="Ảnh đồng hồ điện tháng trước" onView={onViewPhoto} />
     <td style={{ padding: "12px 16px" }}>
-      <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(inv.waterCost)}</div>
+      <div style={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(Math.round(Number(inv.waterCost || 0)))}</div>
       <div style={{ fontSize: "0.6875rem", color: "#94a3b8", fontFamily: "monospace" }}>
-        {inv.waterOld || 0} → {inv.waterNew || 0} ({(inv.waterNew || 0) - (inv.waterOld || 0)} m³)
+        {Math.round(Number(inv.waterOld || 0))} → {Math.round(Number(inv.waterNew || 0))} ({Math.round(Number(inv.waterNew || 0)) - Math.round(Number(inv.waterOld || 0))} m³)
       </div>
     </td>
     <PhotoCell photo={inv.waterPhoto} alt="Ảnh đồng hồ nước" onView={onViewPhoto} />

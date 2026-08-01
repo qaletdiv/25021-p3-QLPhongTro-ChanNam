@@ -6,15 +6,15 @@ import ModalShell from "../ui/ModalShell";
 import { formatCurrency } from "../../utils/format";
 
 const Row = (inv) => {
-  const elecUsage = (inv.electricityNew || 0) - (inv.electricityOld || 0);
-  const waterUsage = (inv.waterNew || 0) - (inv.waterOld || 0);
+  const elecUsage = Math.round(Number(inv.electricityNew || 0)) - Math.round(Number(inv.electricityOld || 0));
+  const waterUsage = Math.round(Number(inv.waterNew || 0)) - Math.round(Number(inv.waterOld || 0));
   const elecRate = elecUsage > 0 ? Math.round((inv.electricityCost || 0) / elecUsage) : 0;
   const waterRate = waterUsage > 0 ? Math.round((inv.waterCost || 0) / waterUsage) : 0;
   return [
-    { label: "Tiền phòng", detail: "1 Tháng", amount: inv.roomPrice },
-    { label: `Tiền điện (${formatCurrency(elecRate)}/kWh)`, detail: `${inv.electricityOld || 0} → ${inv.electricityNew || 0} (${elecUsage} kWh)`, amount: inv.electricityCost },
-    { label: `Tiền nước (${formatCurrency(waterRate)}/m³)`, detail: `${inv.waterOld || 0} → ${inv.waterNew || 0} (${waterUsage} m³)`, amount: inv.waterCost },
-    { label: "Phí dịch vụ & rác", detail: "Cố định", amount: inv.serviceFee + inv.otherFees },
+    { label: "Tiền phòng", detail: "1 Tháng", amount: Math.round(Number(inv.roomPrice || 0)) },
+    { label: `Tiền điện (${formatCurrency(elecRate)}/kWh)`, detail: `${Math.round(Number(inv.electricityOld || 0))} → ${Math.round(Number(inv.electricityNew || 0))} (${elecUsage} kWh)`, amount: Math.round(Number(inv.electricityCost || 0)) },
+    { label: `Tiền nước (${formatCurrency(waterRate)}/m³)`, detail: `${Math.round(Number(inv.waterOld || 0))} → ${Math.round(Number(inv.waterNew || 0))} (${waterUsage} m³)`, amount: Math.round(Number(inv.waterCost || 0)) },
+    { label: "Phí dịch vụ & rác", detail: "Cố định", amount: Math.round(Number(inv.serviceFee + inv.otherFees || 0)) },
   ];
 };
 
