@@ -129,6 +129,8 @@ export default function TenantInvoices() {
       setElecPhoto("");
       setWaterPhoto("");
       await loadData();
+      setElecVal(0);
+      setWaterVal(0);
     } catch (err) {
       setWarningMsg(err.response?.data?.message || "Gửi thất bại, vui lòng thử lại");
     } finally {
