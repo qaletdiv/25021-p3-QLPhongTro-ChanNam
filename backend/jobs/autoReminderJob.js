@@ -46,9 +46,10 @@ exports.runAutoReminders = async () => {
         if (await isAutoReminderSentThisMonth(room.id)) continue;
 
         const monthStr = formatMonth(new Date());
-        const content =
-            `Kinh gui {{TENKHACH}} (Phong {{MAPHONG}}), den ky thu tien nha thang ${monthStr}. ` +
-            `Vui long thanh toan truoc ngay {{HAN_THANH_TOAN}}. Cam on!`;
+        const DEFAULT_TEMPLATE = `Kinh gui {{TENKHACH}} (Phong {{MAPHONG}}), den ky thu tien nha thang {{THANG}}. Vui long thanh toan truoc ngay {{HAN_THANH_TOAN}}. Cam on!`;
+        const content = (settings.autoReminderTemplate && settings.autoReminderTemplate.trim())
+            ? settings.autoReminderTemplate
+            : DEFAULT_TEMPLATE;
 
         const notification = await Notification.create({
             title: `Nhc Tien Phong ${monthStr} (Tu Dong)`,
@@ -64,9 +65,12 @@ exports.runAutoReminders = async () => {
 
         if (tenant.telegramChatId) {
             try {
+                const totalStr = new Intl.NumberFormat("vi-VN").format(Number(contract.price)) + " VND";
                 const text = telegram.formatMessage(content, {
                     tenantName: tenant.name,
                     roomNumber: room.room_number,
+                    totalAmount: totalStr,
+                    month: monthStr,
                     dueDate: `ngay ${contract.paymentDay + 5}`
                 });
                 await telegram.sendMessage({

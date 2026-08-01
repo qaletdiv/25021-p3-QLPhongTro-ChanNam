@@ -38,6 +38,7 @@ exports.formatMessage = (template, context) => {
         "TENKHACH": context.tenantName || "",
         "MAPHONG": context.roomNumber || "",
         "TONG_TIEN": context.totalAmount != null ? context.totalAmount : "",
+        "THANG": context.month || "",
         "HAN_THANH_TOAN": context.dueDate || ""
     };
     return String(template).replace(/\{\{\s*([A-Z_]+)\s*\}\}/g, (m, key) => vars[key] !== undefined ? vars[key] : "");

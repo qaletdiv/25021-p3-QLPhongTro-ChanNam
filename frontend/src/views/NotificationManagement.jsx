@@ -11,9 +11,11 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import MessageDialog from "../components/MessageDialog";
 import notificationApi from "../api/notificationApi";
 import roomApi from "../api/roomApi";
+import settingApi from "../api/settingApi";
 import { resolveNotificationTemplate } from "../utils/notificationTemplate";
 
 const VARIABLES = ["TENKHACH", "MAPHONG", "TONG_TIEN", "HAN_THANH_TOAN"];
+const AUTO_VARIABLES = ["TENKHACH", "MAPHONG", "TONG_TIEN", "THANG", "HAN_THANH_TOAN"];
 
 export default function NotificationManagement() {
   const [notifications, setNotifications] = useState([]);
@@ -28,12 +30,15 @@ export default function NotificationManagement() {
   const [targetRoom, setTargetRoom] = useState("all");
   const [isSending, setIsSending] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [autoTemplate, setAutoTemplate] = useState("");
+  const [autoSavedMsg, setAutoSavedMsg] = useState("");
 
   const fetchData = useCallback(async () => {
     try {
-      const [notifRes, roomRes] = await Promise.all([notificationApi.getAll(), roomApi.getAll()]);
+      const [notifRes, roomRes, setRes] = await Promise.all([notificationApi.getAll(), roomApi.getAll(), settingApi.getAll("")]);
       setNotifications(notifRes.data.notifications || []);
       setRooms(roomRes.data.rooms || []);
+      setAutoTemplate(setRes.data.settings?.autoReminderTemplate || "");
     } catch {
       setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" });
     } finally { setLoading(false); }
@@ -78,6 +83,20 @@ export default function NotificationManagement() {
         HAN_THANH_TOAN: activeContract?.paymentDay ? `Ngày ${activeContract.paymentDay + 5}` : "",
       });
     }).join("\n\n─────\n\n");
+  };
+
+  const insertAutoVariable = (varName) => {
+    setAutoTemplate((prev) => prev + `{{${varName}}}`);
+  };
+
+  const handleSaveAutoTemplate = async () => {
+    try {
+      await settingApi.save({ autoReminderTemplate: autoTemplate }, "");
+      setAutoSavedMsg("Đã lưu mẫu thông báo nhắc nợ tự động!");
+      setTimeout(() => setAutoSavedMsg(""), 4000);
+    } catch {
+      setSnack({ open: true, message: "Lỗi lưu mẫu", severity: "error" });
+    }
   };
 
   return (
@@ -224,6 +243,46 @@ export default function NotificationManagement() {
           </Box>
         </Box>
       )}
+
+      {/* Auto reminder template editor */}
+      <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 2.5 }}>
+          <BoltIcon sx={{ fontSize: 18, color: "#d97706" }} />
+          <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>Mẫu Thông Báo Nhắc Nợ Tự Động</Typography>
+        </Box>
+        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 2 }}>
+          Nội dung này sẽ được hệ thống dùng để <b>tự động gửi nhắc nợ</b> qua Telegram vào đúng <b>ngày thu tiền</b> của từng phòng. Nếu để trống, hệ thống dùng mẫu mặc định.
+        </Typography>
+
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mb: 1.5 }}>
+          {AUTO_VARIABLES.map((v) => (
+            <Box key={v} onClick={() => insertAutoVariable(v)}
+              sx={{ px: 1.25, py: 0.5, bgcolor: "#fff7ed", color: "#b45309", border: "1px solid #fed7aa", fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#ffedd5" } }}
+            >
+              + {`{{${v}}}`}
+            </Box>
+          ))}
+        </Box>
+
+        <TextField
+          fullWidth multiline minRows={4} value={autoTemplate} onChange={(e) => setAutoTemplate(e.target.value)}
+          placeholder="Kính gửi {{TENKHACH}} (Phòng {{MAPHONG}}), đến kỳ thu tiền nhà tháng {{THANG}}. Vui lòng thanh toán trước ngày {{HAN_THANH_TOAN}}. Cảm ơn!"
+          sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, lineHeight: 1.6 } }}
+        />
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+          <Button variant="contained" onClick={handleSaveAutoTemplate}
+            sx={{ py: 1, px: 3, fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", textTransform: "none", bgcolor: "#d97706", "&:hover": { bgcolor: "#b45309" } }}>
+            Lưu Mẫu Nhắc Nợ Tự Động
+          </Button>
+          {autoSavedMsg && (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, bgcolor: "#d1fae5", color: "#065f46", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", border: "1px solid #a7f3d0" }}>
+              <CheckCircleIcon sx={{ fontSize: 16 }} />
+              <span>{autoSavedMsg}</span>
+            </Box>
+          )}
+        </Box>
+      </Box>
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
