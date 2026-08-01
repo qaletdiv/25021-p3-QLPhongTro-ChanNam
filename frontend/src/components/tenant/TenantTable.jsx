@@ -6,7 +6,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PrintIcon from "@mui/icons-material/Print";
 import { formatCurrency, formatDate } from "../../utils/format";
 
-const HEADERS = ["Phòng", "Khách Thuê", "Số Điện Thoại", "Tiền Cọc", "Thời Hạn HĐ", "Ngày Thu", "Mã Vân Tay", "Trạng Thái", ""];
+const HEADERS = ["Phòng", "Khách Thuê", "Số Điện Thoại", "Telegram", "Tiền Cọc", "Thời Hạn HĐ", "Ngày Thu", "Mã Vân Tay", "Trạng Thái", ""];
 
 const StatusBadge = ({ active, ended }) => {
   if (active) {
@@ -65,6 +65,18 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                   </td>
                   <td style={{ padding: "12px 16px", color: "#64748b", fontWeight: 600 }}>
                     {tenant.phone || "-"}
+                  </td>
+                  <td style={{ padding: "12px 16px" }}>
+                    {tenant.telegramChatId ? (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 800, borderRadius: "9999px", backgroundColor: "#e0f2fe", color: "#075985", border: "1px solid #bae6fd" }}>
+                        <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#0284c7", display: "inline-block" }} />
+                        Đã liên kết
+                      </span>
+                    ) : (
+                      <span style={{ padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 600, borderRadius: "9999px", backgroundColor: "#f1f5f9", color: "#94a3b8", border: "1px solid #e2e8f0" }}>
+                        Chưa liên kết
+                      </span>
+                    )}
                   </td>
                   <td style={{ padding: "12px 16px", fontWeight: 700, color: "#2563eb" }}>
                     {displayContract ? formatCurrency(displayContract.deposit) : "-"}

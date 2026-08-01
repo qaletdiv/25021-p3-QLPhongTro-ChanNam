@@ -1,0 +1,44 @@
+const { getResolvedSettings } = require("./settings");
+
+const API = "https://api.telegram.org";
+
+exports.getBotToken = async (landlordId, buildingId) => {
+    const settings = await getResolvedSettings(landlordId, buildingId || null);
+    return settings.telegramBotToken || "";
+};
+
+async function call(method, botToken, params = {}) {
+    const res = await fetch(`${API}/bot${botToken}/${method}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params)
+    });
+    return res.json();
+}
+
+exports.checkConnection = async (landlordId, buildingId) => {
+    const botToken = await exports.getBotToken(landlordId, buildingId);
+    if (!botToken) return { ok: false, message: "Chua cau hinh Telegram Bot Token" };
+    const data = await call("getMe", botToken);
+    if (data.ok) return { ok: true, message: `Ket noi thanh cong (bot @${data.result.username})` };
+    return { ok: false, message: data.description || "Khong the ket noi Telegram" };
+};
+
+exports.sendMessage = async ({ landlordId, buildingId, chatId, text }) => {
+    const botToken = await exports.getBotToken(landlordId, buildingId);
+    if (!botToken) throw new Error("Chua cau hinh Telegram Bot Token trong Cau hinh");
+    if (!chatId) throw new Error("Khach thue chua cung cap Telegram Chat ID");
+    const data = await call("sendMessage", botToken, { chat_id: String(chatId).trim(), text });
+    if (!data.ok) throw new Error(data.description || "Khong gui duoc tin nhan Telegram");
+    return data;
+};
+
+exports.formatMessage = (template, context) => {
+    const vars = {
+        "TENKHACH": context.tenantName || "",
+        "MAPHONG": context.roomNumber || "",
+        "TONG_TIEN": context.totalAmount != null ? context.totalAmount : "",
+        "HAN_THANH_TOAN": context.dueDate || ""
+    };
+    return String(template).replace(/\{\{\s*([A-Z_]+)\s*\}\}/g, (m, key) => vars[key] !== undefined ? vars[key] : "");
+};

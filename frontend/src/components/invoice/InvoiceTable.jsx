@@ -110,7 +110,7 @@ const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint, onViewPhoto }) =
       {inv.status !== "paid" && (
         <>
           <ActionButton label="Thu Tiền" bgcolor="#059669" hover="#047857" onClick={() => onMarkPaid(inv.id)} />
-          <ActionButton label="Nhắc Zalo" bgcolor="#d97706" hover="#b45309" onClick={() => onRemind(inv.id)} />
+          <ActionButton label="Nhắc Telegram" bgcolor="#d97706" hover="#b45309" onClick={() => onRemind(inv.id)} />
         </>
       )}
       <IconButton size="small" onClick={() => onPrint(inv)} sx={{ color: "#64748b", "&:hover": { color: "#0f172a", bgcolor: "#f1f5f9" } }}>

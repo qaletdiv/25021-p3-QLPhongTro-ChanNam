@@ -54,7 +54,7 @@ export default function NotificationManagement() {
       await notificationApi.create(payload);
       setSuccessMsg("");
       fetchData();
-      setTimeout(() => setSuccessMsg("Đã tự động gửi thông báo Zalo OA thành công tới danh sách khách hàng!"), 300);
+      setTimeout(() => setSuccessMsg("Đã tự động gửi thông báo Telegram thành công tới danh sách khách hàng!"), 300);
       setTimeout(() => setSuccessMsg(""), 4300);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Lỗi gửi thông báo", severity: "error" });
@@ -68,9 +68,9 @@ export default function NotificationManagement() {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Thông Báo Zalo OA</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Thông Báo Telegram</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
-          Soạn mẫu thông báo tự động cá nhân hóa biến động và gửi đồng loạt qua Zalo OA (ZBS API).
+          Soạn mẫu thông báo tự động cá nhân hóa biến động và gửi đồng loạt qua Telegram Bot.
         </Typography>
       </Box>
 
@@ -80,7 +80,7 @@ export default function NotificationManagement() {
           <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <SendIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-              <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>Gửi Thông Báo Mới Zalo OA</Typography>
+              <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>Gửi Thông Báo Mới Telegram</Typography>
             </Box>
 
             {successMsg && (
@@ -150,7 +150,7 @@ export default function NotificationManagement() {
                 sx={{ width: "100%", py: 1.5, fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}
               >
                 <BoltIcon sx={{ fontSize: 16 }} />
-                <span>{isSending ? "Đang Gửi..." : "Lưu Dữ Liệu & Gửi Zalo OA Ngay"}</span>
+                <span>{isSending ? "Đang Gửi..." : "Lưu Dữ Liệu & Gửi Telegram Ngay"}</span>
               </Button>
             </Box>
           </Box>
@@ -160,7 +160,7 @@ export default function NotificationManagement() {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <HistoryIcon sx={{ fontSize: 18, color: "#64748b" }} />
               <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>
-                Lịch Sử Đã Gửi Zalo OA ({sentNotifications.length})
+                Lịch Sử Đã Gửi Telegram ({sentNotifications.length})
               </Typography>
             </Box>
 

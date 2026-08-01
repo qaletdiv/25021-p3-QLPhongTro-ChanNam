@@ -21,7 +21,7 @@ const cardSx = {
 export default function TenantProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [profile, setProfile] = useState({ name: "", email: "", phone: "", cccd: "" });
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "", cccd: "", telegramChatId: "" });
   const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
@@ -91,6 +91,14 @@ export default function TenantProfile() {
           <Grid size={6}>
             <TextField fullWidth label="CCCD" value={profile.cccd || ""} onChange={(e) => setProfile({ ...profile, cccd: e.target.value })}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+          </Grid>
+          <Grid size={12}>
+            <TextField fullWidth label="Telegram Chat ID (để nhận thông báo từ chủ trọ)" placeholder="Ví dụ: 123456789" value={profile.telegramChatId || ""}
+              onChange={(e) => setProfile({ ...profile, telegramChatId: e.target.value })}
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+            <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.5 }}>
+              Gửi tin nhắn /start tới bot của chủ trọ trên Telegram, sau đó lấy Chat ID từ tin nhắn hoặc dùng @userinfobot để tra cứu.
+            </Typography>
           </Grid>
         </Grid>
         <Box sx={{ mt: 2, textAlign: "right" }}>

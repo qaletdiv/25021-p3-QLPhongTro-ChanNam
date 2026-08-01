@@ -6,6 +6,6 @@ const authorizeRole = require('../middlewares/authorizeRole');
 
 router.get('/', authenticateToken, authorizeRole('landlord'), settingController.getSettings);
 router.put('/', authenticateToken, authorizeRole('landlord'), settingController.saveSettings);
-router.post('/check-zalo', authenticateToken, authorizeRole('landlord'), settingController.checkZaloConnection);
+router.post('/check-telegram', authenticateToken, authorizeRole('landlord'), settingController.checkTelegramConnection);
 
 module.exports = router;

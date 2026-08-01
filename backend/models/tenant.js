@@ -13,6 +13,7 @@ module.exports = (sequelize, DataType) => {
         name: { type: DataType.STRING(100), allowNull: false },
         phone: { type: DataType.STRING(20), allowNull: false },
         cccd: { type: DataType.STRING(20) },
+        telegramChatId: { type: DataType.STRING(64) },
         userId: { type: DataType.INTEGER }
     }, {
         sequelize, modelName: "Tenant", tableName: "tenants", timestamps: true

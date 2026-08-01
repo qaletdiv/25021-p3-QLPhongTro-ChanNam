@@ -1,5 +1,6 @@
 const { Setting } = require("../models");
 const { getResolvedSettings } = require("../utils/settings");
+const telegram = require("../utils/telegram");
 
 exports.getSettings = async (req, res, next) => {
     try {
@@ -33,9 +34,11 @@ exports.saveSettings = async (req, res, next) => {
     }
 };
 
-exports.checkZaloConnection = async (req, res, next) => {
+exports.checkTelegramConnection = async (req, res, next) => {
     try {
-        res.json({ message: "Zalo OA ket noi thanh cong (gia lap)" });
+        const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
+        const result = await telegram.checkConnection(req.user.id, buildingId);
+        res.json(result);
     } catch (error) {
         next(error);
     }

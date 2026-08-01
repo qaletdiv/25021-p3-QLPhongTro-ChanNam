@@ -21,6 +21,7 @@ export default function Settings() {
   const [buildingId, setBuildingId] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+  const [checkMsg, setCheckMsg] = useState(null);
 
   useEffect(() => {
     buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
@@ -50,6 +51,16 @@ export default function Settings() {
     }
   };
 
+  const handleTestTelegram = async () => {
+    try {
+      await settingApi.save(form, buildingId);
+      const res = await settingApi.checkTelegram(buildingId);
+      setCheckMsg({ ok: res.data.ok, message: res.data.message || "Kiểm tra không xác định" });
+    } catch {
+      setCheckMsg({ ok: false, message: "Lỗi kết nối đến máy chủ" });
+    }
+  };
+
   const sectionSx = { bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" };
 
   return (
@@ -58,7 +69,7 @@ export default function Settings() {
       <Box>
         <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Cài Đặt Cấu Hình Hệ Thống Chung</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
-          Cấu hình đơn giá tiện ích điện nước, tài khoản ngân hàng VietQR, token kết nối Zalo OA và thông tin vận hành.
+          Cấu hình đơn giá tiện ích điện nước, tài khoản ngân hàng VietQR, token kết nối Telegram Bot và thông tin vận hành.
         </Typography>
       </Box>
 
@@ -137,20 +148,19 @@ export default function Settings() {
           </Box>
         </Box>
 
-        {/* 3. Zalo OA */}
+        {/* 3. Telegram Bot */}
         <Box sx={sectionSx}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
             <MessageIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>3. Cấu Hình Tự Động Hóa Zalo Official Account (Zalo OA)</Typography>
+            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>3. Cấu Hình Telegram Bot Gửi Thông Báo</Typography>
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Zalo Official Account ID</Typography>
-              <TextField fullWidth value={form.zaloOaId || ""} onChange={(e) => set("zaloOaId", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Zalo Access Token</Typography>
-              <TextField fullWidth type="password" value={form.zaloAccessToken || ""} onChange={(e) => set("zaloAccessToken", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, fontFamily: "monospace" } }} />
+            <Box sx={{ gridColumn: { xs: "1", sm: "1 / 3" } }}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Telegram Bot Token (lấy từ @BotFather)</Typography>
+              <TextField fullWidth type="password" placeholder="123456:ABC-DEF..." value={form.telegramBotToken || ""} onChange={(e) => set("telegramBotToken", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, fontFamily: "monospace" } }} />
+              <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.75 }}>
+                Khách thuê cần nhập Telegram Chat ID trong mục "Hồ sơ cá nhân" để nhận thông báo.
+              </Typography>
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Chốt Hóa Đơn Hàng Tháng</Typography>
@@ -160,6 +170,19 @@ export default function Settings() {
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Nhắc Nợ Tự Động</Typography>
               <TextField fullWidth type="number" slotProps={{ htmlInput: { min: 1, max: 31 } }} value={form.defaultRemindDay || ""} onChange={(e) => set("defaultRemindDay", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 2 }}>
+            <Button variant="outlined" size="small" onClick={handleTestTelegram}
+              sx={{ textTransform: "none", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", borderColor: "#cbd5e1", color: "#334155", "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" } }}>
+              Kiểm Tra Kết Nối Bot
+            </Button>
+            {checkMsg && (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, borderRadius: "10px", fontSize: "0.75rem", fontWeight: 700,
+                bgcolor: checkMsg.ok ? "#d1fae5" : "#fee2e2", color: checkMsg.ok ? "#065f46" : "#991b1b", border: `1px solid ${checkMsg.ok ? "#a7f3d0" : "#fecaca"}` }}>
+                {checkMsg.ok ? <CheckCircleIcon sx={{ fontSize: 16 }} /> : <BoltIcon sx={{ fontSize: 16 }} />}
+                <span>{checkMsg.message}</span>
+              </Box>
+            )}
           </Box>
         </Box>
 

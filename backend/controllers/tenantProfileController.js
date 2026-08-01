@@ -9,6 +9,7 @@ exports.getProfile = async (req, res, next) => {
             email: req.user.email,
             phone: req.user.phone,
             cccd: req.user.cccd || (tenant ? tenant.cccd : ""),
+            telegramChatId: tenant ? tenant.telegramChatId || "" : "",
             avatar: req.user.avatar
         };
         res.json({ profile });
@@ -19,7 +20,7 @@ exports.getProfile = async (req, res, next) => {
 
 exports.updateProfile = async (req, res, next) => {
     try {
-        const { name, email, phone, cccd } = req.body;
+        const { name, email, phone, cccd, telegramChatId } = req.body;
         const updateData = {};
         if (name) updateData.name = name;
         if (email) updateData.email = email;
@@ -31,6 +32,9 @@ exports.updateProfile = async (req, res, next) => {
         const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
         if (tenant && cccd !== undefined) {
             await tenant.update({ cccd });
+        }
+        if (tenant && telegramChatId !== undefined) {
+            await tenant.update({ telegramChatId: String(telegramChatId).trim() });
         }
 
         res.json({ message: "Cap nhat thong tin thanh cong" });
