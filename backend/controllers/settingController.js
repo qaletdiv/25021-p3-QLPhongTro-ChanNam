@@ -2,6 +2,8 @@ const { Setting } = require("../models");
 const { getResolvedSettings } = require("../utils/settings");
 const telegram = require("../utils/telegram");
 
+const ALLOWED_VARS = new Set(["TENKHACH", "MAPHONG", "TONG_TIEN", "THANG", "HAN_THANH_TOAN"]);
+
 exports.getSettings = async (req, res, next) => {
     try {
         const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
@@ -12,6 +14,18 @@ exports.getSettings = async (req, res, next) => {
     }
 };
 
+function validateTemplate(value) {
+    if (/[`$]/.test(value)) {
+        return "Mau khong duoc chua ky tu dac biet nhu backtick (`) hoac ${...}";
+    }
+    const used = [...value.matchAll(/\{\{\s*([A-Z_]+)\s*\}\}/g)].map((m) => m[1]);
+    const unknown = used.find((v) => !ALLOWED_VARS.has(v));
+    if (unknown) {
+        return `Bien {{${unknown}}} khong duoc ho tro`;
+    }
+    return null;
+}
+
 exports.saveSettings = async (req, res, next) => {
     try {
         const entries = req.body;
@@ -19,6 +33,10 @@ exports.saveSettings = async (req, res, next) => {
         const keys = Object.keys(entries);
         for (const key of keys) {
             const value = String(entries[key]);
+            if (key === "autoReminderTemplate" && value.trim()) {
+                const err = validateTemplate(value);
+                if (err) return res.status(400).json({ message: err });
+            }
             const [existing] = await Setting.findAll({
                 where: { key, landlordId: req.user.id, buildingId: buildingId || null }
             });

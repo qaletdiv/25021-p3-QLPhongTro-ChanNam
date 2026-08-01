@@ -98,12 +98,19 @@ export default function NotificationManagement() {
   };
 
   const handleSaveAutoTemplate = async () => {
+    const invalid = /[`$]/.test(autoTemplate)
+      ? "Mẫu không được chứa backtick (`) hoặc ${...}"
+      : null;
+    if (invalid) {
+      setSnack({ open: true, message: invalid, severity: "error" });
+      return;
+    }
     try {
       await settingApi.save({ autoReminderTemplate: autoTemplate }, "");
       setAutoSavedMsg("Đã lưu mẫu thông báo nhắc nợ tự động!");
       setTimeout(() => setAutoSavedMsg(""), 4000);
-    } catch {
-      setSnack({ open: true, message: "Lỗi lưu mẫu", severity: "error" });
+    } catch (err) {
+      setSnack({ open: true, message: err.response?.data?.message || "Lỗi lưu mẫu", severity: "error" });
     }
   };
 
