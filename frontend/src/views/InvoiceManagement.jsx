@@ -85,7 +85,7 @@ export default function InvoiceManagement() {
           { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
           { key: "submitted", label: "Đã Gửi Chỉ Số", activeColor: "#d97706" },
           { key: "paid", label: "Đã Thanh Toán", activeColor: "#059669" },
-          { key: "pending", label: "Chờ Nhập Chỉ Số", activeColor: "#334155" },
+          { key: "pending", label: "Chờ Thu Tiền", activeColor: "#334155" },
         ]}
         total={invoices.length}
         counts={counts}

@@ -25,7 +25,7 @@ const StatusBadge = ({ status }) => {
   }
   return (
     <span style={{ padding: "4px 10px", backgroundColor: "#f1f5f9", color: "#475569", fontSize: "0.6875rem", fontWeight: 800, borderRadius: "9999px", border: "1px solid #e2e8f0" }}>
-      ○ Chờ Nhập Chỉ Số
+      ○ Chờ Thu Tiền
     </span>
   );
 };
