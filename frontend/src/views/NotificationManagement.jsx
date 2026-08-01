@@ -88,7 +88,7 @@ export default function NotificationManagement() {
         MAPHONG: room?.room_number || "",
         TONG_TIEN: room?.price != null ? String(room.price) : "",
         THANG: monthStr,
-        HAN_THANH_TOAN: activeContract?.paymentDay ? `Ngày ${activeContract.paymentDay + 5}` : "",
+        HAN_THANH_TOAN: activeContract?.paymentDay ? String(activeContract.paymentDay + 5) : "",
       });
     }).join("\n\n─────\n\n");
   };

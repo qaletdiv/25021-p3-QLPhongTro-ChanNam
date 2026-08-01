@@ -52,7 +52,7 @@ exports.runAutoReminders = async () => {
             : DEFAULT_TEMPLATE;
 
         const notification = await Notification.create({
-            title: `Nhc Tien Phong ${monthStr} (Tu Dong)`,
+            title: `Nhắc Tiền Phòng ${monthStr} (Tự Động)`,
             content,
             targetType: 'specific_rooms',
             targetRoomIds: JSON.stringify([String(room.id)]),
@@ -71,7 +71,7 @@ exports.runAutoReminders = async () => {
                     roomNumber: room.room_number,
                     totalAmount: totalStr,
                     month: monthStr,
-                    dueDate: `ngay ${contract.paymentDay + 5}`
+                    dueDate: String(contract.paymentDay + 5)
                 });
                 await telegram.sendMessage({
                     landlordId: room.landlordId,

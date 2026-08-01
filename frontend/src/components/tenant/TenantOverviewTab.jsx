@@ -22,7 +22,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
     TENKHACH: tenant?.name || "",
     MAPHONG: room?.room_number || "",
     TONG_TIEN: contract?.price != null ? String(contract.price) : room?.price != null ? String(room.price) : "",
-    HAN_THANH_TOAN: contract?.paymentDay ? `Ngày ${contract.paymentDay + 5}` : "",
+    HAN_THANH_TOAN: contract?.paymentDay ? String(contract.paymentDay + 5) : "",
   });
 
   return (
