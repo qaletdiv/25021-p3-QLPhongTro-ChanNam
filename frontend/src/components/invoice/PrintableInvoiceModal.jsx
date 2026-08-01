@@ -2,17 +2,21 @@
 
 import { Box, Typography, Paper } from "@mui/material";
 import PrinterIcon from "@mui/icons-material/Print";
-import { VietQR } from "@viet-qr/react";
 import ModalShell from "../ui/ModalShell";
 import { formatCurrency } from "../../utils/format";
-import { resolveBankInfo } from "../../utils/vietqr";
 
-const Row = (inv) => [
-  { label: "Tiền phòng", detail: "1 Tháng", amount: inv.roomPrice },
-  { label: `Tiền điện (${formatCurrency(inv.electricityRate || 0)}/kWh)`, detail: `${inv.oldElectricity || 0} → ${inv.newElectricity || 0} (${(inv.newElectricity || 0) - (inv.oldElectricity || 0)} kWh)`, amount: inv.electricityCost },
-  { label: `Tiền nước (${formatCurrency(inv.waterRate || 0)}/m³)`, detail: `${inv.oldWater || 0} → ${inv.newWater || 0} (${(inv.newWater || 0) - (inv.oldWater || 0)} m³)`, amount: inv.waterCost },
-  { label: "Phí dịch vụ & rác", detail: "Cố định", amount: inv.serviceFee + inv.otherFees },
-];
+const Row = (inv) => {
+  const elecUsage = (inv.electricityNew || 0) - (inv.electricityOld || 0);
+  const waterUsage = (inv.waterNew || 0) - (inv.waterOld || 0);
+  const elecRate = elecUsage > 0 ? Math.round((inv.electricityCost || 0) / elecUsage) : 0;
+  const waterRate = waterUsage > 0 ? Math.round((inv.waterCost || 0) / waterUsage) : 0;
+  return [
+    { label: "Tiền phòng", detail: "1 Tháng", amount: inv.roomPrice },
+    { label: `Tiền điện (${formatCurrency(elecRate)}/kWh)`, detail: `${inv.electricityOld || 0} → ${inv.electricityNew || 0} (${elecUsage} kWh)`, amount: inv.electricityCost },
+    { label: `Tiền nước (${formatCurrency(waterRate)}/m³)`, detail: `${inv.waterOld || 0} → ${inv.waterNew || 0} (${waterUsage} m³)`, amount: inv.waterCost },
+    { label: "Phí dịch vụ & rác", detail: "Cố định", amount: inv.serviceFee + inv.otherFees },
+  ];
+};
 
 export default function PrintableInvoiceModal({ invoice, settings, onClose }) {
   if (!invoice) return null;
@@ -20,7 +24,7 @@ export default function PrintableInvoiceModal({ invoice, settings, onClose }) {
   return (
     <ModalShell open={!!invoice} onClose={onClose} headerBg="#0f172a" maxWidth={560}
       header={
-        <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Phiếu Bảng Kê Thanh Toán & VietQR</Typography>
+        <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Phiếu Bảng Kê Thanh Toán</Typography>
       }
       headerRight={
         <Box onClick={() => window.print()} sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, px: 1.5, py: 0.9, bgcolor: "#2563eb", color: "#fff", borderRadius: "12px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
@@ -71,26 +75,6 @@ export default function PrintableInvoiceModal({ invoice, settings, onClose }) {
               </tfoot>
             </table>
           </Paper>
-          <Box sx={{ p: 3, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0", textAlign: "center" }}>
-            <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 2 }}>
-              Quét Mã VietQR Chuyển Khoản Tự Động
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-              <VietQR
-                bankId={resolveBankInfo(settings?.bankName)?.bin || "970422"}
-                accountNo={settings?.bankAccount || "0988776655"}
-                accountName={settings?.bankHolder || "CHU TRO"}
-                amount={invoice.total}
-                content={`Thanh toan phong ${invoice.contract?.room?.room_number || ""} thang ${invoice.month}`}
-                renderAs="svg"
-                size={180}
-              />
-            </Box>
-            <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>
-              Ngân hàng: <strong style={{ color: "#0f172a" }}>{settings?.bankName || "MBBank"}</strong> | Số TK: <strong style={{ color: "#0f172a" }}>{settings?.bankAccount || "0988776655"}</strong><br />
-              Chủ TK: <strong style={{ color: "#0f172a" }}>{settings?.bankHolder || "—"}</strong>
-            </Typography>
-          </Box>
         </Box>
       }
     />
