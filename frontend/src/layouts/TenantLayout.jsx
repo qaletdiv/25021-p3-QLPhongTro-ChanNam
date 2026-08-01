@@ -94,7 +94,7 @@ export default function TenantLayout({ children }) {
           {sidebar}
         </Drawer>
       </Box>
-      <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3 }, mt: isMobile ? 7 : 0, ml: { md: `${drawerWidth}px` }, maxWidth: { md: `calc(100% - ${drawerWidth}px)` } }}>
+      <Box component="main" sx={{ flexGrow: 1, minWidth: 0, p: { xs: 2, md: 3 }, mt: isMobile ? 7 : 0 }}>
         {children}
       </Box>
     </Box>
