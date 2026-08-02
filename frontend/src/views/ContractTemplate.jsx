@@ -52,7 +52,8 @@ export default function ContractTemplate() {
 
   const handleSave = async () => {
     try {
-      await contractTemplateApi.saveTemplate({ template });
+      const toSave = template.replace(/ {2,}/g, (m) => Array.from({ length: m.length }, () => "&nbsp;").join(""));
+      await contractTemplateApi.saveTemplate({ template: toSave });
       setSnack({ open: true, message: "Đã lưu hợp đồng thành công", severity: "success" });
     } catch {
       setSnack({ open: true, message: "Lỗi lưu mẫu", severity: "error" });
