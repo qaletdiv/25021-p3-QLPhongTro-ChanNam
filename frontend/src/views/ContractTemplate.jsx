@@ -116,7 +116,7 @@ export default function ContractTemplate() {
             placeholder="Nhập nội dung hợp đồng..."
           />
         </Box>
-        <Box sx={{ mt: 3, textAlign: "right" }}>
+        <Box sx={{ mt: 3, textAlign: "center" }}>
           <Button
             variant="contained"
             onClick={handleSave}

@@ -206,7 +206,7 @@ export default function Settings() {
         </Box>
 
         {/* Save */}
-        <Box sx={{ textAlign: "right" }}>
+        <Box sx={{ textAlign: "center" }}>
           <Button type="submit" variant="contained"
             sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 4, py: 1.5, fontWeight: 700, fontSize: "0.75rem", borderRadius: "12px", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}
           >

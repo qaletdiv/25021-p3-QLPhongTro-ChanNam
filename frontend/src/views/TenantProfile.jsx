@@ -101,7 +101,7 @@ export default function TenantProfile() {
             </Typography>
           </Grid>
         </Grid>
-        <Box sx={{ mt: 2, textAlign: "right" }}>
+        <Box sx={{ mt: 2, textAlign: "center" }}>
           <Button variant="contained" onClick={handleUpdateProfile} disabled={saving}
             sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
             Lưu thay đổi
@@ -128,7 +128,7 @@ export default function TenantProfile() {
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           </Grid>
         </Grid>
-        <Box sx={{ mt: 2, textAlign: "right" }}>
+        <Box sx={{ mt: 2, textAlign: "center" }}>
           <Button variant="contained" onClick={handleChangePassword} disabled={saving}
             sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
             Đổi mật khẩu

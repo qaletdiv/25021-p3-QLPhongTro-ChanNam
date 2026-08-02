@@ -134,7 +134,7 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
           <Typography sx={{ fontSize: "0.75rem", color: "#dc2626", fontWeight: 600, mb: 1.5 }}>⚠ {error}</Typography>
         )}
 
-        <Box sx={{ textAlign: "right" }}>
+        <Box sx={{ textAlign: "center" }}>
           <Button variant="contained" onClick={handleSubmit} disabled={saving}
             sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none", px: 4 }}>
             {saving ? "Đang lưu..." : "Lưu chỉ số ban đầu"}
