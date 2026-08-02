@@ -83,6 +83,23 @@ exports.saveInitialReadings = async (req, res, next) => {
             initialWaterPhoto: waterRes.secure_url
         });
 
+        const roomPrice = Number(contract.room.price) || 0;
+        const invoice = await Invoice.create({
+            contractId: contract.id,
+            month: monthStr(new Date()),
+            roomPrice,
+            electricityOld: 0,
+            electricityNew: 0,
+            electricityCost: 0,
+            waterOld: 0,
+            waterNew: 0,
+            waterCost: 0,
+            serviceFee: 0,
+            otherFees: 0,
+            total: roomPrice,
+            status: 'submitted'
+        });
+
         res.json({
             message: "Đã lưu chỉ số ban đầu thành công",
             contract
@@ -92,7 +109,7 @@ exports.saveInitialReadings = async (req, res, next) => {
             await telegram.sendToLandlord({
                 landlordId: contract.room.landlordId,
                 buildingId: contract.room.buildingId,
-                text: `📦 Có phòng ${contract.room.room_number} là khách thuê mới, đã gửi chỉ số ban đầu và tiền phòng tháng đầu, chờ xác nhận.`,
+                text: `📦 Có phòng ${contract.room.room_number} là khách thuê mới, đã gửi chỉ số ban đầu và tiền phòng tháng ${monthStr(new Date())}, chờ xác nhận.`,
                 url: `${FRONTEND_URL}/landlord/invoices`
             });
         } catch (e) {
