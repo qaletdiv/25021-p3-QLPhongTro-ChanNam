@@ -1,4 +1,4 @@
-const { Issue, Room } = require("../models");
+const { Issue, Room, Notification } = require("../models");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 
 exports.getIssues = async (req, res, next) => {
@@ -33,6 +33,23 @@ exports.createIssue = async (req, res, next) => {
             description,
             images: images ? JSON.stringify(images) : null
         });
+
+        const room = await Room.findByPk(contract.roomId);
+        if (room && room.landlordId) {
+            await Notification.create({
+                title: `Báo hỏng mới - Phòng ${room.room_number}`,
+                content: `Khách ${tenant.name} (Phòng ${room.room_number}) báo hỏng: ${title}${description ? `\n${description}` : ""}`,
+                targetType: 'specific_rooms',
+                targetRoomIds: JSON.stringify([String(room.id)]),
+                sentAt: new Date(),
+                recipientCount: 0,
+                status: 'sent',
+                source: 'manual',
+                type: 'issue',
+                landlordId: room.landlordId
+            });
+        }
+
         res.status(201).json({ message: "Gui bao cao thanh cong", issue });
     } catch (error) {
         next(error);

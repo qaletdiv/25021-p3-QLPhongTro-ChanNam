@@ -15,6 +15,7 @@ const invoiceRoutes = require("./routes/invoiceRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const settingRoutes = require("./routes/settingRoutes");
 const tenantApiRoutes = require("./routes/tenantApiRoutes");
+const issueRoutes = require("./routes/issueRoutes");
 const contractPdfRoutes = require("./routes/contractPdfRoutes");
 
 const requestLoggerMiddleware = require("./middlewares/requestLogger");
@@ -45,6 +46,7 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/tenant", tenantApiRoutes);
+app.use("/api/issues", issueRoutes);
 
 app.use(errorHandlerMiddleware);
 

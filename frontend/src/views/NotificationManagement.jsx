@@ -254,12 +254,14 @@ export default function NotificationManagement() {
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <HistoryIcon sx={{ fontSize: 18, color: "#64748b" }} />
               <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>
-                Lịch Sử Đã Gửi Telegram ({sentNotifications.length})
+                Lịch Sử Thông Báo ({sentNotifications.length})
               </Typography>
             </Box>
 
             <Box sx={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 1.5, pr: 0.5 }}>
-              {sentNotifications.map((log) => (
+              {sentNotifications.map((log) => {
+                const isIssue = log.type === "issue";
+                return (
                 <Paper key={log.id} sx={{ p: 1.75, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
                     <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.75rem" }}>
@@ -279,20 +281,27 @@ export default function NotificationManagement() {
                           Tự động
                         </Typography>
                       )}
-                      <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
-                        Gửi thành công
-                      </Typography>
+                      {isIssue ? (
+                        <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#fef3c7", color: "#92400e", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #fde68a" }}>
+                          Báo hỏng
+                        </Typography>
+                      ) : (
+                        <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
+                          Gửi thành công
+                        </Typography>
+                      )}
                     </Box>
                   </Box>
                   <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>
                     Ngày gửi: {new Date(log.sentAt).toLocaleString("vi-VN")}
                   </Typography>
                   <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.6875rem", mt: 0.5 }}>{log.title}</Typography>
-                  <Typography sx={{ fontSize: "0.6875rem", color: "#475569", fontStyle: "italic", bgcolor: "#fff", p: 1.25, borderRadius: "12px", border: "1px solid #e2e8f0", mt: 0.75, lineHeight: 1.5 }}>
-                    "{resolveLogContent(log)}"
+                  <Typography sx={{ fontSize: "0.6875rem", color: "#475569", fontStyle: isIssue ? "normal" : "italic", bgcolor: "#fff", p: 1.25, borderRadius: "12px", border: "1px solid #e2e8f0", mt: 0.75, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+                    {isIssue ? log.content : `"${resolveLogContent(log)}"`}
                   </Typography>
                 </Paper>
-              ))}
+                );
+              })}
               {sentNotifications.length === 0 && (
                 <Typography sx={{ textAlign: "center", color: "#94a3b8", fontSize: "0.75rem", py: 6 }}>
                   Chưa có thông báo nào được gửi.
