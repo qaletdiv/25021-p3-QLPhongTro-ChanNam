@@ -87,6 +87,17 @@ exports.saveInitialReadings = async (req, res, next) => {
             message: "Đã lưu chỉ số ban đầu thành công",
             contract
         });
+
+        try {
+            await telegram.sendToLandlord({
+                landlordId: contract.room.landlordId,
+                buildingId: contract.room.buildingId,
+                text: `📦 Có phòng ${contract.room.room_number} là khách thuê mới, đã gửi chỉ số ban đầu và tiền phòng tháng đầu, chờ xác nhận.`,
+                url: `${FRONTEND_URL}/landlord/invoices`
+            });
+        } catch (e) {
+            console.error("Landlord Telegram failed:", e.message);
+        }
     } catch (error) {
         next(error);
     }
