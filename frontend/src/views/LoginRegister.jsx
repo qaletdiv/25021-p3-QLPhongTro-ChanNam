@@ -86,7 +86,7 @@ export default function LoginRegister() {
         {/* Tabs */}
         <Tabs value={tab} onChange={(_, v) => { setTab(v); setError(""); }} variant="fullWidth" sx={{ mt: 0 }}>
           <Tab label="Đăng nhập" />
-          <Tab label="Đăng ký" />
+          {role === "tenant" && <Tab label="Đăng ký" />}
         </Tabs>
 
         <Box sx={{ p: 3 }}>

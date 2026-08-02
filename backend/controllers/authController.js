@@ -5,6 +5,9 @@ const { User, Tenant, Companion } = require("../models");
 exports.register = async (req, res, next) => {
     try {
         const { name, email, phone, password, role, cccd, companions } = req.body;
+        if ((role || 'tenant') === 'landlord') {
+            return res.status(403).json({ message: "Không được phép tự đăng ký tài khoản chủ trọ" });
+        }
         const hashPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({ name, email, phone, password: hashPassword, role: role || 'tenant' });
 
