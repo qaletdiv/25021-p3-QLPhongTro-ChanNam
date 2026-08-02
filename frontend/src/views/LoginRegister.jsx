@@ -129,10 +129,6 @@ export default function LoginRegister() {
               </Button>
             </Box>
           )}
-
-          <Button fullWidth sx={{ mt: 2, fontSize: "0.75rem", color: "#64748b" }} onClick={() => router.push(`/login/${role === "landlord" ? "tenant" : "landlord"}`)}>
-            {role === "landlord" ? "Dành cho người thuê?" : "Dành cho chủ trọ?"}
-          </Button>
         </Box>
       </Paper>
     </Box>
