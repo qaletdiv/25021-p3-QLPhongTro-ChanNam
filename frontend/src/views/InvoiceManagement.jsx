@@ -97,7 +97,7 @@ export default function InvoiceManagement() {
 
       {/* Header */}
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Hóa Đơn & Thanh Toán</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 900 }}>Quản Lý Hóa Đơn & Thanh Toán</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
           Xem danh sách hóa đơn, xác nhận thu tiền, chốt chỉ số điện nước và xuất phiếu thu VietQR.
         </Typography>

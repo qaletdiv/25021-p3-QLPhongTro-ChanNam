@@ -127,7 +127,7 @@ export default function MeterInvoiceTab({
       {/* VietQR */}
       <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
         <Box sx={{ textAlign: "center" }}>
-          <Typography sx={{ fontSize: "1rem", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.025em" }}>Mã QR Thanh Toán VietQR</Typography>
+          <Typography sx={{ fontSize: "1rem", fontWeight: 900, color: "#0f172a" }}>Mã QR Thanh Toán VietQR</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5, fontWeight: 500 }}>
             Quét bằng ứng dụng Ngân hàng (MB, VCB, Techcombank...) để thanh toán ngay.
           </Typography>

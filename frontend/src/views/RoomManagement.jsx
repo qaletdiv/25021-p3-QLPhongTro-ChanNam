@@ -148,7 +148,7 @@ export default function RoomManagement() {
       {/* Header */}
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 2 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Danh Sách Phòng Trọ</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 900 }}>Quản Lý Danh Sách Phòng Trọ</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
             Theo dõi trạng thái phòng, doanh thu dự kiến và vật dụng bàn giao chi tiết.
           </Typography>

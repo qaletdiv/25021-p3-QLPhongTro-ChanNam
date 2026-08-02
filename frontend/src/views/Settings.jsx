@@ -68,7 +68,7 @@ export default function Settings() {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Cài Đặt Cấu Hình Hệ Thống Chung</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 900 }}>Cài Đặt Cấu Hình Hệ Thống Chung</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
           Cấu hình đơn giá tiện ích điện nước, tài khoản ngân hàng VietQR, token kết nối Telegram Bot và thông tin vận hành.
         </Typography>

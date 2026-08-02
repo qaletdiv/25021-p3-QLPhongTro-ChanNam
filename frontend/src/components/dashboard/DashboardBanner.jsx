@@ -22,7 +22,7 @@ export default function DashboardBanner({ onNavigate }) {
             size="small"
             sx={{ bgcolor: "rgba(59,130,246,0.2)", color: "#bfdbfe", fontWeight: 700, borderRadius: "9999px", border: "1px solid rgba(96,165,250,0.3)", fontSize: "0.6875rem", mb: 1.5 }}
           />
-          <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em", mb: 0.5, display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 900, mb: 0.5, display: "flex", alignItems: "center", gap: 1 }}>
             Tổng Quan Quản Lý Nhà Trọ
             <AutoAwesomeIcon sx={{ fontSize: 20, color: "#fcd34d" }} />
           </Typography>

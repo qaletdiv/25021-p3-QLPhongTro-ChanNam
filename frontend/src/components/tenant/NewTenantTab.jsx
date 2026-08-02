@@ -28,7 +28,7 @@ export default function NewTenantTab({ settings, roomPrice, roomNumber, onSaveMe
       {/* VietQR - Tiền phòng tháng đầu */}
       <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
         <Box sx={{ textAlign: "center" }}>
-          <Typography sx={{ fontSize: "1rem", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.025em" }}>
+          <Typography sx={{ fontSize: "1rem", fontWeight: 900, color: "#0f172a" }}>
             Mã QR Thanh Toán Tiền Phòng
           </Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5, fontWeight: 500 }}>

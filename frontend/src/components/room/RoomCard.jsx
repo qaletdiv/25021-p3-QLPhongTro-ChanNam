@@ -50,7 +50,7 @@ export default function RoomCard({ room, onOpenDetail, onOpenEdit, onDelete }) {
 
       {/* Room Number & Price */}
       <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: 2 }}>
-        <Typography sx={{ fontSize: "1.5rem", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.025em" }}>
+        <Typography sx={{ fontSize: "1.5rem", fontWeight: 900, color: "#0f172a" }}>
           Phòng {room.room_number}
         </Typography>
         <Typography sx={{ fontSize: "1.125rem", fontWeight: 800, color: "#2563eb" }}>

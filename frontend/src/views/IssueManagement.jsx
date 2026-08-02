@@ -44,7 +44,7 @@ export default function IssueManagement() {
   return (
     <Box>
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Báo Hỏng</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 900 }}>Quản Lý Báo Hỏng</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
           Các báo cáo hỏng hóc từ khách thuê được gửi đến chủ trọ.
         </Typography>

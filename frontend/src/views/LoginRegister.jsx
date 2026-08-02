@@ -75,7 +75,7 @@ export default function LoginRegister() {
           <Avatar sx={{ mx: "auto", mb: 1.5, bgcolor: "#2563eb", width: 52, height: 52, borderRadius: "14px" }}>
             <HomeIcon />
           </Avatar>
-          <Typography sx={{ fontWeight: 900, fontSize: "1.25rem", color: "#fff", letterSpacing: "-0.025em" }}>
+          <Typography sx={{ fontWeight: 900, fontSize: "1.25rem", color: "#fff" }}>
             SmartRent Manager
           </Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#93c5fd", mt: 0.5 }}>

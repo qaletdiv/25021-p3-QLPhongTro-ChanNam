@@ -61,7 +61,7 @@ export default function BuildingManagement() {
       {/* Header */}
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 2 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Nhà Trọ</Typography>
+          <Typography variant="h4" sx={{ fontWeight: 900 }}>Quản Lý Nhà Trọ</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
             Nhóm phòng theo từng nhà, mỗi nhà có thể cấu hình riêng và lọc báo cáo độc lập.
           </Typography>
@@ -84,7 +84,7 @@ export default function BuildingManagement() {
                 <ApartmentIcon sx={{ fontSize: 20 }} />
               </Box>
               <Box sx={{ minWidth: 0 }}>
-                <Typography sx={{ fontSize: "1.0625rem", fontWeight: 900, color: "#0f172a", letterSpacing: "-0.025em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.name}</Typography>
+                <Typography sx={{ fontSize: "1.0625rem", fontWeight: 900, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.name}</Typography>
                 <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.address || "Chưa có địa chỉ"}</Typography>
               </Box>
             </Box>
