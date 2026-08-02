@@ -10,5 +10,8 @@
     "mysql2": "^3.22.5",
     "pdfkit": "^0.19.1",
     "sequelize": "^6.37.8"
+  },
+  "scripts": {
+    "seed:landlord": "node scripts/createLandlord.js"
   }
 }
