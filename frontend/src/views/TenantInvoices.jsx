@@ -35,15 +35,8 @@ export default function TenantInvoices() {
       .then(([invRes, setRes]) => {
         setInvoices(invRes.data.invoices);
         setSettings(setRes.data);
-        const last = invRes.data.invoices[0];
-        const base = setRes.data.contract;
-        if (last) {
-          setElecVal(Number(last.electricityNew) || 0);
-          setWaterVal(Number(last.waterNew) || 0);
-        } else {
-          setElecVal(base ? Number(base.initialElectricity) || 0 : 0);
-          setWaterVal(base ? Number(base.initialWater) || 0 : 0);
-        }
+        setElecVal(0);
+        setWaterVal(0);
       })
       .catch(() => setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" }))
       .finally(() => setLoading(false));
@@ -129,8 +122,6 @@ export default function TenantInvoices() {
       setElecPhoto("");
       setWaterPhoto("");
       await loadData();
-      setElecVal(0);
-      setWaterVal(0);
     } catch (err) {
       setWarningMsg(err.response?.data?.message || "Gửi thất bại, vui lòng thử lại");
     } finally {
