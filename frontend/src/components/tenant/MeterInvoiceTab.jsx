@@ -56,14 +56,14 @@ export default function MeterInvoiceTab({
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
-              <TextField fullWidth size="small" type="number" value={elecVal} required
-                onChange={(e) => setElecVal(Number(e.target.value))}
-                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
               <Button component="label" variant="contained" sx={{ px: 2.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 1 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 Chụp / Upload ảnh
                 <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e, "electricity")} />
               </Button>
+              <TextField fullWidth size="small" type="number" value={elecVal} required
+                onChange={(e) => setElecVal(Number(e.target.value))}
+                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
             </Box>
             {elecPhoto && (
               <Typography sx={{ mt: 1, fontSize: "0.625rem", color: "#059669", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -85,14 +85,14 @@ export default function MeterInvoiceTab({
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1 }}>
-              <TextField fullWidth size="small" type="number" value={waterVal} required
-                onChange={(e) => setWaterVal(Number(e.target.value))}
-                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
               <Button component="label" variant="contained" sx={{ px: 2.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 1 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 Chụp / Upload ảnh
                 <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e, "water")} />
               </Button>
+              <TextField fullWidth size="small" type="number" value={waterVal} required
+                onChange={(e) => setWaterVal(Number(e.target.value))}
+                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
             </Box>
             {waterPhoto && (
               <Typography sx={{ mt: 1, fontSize: "0.625rem", color: "#059669", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.5 }}>
