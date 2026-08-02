@@ -18,6 +18,23 @@ const cardSx = {
   mb: 3,
 };
 
+// MUI v9 outlines a short input (height 1.4375em ~ 23px, padding 4px 0) which
+// pushes the floating label/placeholder to the bottom of an empty field.
+// Give the password fields a proper medium height + balanced padding so text
+// sits vertically centered instead of being pinned to the bottom border.
+const passwordFieldSx = {
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "12px",
+    minHeight: "48px",
+  },
+  "& .MuiOutlinedInput-input": {
+    padding: "12px 14px",
+    lineHeight: 1.5,
+    fontSize: "0.9375rem",
+    height: "24px",
+  },
+};
+
 export default function TenantProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -117,15 +134,15 @@ export default function TenantProfile() {
          <Grid container spacing={2}>
           <Grid size={4}>
             <TextField fullWidth label="Mật khẩu cũ" type="password" value={passwords.oldPassword} onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" }, "& .MuiOutlinedInput-input": { padding: "12px 14px", lineHeight: 1.5 } }} />
+              sx={passwordFieldSx} />
           </Grid>
           <Grid size={4}>
             <TextField fullWidth label="Mật khẩu mới" type="password" value={passwords.newPassword} onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" }, "& .MuiOutlinedInput-input": { padding: "12px 14px", lineHeight: 1.5 } }} />
+              sx={passwordFieldSx} />
           </Grid>
           <Grid size={4}>
             <TextField fullWidth label="Xác nhận mật khẩu" type="password" value={passwords.confirmPassword} onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" }, "& .MuiOutlinedInput-input": { padding: "12px 14px", lineHeight: 1.5 } }} />
+              sx={passwordFieldSx} />
           </Grid>
         </Grid>
         <Box sx={{ mt: 2, textAlign: "center" }}>
