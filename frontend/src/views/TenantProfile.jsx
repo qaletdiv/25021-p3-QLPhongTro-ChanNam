@@ -114,18 +114,18 @@ export default function TenantProfile() {
           <LockIcon sx={{ color: "#059669", fontSize: 20 }} />
           <Typography variant="h6" fontWeight="bold" color="#0f172a">Đổi mật khẩu</Typography>
         </Box>
-        <Grid container spacing={2}>
+         <Grid container spacing={2}>
           <Grid size={4}>
             <TextField fullWidth label="Mật khẩu cũ" type="password" value={passwords.oldPassword} onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" }, "& .MuiOutlinedInput-input": { padding: "12px 14px", lineHeight: 1.5 } }} />
           </Grid>
           <Grid size={4}>
             <TextField fullWidth label="Mật khẩu mới" type="password" value={passwords.newPassword} onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" }, "& .MuiOutlinedInput-input": { padding: "12px 14px", lineHeight: 1.5 } }} />
           </Grid>
           <Grid size={4}>
             <TextField fullWidth label="Xác nhận mật khẩu" type="password" value={passwords.confirmPassword} onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" }, "& .MuiOutlinedInput-input": { padding: "12px 14px", lineHeight: 1.5 } }} />
           </Grid>
         </Grid>
         <Box sx={{ mt: 2, textAlign: "center" }}>
