@@ -5,7 +5,7 @@ import { Box, Typography, CircularProgress, Dialog, DialogTitle, DialogContent, 
 import MessageDialog from "../components/MessageDialog";
 import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
 import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
-import InitialMeterForm from "../components/tenant/InitialMeterForm";
+import NewTenantTab from "../components/tenant/NewTenantTab";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
 import { nextMonthLabel, formatCurrency } from "../utils/format";
@@ -142,7 +142,12 @@ export default function TenantInvoices() {
       </Box>
 
       {isNewTenant ? (
-        <InitialMeterForm roomNumber={baseContract?.room?.room_number} onSaved={handleSaveInitial} />
+        <NewTenantTab
+          settings={settings}
+          roomPrice={roomPrice}
+          roomNumber={baseContract?.room?.room_number}
+          onSaveMeter={handleSaveInitial}
+        />
       ) : (
         <MeterInvoiceTab
           contract={contract} settings={settings} monthStr={nextMonthLabel()}
