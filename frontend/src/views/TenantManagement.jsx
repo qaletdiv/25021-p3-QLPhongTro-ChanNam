@@ -11,19 +11,25 @@ import TenantManagementHeader from "../components/tenant/TenantManagementHeader"
 import TenantManagementFilter from "../components/tenant/TenantManagementFilter";
 import contractTemplateApi from "../api/contractTemplateApi";
 import useTenantList from "../hooks/useTenantList";
+import useContractFormState from "../hooks/useContractFormState";
+import useTenantEditor from "../hooks/useTenantEditor";
 import useContractEditor from "../hooks/useContractEditor";
+import useCheckout from "../hooks/useCheckout";
 
 export default function TenantManagement() {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const notify = useCallback((message, severity = "success") => setSnack({ open: true, message, severity }), []);
 
   const list = useTenantList({ notify });
-  const editor = useContractEditor({ notify, fetchTenants: list.fetchTenants });
+  const formState = useContractFormState();
+  const tenantEditor = useTenantEditor({ notify, fetchTenants: list.fetchTenants, formState });
+  const contractEditor = useContractEditor({ notify, fetchTenants: list.fetchTenants, formState });
+  const checkout = useCheckout({ notify, fetchTenants: list.fetchTenants });
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
-      <TenantManagementHeader onCreateContract={editor.openCreateContract} />
+      <TenantManagementHeader onCreateContract={contractEditor.openCreateContract} />
 
       {/* Filter Panel */}
       <TenantManagementFilter
@@ -40,44 +46,44 @@ export default function TenantManagement() {
       {list.loading ? <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box> : (
         <TenantTable
           tenants={list.filteredTenants}
-          onEdit={editor.openEdit}
-          onCheckout={editor.openCheckoutConfirm}
+          onEdit={tenantEditor.openEdit}
+          onCheckout={checkout.openCheckoutConfirm}
           onPrint={(id) => window.open(contractTemplateApi.getPdfUrl(id), "_blank")}
         />
       )}
 
       <ContractModal
-        open={editor.openContract}
-        editContractId={editor.editContractId}
+        open={formState.openContract}
+        editContractId={formState.editContractId}
         tenants={list.tenants}
-        emptyRooms={editor.emptyRooms}
-        contractForm={editor.contractForm} setContractForm={editor.setContractForm}
-        companionFingerprints={editor.companionFingerprints} setCompanionFingerprints={editor.setCompanionFingerprints}
-        furnitureList={editor.furnitureList} selectedFurnitures={editor.selectedFurnitures} setSelectedFurnitures={editor.setSelectedFurnitures}
-        paymentDayManuallyChanged={editor.paymentDayManuallyChanged}
-        contractLoading={editor.contractLoading}
-        onClose={() => editor.setOpenContract(false)}
-        onSave={editor.handleSaveContract}
+        emptyRooms={formState.emptyRooms}
+        contractForm={formState.contractForm} setContractForm={formState.setContractForm}
+        companionFingerprints={formState.companionFingerprints} setCompanionFingerprints={formState.setCompanionFingerprints}
+        furnitureList={formState.furnitureList} selectedFurnitures={formState.selectedFurnitures} setSelectedFurnitures={formState.setSelectedFurnitures}
+        paymentDayManuallyChanged={formState.paymentDayManuallyChanged}
+        contractLoading={formState.contractLoading}
+        onClose={() => formState.setOpenContract(false)}
+        onSave={contractEditor.handleSaveContract}
       />
 
       <TenantEditModal
-        editTenantId={editor.editTenantId} editContractId={editor.editContractId}
+        editTenantId={tenantEditor.editTenantId} editContractId={formState.editContractId}
         tenants={list.tenants}
-        tenantForm={editor.tenantForm} setTenantForm={editor.setTenantForm}
-        emptyRooms={editor.emptyRooms} contractForm={editor.contractForm} setContractForm={editor.setContractForm}
-        companionFingerprints={editor.companionFingerprints} setCompanionFingerprints={editor.setCompanionFingerprints}
-        furnitureList={editor.furnitureList} selectedFurnitures={editor.selectedFurnitures} setSelectedFurnitures={editor.setSelectedFurnitures}
-        paymentDayManuallyChanged={editor.paymentDayManuallyChanged}
-        contractLoading={editor.contractLoading}
-        openContract={editor.openContract}
-        onClose={() => editor.setEditTenantId(null)}
-        onSave={editor.handleSaveAll}
+        tenantForm={tenantEditor.tenantForm} setTenantForm={tenantEditor.setTenantForm}
+        emptyRooms={formState.emptyRooms} contractForm={formState.contractForm} setContractForm={formState.setContractForm}
+        companionFingerprints={formState.companionFingerprints} setCompanionFingerprints={formState.setCompanionFingerprints}
+        furnitureList={formState.furnitureList} selectedFurnitures={formState.selectedFurnitures} setSelectedFurnitures={formState.setSelectedFurnitures}
+        paymentDayManuallyChanged={formState.paymentDayManuallyChanged}
+        contractLoading={formState.contractLoading}
+        openContract={formState.openContract}
+        onClose={() => tenantEditor.setEditTenantId(null)}
+        onSave={tenantEditor.handleSaveAll}
       />
 
       <CheckoutConfirmModal
-        checkoutConfirm={editor.checkoutConfirm}
-        onClose={() => editor.setCheckoutConfirm(null)}
-        onConfirm={editor.handleCheckoutConfirm}
+        checkoutConfirm={checkout.checkoutConfirm}
+        onClose={() => checkout.setCheckoutConfirm(null)}
+        onConfirm={checkout.handleCheckoutConfirm}
       />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
