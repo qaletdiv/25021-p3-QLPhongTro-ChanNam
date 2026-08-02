@@ -41,7 +41,7 @@ exports.sendToLandlord = async ({ landlordId, buildingId, text, url }) => {
     const settings = await getResolvedSettings(landlordId, buildingId || null);
     const chatId = settings.landlordTelegramId;
     if (!chatId) throw new Error("Chua cau hinh Telegram ID cho chu tro");
-    const link = url ? `\n🔗 Xem ngay: <a href="${escapeHtml(url)}">${escapeHtml(url)}</a>` : "";
+    const link = url ? `\n🔗 <a href="${escapeHtml(url)}">${escapeHtml(url)}</a>` : "";
     return exports.sendMessage({ landlordId, buildingId, chatId, text: `${escapeHtml(text)}${link}`, parseMode: "HTML" });
 };
 
