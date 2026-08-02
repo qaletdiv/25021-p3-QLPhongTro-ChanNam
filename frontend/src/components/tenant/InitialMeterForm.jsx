@@ -19,38 +19,20 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
   const [water, setWater] = useState("");
   const [elecPreview, setElecPreview] = useState("");
   const [waterPreview, setWaterPreview] = useState("");
-  const [ocrLoading, setOcrLoading] = useState("");
-  const [ocrMsg, setOcrMsg] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const handleFile = async (e, type) => {
+  const handlePhoto = async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const resized = await resizeImage(file);
-    if (type === "elec") setElecPreview(resized);
-    else setWaterPreview(resized);
-
-    setOcrLoading(type);
-    setOcrMsg("");
     try {
-      const res = await fetch("/api/ocr-meter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: resized, meterType: type === "elec" ? "electricity" : "water" }),
-      });
-      const d = await res.json();
-      if (d?.reading) {
-        if (type === "elec") setElec(String(d.reading));
-        else setWater(String(d.reading));
-        setOcrMsg(`✓ Đã nhận diện chỉ số: ${d.reading}`);
-      } else {
-        setOcrMsg(`Không nhận diện được (${d?.message || "OCR không đọc được"})`);
-      }
+      const resized = await resizeImage(file);
+      if (type === "elec") setElecPreview(resized);
+      else setWaterPreview(resized);
     } catch {
-      setOcrMsg("Lỗi nhận diện, vui lòng nhập tay");
+      setError("Không đọc được ảnh, vui lòng thử lại.");
     } finally {
-      setOcrLoading("");
+      e.target.value = "";
     }
   };
 
@@ -74,23 +56,14 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
     }
   };
 
-  const photoBox = (preview, label, onPick, type) => (
+  const photoBox = (preview, label, onPick) => (
     <Box sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
       <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1.5 }}>{label}</Typography>
       {preview ? (
-        <Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Box component="img" src={preview} alt={label}
-              sx={{ width: 88, height: 88, objectFit: "cover", borderRadius: "12px", border: "1px solid #e2e8f0" }} />
-            {ocrLoading === type ? (
-              <Typography sx={{ fontSize: "0.6875rem", color: "#2563eb", fontWeight: 700 }}>⏳ Đang nhận diện OCR...</Typography>
-            ) : (
-              <CheckCircleIcon sx={{ color: "#059669", fontSize: 20 }} />
-            )}
-          </Box>
-          {!ocrLoading && ocrMsg && (
-            <Typography sx={{ fontSize: "0.6875rem", color: "#065f46", fontWeight: 600, mt: 1 }}>{ocrMsg}</Typography>
-          )}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Box component="img" src={preview} alt={label}
+            sx={{ width: 88, height: 88, objectFit: "cover", borderRadius: "12px", border: "1px solid #e2e8f0" }} />
+          <CheckCircleIcon sx={{ color: "#059669", fontSize: 20 }} />
         </Box>
       ) : (
         <Button component="label" variant="outlined" startIcon={<CameraAltIcon />} fullWidth
@@ -126,8 +99,8 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
         </Box>
 
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 2 }}>
-          {photoBox(elecPreview, "Ảnh đồng hồ điện", (e) => handleFile(e, "elec"), "elec")}
-          {photoBox(waterPreview, "Ảnh đồng hồ nước", (e) => handleFile(e, "water"), "water")}
+          {photoBox(elecPreview, "Ảnh đồng hồ điện", (e) => handlePhoto(e, "elec"))}
+          {photoBox(waterPreview, "Ảnh đồng hồ nước", (e) => handlePhoto(e, "water"))}
         </Box>
 
         {error && (

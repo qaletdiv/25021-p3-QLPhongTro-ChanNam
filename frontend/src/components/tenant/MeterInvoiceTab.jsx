@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography, Chip, TextField, Paper, Button } from "@mui/material";
+import { Box, Typography, TextField, Paper, Button } from "@mui/material";
 import { VietQR } from "@viet-qr/react";
 import { formatCurrency } from "../../utils/format";
 import { resolveBankInfo } from "../../utils/vietqr";
@@ -8,10 +8,10 @@ import { resolveBankInfo } from "../../utils/vietqr";
 export default function MeterInvoiceTab({
   contract, settings, monthStr,
   elecVal, setElecVal, waterVal, setWaterVal,
-  ocrLoading, ocrSuccessMsg, warningMsg, submitSuccess,
+  warningMsg, submitSuccess,
   calcElecUsage, calcWaterUsage, calcElecAmount, calcWaterAmount, calcTotal,
   electricityRate, waterRate, roomPrice,
-  handleOcrUpload, handleMeterSubmit,
+  handlePhotoUpload, handleMeterSubmit,
   getVietQRContent,
   submitting, elecPhoto, waterPhoto,
 }) {
@@ -28,16 +28,8 @@ export default function MeterInvoiceTab({
               Nhập Chỉ Số Điện & Nước Tháng {monthStr}
             </Typography>
           </Box>
-          <Chip label="AI Vision OCR" size="small"
-            sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #bfdbfe" }} />
         </Box>
 
-        {ocrSuccessMsg && (
-          <Box sx={{ p: 2, bgcolor: "#eff6ff", color: "#1e40af", fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", border: "1px solid #bfdbfe", mb: 2, display: "flex", alignItems: "center", gap: 1.5 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span>{ocrSuccessMsg}</span>
-          </Box>
-        )}
         {warningMsg && (
           <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", border: "1px solid #fde68a", mb: 2, display: "flex", alignItems: "center", gap: 1.5 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -69,8 +61,8 @@ export default function MeterInvoiceTab({
                 sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
               <Button component="label" variant="contained" sx={{ px: 2.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 1 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                {ocrLoading ? "Đang đọc..." : "Chụp Ảnh OCR"}
-                <input type="file" accept="image/*" hidden onChange={(e) => handleOcrUpload(e, "electricity")} />
+                Chụp / Upload ảnh
+                <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e, "electricity")} />
               </Button>
             </Box>
             {elecPhoto && (
@@ -98,8 +90,8 @@ export default function MeterInvoiceTab({
                 sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
               <Button component="label" variant="contained" sx={{ px: 2.5, py: 1, fontSize: "0.6875rem", fontWeight: 700, borderRadius: "10px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 1 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                {ocrLoading ? "Đang đọc..." : "Chụp Ảnh OCR"}
-                <input type="file" accept="image/*" hidden onChange={(e) => handleOcrUpload(e, "water")} />
+                Chụp / Upload ảnh
+                <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e, "water")} />
               </Button>
             </Box>
             {waterPhoto && (

@@ -18,8 +18,6 @@ export default function TenantInvoices() {
 
   const [elecVal, setElecVal] = useState(0);
   const [waterVal, setWaterVal] = useState(0);
-  const [ocrLoading, setOcrLoading] = useState(false);
-  const [ocrSuccessMsg, setOcrSuccessMsg] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [warningMsg, setWarningMsg] = useState("");
   const [elecPhoto, setElecPhoto] = useState("");
@@ -65,33 +63,18 @@ export default function TenantInvoices() {
   const calcWaterAmount = calcWaterUsage * waterRate;
   const calcTotal = roomPrice + calcElecAmount + calcWaterAmount + serviceFee;
 
-  const handleOcrUpload = async (e, type) => {
+  const handlePhotoUpload = async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setOcrLoading(true);
-    setOcrSuccessMsg("");
-    setWarningMsg("");
     try {
       const resized = await resizeImage(file);
       if (type === "electricity") setElecPhoto(resized);
       else setWaterPhoto(resized);
-      const res = await fetch("/api/ocr-meter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: resized, meterType: type }),
-      });
-      const d = await res.json();
-      if (d?.reading) {
-        const val = Number(d.reading);
-        if (type === "electricity") { setElecVal(val); setOcrSuccessMsg(`Đã đọc chỉ số điện: ${val} kWh`); }
-        else { setWaterVal(val); setOcrSuccessMsg(`Đã đọc chỉ số nước: ${val} m³`); }
-      } else {
-        setWarningMsg(type === "electricity" ? "Không đọc được chỉ số điện, vui lòng nhập tay" : "Không đọc được chỉ số nước, vui lòng nhập tay");
-      }
     } catch {
-      if (type === "electricity") { setElecVal(1380); setOcrSuccessMsg("Đã nhận diện chỉ số điện: 1380 kWh"); }
-      else { setWaterVal(222); setOcrSuccessMsg("Đã nhận diện chỉ số nước: 222 m³"); }
-    } finally { setOcrLoading(false); }
+      setWarningMsg("Không đọc được ảnh, vui lòng thử lại");
+    } finally {
+      e.target.value = "";
+    }
   };
 
   const handleMeterSubmit = async (e) => {
@@ -154,11 +137,11 @@ export default function TenantInvoices() {
         <MeterInvoiceTab
           contract={contract} settings={settings} monthStr={nextMonthLabel()}
           elecVal={elecVal} setElecVal={setElecVal} waterVal={waterVal} setWaterVal={setWaterVal}
-          ocrLoading={ocrLoading} ocrSuccessMsg={ocrSuccessMsg} warningMsg={warningMsg} submitSuccess={submitSuccess}
+          warningMsg={warningMsg} submitSuccess={submitSuccess}
           calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
           calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
           electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
-          handleOcrUpload={handleOcrUpload} handleMeterSubmit={handleMeterSubmit}
+          handlePhotoUpload={handlePhotoUpload} handleMeterSubmit={handleMeterSubmit}
           getVietQRContent={getVietQRContent}
           submitting={submitting} elecPhoto={elecPhoto} waterPhoto={waterPhoto}
         />
