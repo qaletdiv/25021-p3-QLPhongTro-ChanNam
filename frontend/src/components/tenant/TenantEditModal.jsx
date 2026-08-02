@@ -3,6 +3,7 @@
 import { Box, Typography, TextField, CircularProgress, Grid, Autocomplete, Chip } from "@mui/material";
 import ModalShell from "../ui/ModalShell";
 import DateField from "../ui/DateField";
+import MoneyField from "../ui/MoneyField";
 import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
 
@@ -54,11 +55,11 @@ export default function TenantEditModal({
             </Box>
             <Grid container spacing={1.5}>
               <Grid size={6}>
-                <TextField fullWidth size="small" label="Giá thuê (VND/tháng)" type="number" value={contractForm.price || ""} onChange={(e) => setContractForm({ ...contractForm, price: e.target.value })} required
+                <MoneyField fullWidth size="small" label="Giá thuê (VND/tháng)" value={contractForm.price || ""} onChange={(v) => setContractForm({ ...contractForm, price: v })} required
                   sx={inputSx} />
               </Grid>
               <Grid size={6}>
-                <TextField fullWidth size="small" label="Tiền cọc (VND)" type="number" value={contractForm.deposit} onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })} required
+                <MoneyField fullWidth size="small" label="Tiền cọc (VND)" value={contractForm.deposit} onChange={(v) => setContractForm({ ...contractForm, deposit: v })} required
                   sx={inputSx} />
               </Grid>
               <Grid size={6}>

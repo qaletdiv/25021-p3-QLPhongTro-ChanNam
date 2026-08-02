@@ -12,6 +12,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import MessageDialog from "../components/MessageDialog";
+import MoneyField from "../components/ui/MoneyField";
 import settingApi from "../api/settingApi";
 import buildingApi from "../api/buildingApi";
 
@@ -109,15 +110,15 @@ export default function Settings() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Điện (đ/kWh)</Typography>
-              <TextField fullWidth type="number" value={form.electricityRate || ""} onChange={(e) => set("electricityRate", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+              <MoneyField fullWidth value={form.electricityRate || ""} onChange={(v) => set("electricityRate", v)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Nước (đ/m³)</Typography>
-              <TextField fullWidth type="number" value={form.waterRate || ""} onChange={(e) => set("waterRate", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+              <MoneyField fullWidth value={form.waterRate || ""} onChange={(v) => set("waterRate", v)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phí Dịch Vụ & Rác (đ/tháng)</Typography>
-              <TextField fullWidth type="number" value={form.serviceFee || ""} onChange={(e) => set("serviceFee", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+              <MoneyField fullWidth value={form.serviceFee || ""} onChange={(v) => set("serviceFee", v)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
           </Box>
         </Box>

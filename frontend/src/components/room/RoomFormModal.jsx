@@ -4,6 +4,7 @@ import { Box, Typography, TextField, MenuItem, InputAdornment } from "@mui/mater
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import ModalShell from "../ui/ModalShell";
+import MoneyField from "../ui/MoneyField";
 import { inputSx } from "../../utils/styles";
 
 export default function RoomFormModal({ open, editRoom, form, setForm, buildings, onClose, onSave }) {
@@ -64,8 +65,8 @@ export default function RoomFormModal({ open, editRoom, form, setForm, buildings
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng)</Typography>
-              <TextField fullWidth size="small" type="number" value={form.price}
-                onChange={set("price")}
+              <MoneyField fullWidth size="small" value={form.price}
+                onChange={(v) => set("price", v)}
                 sx={inputSx} />
             </Box>
             <Box>

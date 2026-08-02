@@ -4,6 +4,7 @@ import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocompl
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import ModalShell from "../ui/ModalShell";
 import DateField from "../ui/DateField";
+import MoneyField from "../ui/MoneyField";
 import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
 
@@ -93,19 +94,19 @@ export default function ContractModal({
           <Grid container spacing={1.5}>
             <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng)</Typography>
-              <TextField
-                fullWidth size="small" type="number"
+              <MoneyField
+                fullWidth size="small"
                 value={contractForm.price || ""}
-                onChange={(e) => setContractForm({ ...contractForm, price: e.target.value })}
+                onChange={(v) => setContractForm({ ...contractForm, price: v })}
                 sx={inputSx}
               />
             </Grid>
             <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tiền Cọc (VND)</Typography>
-              <TextField
-                fullWidth size="small" type="number"
+              <MoneyField
+                fullWidth size="small"
                 value={contractForm.deposit}
-                onChange={(e) => setContractForm({ ...contractForm, deposit: e.target.value })}
+                onChange={(v) => setContractForm({ ...contractForm, deposit: v })}
                 sx={inputSx}
               />
             </Grid>
