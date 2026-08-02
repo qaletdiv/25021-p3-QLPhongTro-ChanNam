@@ -2,49 +2,34 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, TextField, Button, MenuItem, InputAdornment, Checkbox, FormControlLabel,
+  Box, Typography, TextField, Button, Checkbox, FormControlLabel,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import BoltIcon from "@mui/icons-material/Bolt";
 import MessageIcon from "@mui/icons-material/Message";
 import PersonIcon from "@mui/icons-material/Person";
-import ApartmentIcon from "@mui/icons-material/Apartment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import MessageDialog from "../components/MessageDialog";
 import settingApi from "../api/settingApi";
-import buildingApi from "../api/buildingApi";
 
 export default function Settings() {
   const [form, setForm] = useState({});
-  const [buildings, setBuildings] = useState([]);
-  const [buildingId, setBuildingId] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [checkMsg, setCheckMsg] = useState(null);
 
   useEffect(() => {
-    buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
-    loadSettings("");
+    settingApi.getAll().then((res) => setForm(res.data.settings || {})).catch(() => {});
   }, []);
-
-  const loadSettings = (bid) => {
-    settingApi.getAll(bid).then((res) => setForm(res.data.settings || {})).catch(() => {});
-  };
-
-  const handleBuildingChange = (bid) => {
-    setBuildingId(bid);
-    setSavedMsg("");
-    loadSettings(bid);
-  };
 
   const set = (key, value) => setForm({ ...form, [key]: value });
 
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      await settingApi.save(form, buildingId);
-      setSavedMsg(buildingId ? "Cấu hình riêng cho nhà trọ đã được lưu thành công!" : "Cấu hình chung hệ thống đã được lưu cập nhật thành công!");
+      await settingApi.save(form);
+      setSavedMsg("Cấu hình chung hệ thống đã được lưu cập nhật thành công!");
       setTimeout(() => setSavedMsg(""), 4000);
     } catch {
       setSnack({ open: true, message: "Lỗi lưu cài đặt", severity: "error" });
@@ -53,8 +38,8 @@ export default function Settings() {
 
   const handleTestTelegram = async () => {
     try {
-      await settingApi.save(form, buildingId);
-      const res = await settingApi.checkTelegram(buildingId);
+      await settingApi.save(form);
+      const res = await settingApi.checkTelegram();
       setCheckMsg({ ok: res.data.ok, message: res.data.message || "Kiểm tra không xác định" });
     } catch {
       setCheckMsg({ ok: false, message: "Lỗi kết nối đến máy chủ" });
@@ -71,25 +56,6 @@ export default function Settings() {
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
           Cấu hình đơn giá tiện ích điện nước, tài khoản ngân hàng VietQR, token kết nối Telegram Bot và thông tin vận hành.
         </Typography>
-      </Box>
-
-      {/* Building scope selector */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-        <TextField
-          select size="small" value={buildingId} onChange={(e) => handleBuildingChange(e.target.value)}
-          slotProps={{ input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) } }}
-          sx={{ minWidth: 320, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
-        >
-          <MenuItem value="">Mặc định (áp dụng cho tất cả nhà)</MenuItem>
-          {buildings.map((b) => (
-            <MenuItem key={b.id} value={String(b.id)}>Cấu hình riêng: {b.name}</MenuItem>
-          ))}
-        </TextField>
-        {buildingId && (
-          <Typography sx={{ fontSize: "0.6875rem", color: "#d97706", fontWeight: 600 }}>
-            Đang chỉnh cấu hình riêng cho nhà này, sẽ ghi đè cấu hình mặc định.
-          </Typography>
-        )}
       </Box>
 
       {savedMsg && (
