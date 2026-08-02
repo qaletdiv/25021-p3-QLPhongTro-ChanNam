@@ -3,6 +3,9 @@ const cloudinary = require("../config/cloudinary");
 const { getResolvedSettings } = require("../utils/settings");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const { monthStr } = require("../utils/dates");
+const telegram = require("../utils/telegram");
+
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 exports.getInvoices = async (req, res, next) => {
     try {
@@ -173,6 +176,17 @@ exports.submitMeter = async (req, res, next) => {
         });
 
         res.json({ message: "Da gui chi so va chot hoa don thanh cong", invoice });
+
+        try {
+            await telegram.sendToLandlord({
+                landlordId: contract.room.landlordId,
+                buildingId: contract.room.buildingId,
+                text: `🧾 Hóa đơn mới chờ xử lý\nPhòng ${contract.room.room_number} tháng ${month}: ${Math.round(total).toLocaleString("vi-VN")}₫`,
+                url: `${FRONTEND_URL}/landlord/invoices`
+            });
+        } catch (e) {
+            console.error("Landlord Telegram failed:", e.message);
+        }
     } catch (error) {
         next(error);
     }

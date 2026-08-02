@@ -203,6 +203,13 @@ export default function Settings() {
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại Liên Hệ</Typography>
               <TextField fullWidth value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Telegram ID Chủ Trọ</Typography>
+              <TextField fullWidth value={form.landlordTelegramId || ""} onChange={(e) => set("landlordTelegramId", e.target.value)} placeholder="Ví dụ: 667203953" sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+              <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.75 }}>
+                Chủ trọ sẽ nhận thông báo báo hỏng & hóa đơn mới qua Telegram kèm link xem chi tiết.
+              </Typography>
+            </Box>
           </Box>
         </Box>
 

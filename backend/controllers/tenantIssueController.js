@@ -1,5 +1,8 @@
-const { Issue } = require("../models");
+const { Issue, Room } = require("../models");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
+const telegram = require("../utils/telegram");
+
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 exports.getIssues = async (req, res, next) => {
     try {
@@ -33,6 +36,21 @@ exports.createIssue = async (req, res, next) => {
             description,
             images: images ? JSON.stringify(images) : null
         });
+
+        const room = await Room.findByPk(contract.roomId);
+        if (room && room.landlordId) {
+            try {
+                await telegram.sendToLandlord({
+                    landlordId: room.landlordId,
+                    buildingId: room.buildingId,
+                    text: `🚨 Báo hỏng mới\nKhách ${tenant.name} (Phòng ${room.room_number}): ${title}${description ? `\n${description}` : ""}`,
+                    url: `${FRONTEND_URL}/landlord/issues`
+                });
+            } catch (e) {
+                console.error("Landlord Telegram failed:", e.message);
+            }
+        }
+
         res.status(201).json({ message: "Gui bao cao thanh cong", issue });
     } catch (error) {
         next(error);

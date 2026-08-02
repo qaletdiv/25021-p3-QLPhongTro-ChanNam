@@ -33,6 +33,14 @@ exports.sendMessage = async ({ landlordId, buildingId, chatId, text }) => {
     return data;
 };
 
+exports.sendToLandlord = async ({ landlordId, buildingId, text, url }) => {
+    const settings = await getResolvedSettings(landlordId, buildingId || null);
+    const chatId = settings.landlordTelegramId;
+    if (!chatId) throw new Error("Chua cau hinh Telegram ID cho chu tro");
+    const link = url ? `\n🔗 Xem ngay: ${url}` : "";
+    return exports.sendMessage({ landlordId, buildingId, chatId, text: `${text}${link}` });
+};
+
 exports.formatMessage = (template, context) => {
     const vars = {
         "TENKHACH": context.tenantName || "",
