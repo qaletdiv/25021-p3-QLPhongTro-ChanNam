@@ -1,4 +1,4 @@
-const { Invoice, Contract, Tenant, Room } = require("../models");
+const { Invoice, Contract, Tenant, Room, Building } = require("../models");
 const cloudinary = require("../config/cloudinary");
 const { getResolvedSettings } = require("../utils/settings");
 
@@ -28,16 +28,14 @@ exports.getSettings = async (req, res, next) => {
 
         const contract = await Contract.findOne({
             where: { tenantId: tenant.id, status: 'active' },
-            include: [{ model: Room, as: "room", include: [{ model: require("../models").Building, as: "building", attributes: ["id", "name", "address"] }] }]
+            include: [{ model: Room, as: "room", include: [{ model: Building, as: "building", attributes: ["id", "name", "address"] }] }]
         });
         if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
 
         const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
-        const result = {};
-        Object.entries(settings).forEach(([k, v]) => { result[k] = v; });
 
         res.json({
-            settings: result,
+            settings,
             roomPrice: contract.room.price,
             room: contract.room,
             contract
@@ -114,8 +112,6 @@ exports.submitMeter = async (req, res, next) => {
         });
         if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
 
-        const { Setting, Invoice } = require("../models");
-
         const now = new Date();
         const monthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
         const month = `${String(monthDate.getMonth() + 1).padStart(2, "0")}/${monthDate.getFullYear()}`;
@@ -125,11 +121,9 @@ exports.submitMeter = async (req, res, next) => {
         }
 
         const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
-        const s = {};
-        Object.entries(settings).forEach(([k, v]) => { s[k] = v; });
-        const elecRate = Number(s.electricityRate) || 3500;
-        const waterRate = Number(s.waterRate) || 15000;
-        const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
+        const elecRate = Number(settings.electricityRate) || 3500;
+        const waterRate = Number(settings.waterRate) || 15000;
+        const serviceFee = settings.serviceFee !== undefined && settings.serviceFee !== "" ? Number(settings.serviceFee) || 0 : 0;
         const roomPrice = Number(contract.room.price) || 0;
 
         const lastInvoice = await Invoice.findOne({

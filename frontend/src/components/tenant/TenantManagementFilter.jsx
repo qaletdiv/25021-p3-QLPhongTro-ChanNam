@@ -1,6 +1,5 @@
 import { Box, Paper, Typography, TextField, Select, MenuItem, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 export default function TenantManagementFilter({ statusFilter, search, dateFrom, dateTo, onChange }) {
   return (

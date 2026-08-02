@@ -68,7 +68,6 @@ export default function TenantManagement() {
 
       <TenantEditModal
         editTenantId={tenantEditor.editTenantId} editContractId={formState.editContractId}
-        tenants={list.tenants}
         tenantForm={tenantEditor.tenantForm} setTenantForm={tenantEditor.setTenantForm}
         emptyRooms={formState.emptyRooms} contractForm={formState.contractForm} setContractForm={formState.setContractForm}
         companionFingerprints={formState.companionFingerprints} setCompanionFingerprints={formState.setCompanionFingerprints}

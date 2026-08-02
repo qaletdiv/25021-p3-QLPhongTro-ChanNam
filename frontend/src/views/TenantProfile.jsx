@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, TextField, Button, Paper, Grid, CircularProgress, Divider,
+  Box, Typography, TextField, Button, Paper, Grid, CircularProgress,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";

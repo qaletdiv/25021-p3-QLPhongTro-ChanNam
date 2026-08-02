@@ -1,4 +1,3 @@
-const { Op } = require("sequelize");
 const { Invoice, Contract, Room, Tenant, Building } = require("../models");
 const telegram = require("../utils/telegram");
 

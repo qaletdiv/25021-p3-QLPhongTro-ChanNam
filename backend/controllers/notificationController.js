@@ -43,7 +43,7 @@ exports.createNotification = async (req, res, next) => {
 
         const notification = await Notification.create({
             title, content, targetType,
-            targetRoomIds: targetRoomIds ? JSON.stringify((targetRoomIds || []).map(String)) : null,
+            targetRoomIds: targetRoomIds ? JSON.stringify(targetRoomIds.map(String)) : null,
             sentAt: new Date(),
             recipientCount: activeContracts.length,
             status: 'sent',

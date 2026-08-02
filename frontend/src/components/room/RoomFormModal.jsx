@@ -23,39 +23,30 @@ export default function RoomFormModal({ open, editRoom, form, setForm, buildings
       }
       body={
         <Box sx={{ p: 3, display: "flex", flexDirection: "column", gap: 2.5 }}>
-           {buildings && buildings.length > 0 ? (
-             <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
-               <Box>
-                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Thuộc Nhà Trọ</Typography>
-                 <TextField
-                   select fullWidth size="small" value={form.buildingId || ""}
-                   onChange={set("buildingId")}
-                   slotProps={{
-                     input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
-                   }}
-                   sx={inputSx}
-                 >
-                   <MenuItem value="">Chưa thuộc nhà nào</MenuItem>
-                   {buildings.map((b) => (
-                     <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
-                   ))}
-                 </TextField>
-               </Box>
-               <Box>
-                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số / Tên Phòng *</Typography>
-                 <TextField fullWidth size="small" placeholder="Ví dụ: 301" value={form.room_number}
-                   onChange={set("room_number")}
-                   sx={inputSx} />
-               </Box>
-             </Box>
-           ) : (
+           {buildings && buildings.length > 0 && (
              <Box>
-               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số / Tên Phòng *</Typography>
-               <TextField fullWidth size="small" placeholder="Ví dụ: 301" value={form.room_number}
-                 onChange={set("room_number")}
-                 sx={inputSx} />
+               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Thuộc Nhà Trọ</Typography>
+               <TextField
+                 select fullWidth size="small" value={form.buildingId || ""}
+                 onChange={set("buildingId")}
+                 slotProps={{
+                   input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) },
+                 }}
+                 sx={inputSx}
+               >
+                 <MenuItem value="">Chưa thuộc nhà nào</MenuItem>
+                 {buildings.map((b) => (
+                   <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+                 ))}
+               </TextField>
              </Box>
            )}
+           <Box>
+             <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số / Tên Phòng *</Typography>
+             <TextField fullWidth size="small" placeholder="Ví dụ: 301" value={form.room_number}
+               onChange={set("room_number")}
+               sx={inputSx} />
+           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tầng</Typography>

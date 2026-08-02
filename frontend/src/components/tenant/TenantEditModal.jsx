@@ -1,12 +1,12 @@
 "use client";
 
-import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocomplete, Chip } from "@mui/material";
+import { Box, Typography, TextField, CircularProgress, Grid, Autocomplete, Chip } from "@mui/material";
 import ModalShell from "../ui/ModalShell";
 import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
 
 export default function TenantEditModal({
-  editTenantId, editContractId, tenants, tenantForm, setTenantForm,
+  editTenantId, editContractId, tenantForm, setTenantForm,
   emptyRooms, contractForm, setContractForm,
   companionFingerprints, setCompanionFingerprints,
   furnitureList, selectedFurnitures, setSelectedFurnitures,
@@ -15,28 +15,14 @@ export default function TenantEditModal({
   if (!editTenantId || openContract) return null;
 
   return (
-    <ModalShell open={!!editTenantId && !openContract} onClose={onClose} maxWidth={editContractId ? 640 : 420}
+    <ModalShell open maxWidth={editContractId ? 640 : 420}
       header={
         <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
-          {editTenantId ? "Sửa Thông Tin" : "Thêm Khách Thuê Mới"}
+          Sửa Thông Tin
         </Typography>
       }
       body={
         <Box sx={{ p: 3, overflow: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
-          {!editTenantId && (
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn từ danh sách</Typography>
-              <Autocomplete
-                fullWidth size="small" disableClearable
-                options={tenants}
-                getOptionLabel={(t) => `${t.name} - ${t.phone}`}
-                onChange={(e, t) => {
-                  if (t) setTenantForm({ name: t.name, phone: t.phone, cccd: t.cccd || "" });
-                }}
-                renderInput={(params) => <TextField {...params} placeholder="-- Nhập thủ công --" />}
-              />
-            </Box>
-          )}
           <TextField fullWidth size="small" label="Họ tên" value={tenantForm.name} onChange={(e) => setTenantForm({ ...tenantForm, name: e.target.value })} required
             sx={inputSx} />
           <TextField fullWidth size="small" label="Số điện thoại" value={tenantForm.phone} onChange={(e) => setTenantForm({ ...tenantForm, phone: e.target.value })} required
@@ -106,39 +92,15 @@ export default function TenantEditModal({
             {furnitureList.length > 0 && (
               <Box>
                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Vật dụng trong phòng</Typography>
-                {editTenantId ? (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
-                    {furnitureList.filter(f => selectedFurnitures[f.id]?.checked).map((f) => (
-                      <Chip key={f.id} label={`${f.name} (x${selectedFurnitures[f.id].quantity})`}
-                        size="small" sx={{ bgcolor: "#f1f5f9", color: "#0f172a", fontWeight: 600, borderRadius: "8px", fontSize: "0.75rem" }} />
-                    ))}
-                    {!furnitureList.some(f => selectedFurnitures[f.id]?.checked) && (
-                      <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Chưa bàn giao vật dụng</Typography>
-                    )}
-                  </Box>
-                ) : (
-                  <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0.75 }}>
-                    {furnitureList.map((f) => {
-                      const checked = selectedFurnitures[f.id]?.checked || false;
-                      return (
-                        <Box key={f.id} sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 1, bgcolor: "#f8fafc", borderRadius: "8px" }}>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, cursor: "pointer" }}
-                            onClick={() => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], checked: !checked } })}
-                          >
-                            <Checkbox checked={checked} readOnly sx={{ p: 0, color: "#94a3b8", "&.Mui-checked": { color: "#2563eb" }, cursor: "pointer" }} />
-                            <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a" }}>{f.name}</Typography>
-                          </Box>
-                          {checked && (
-                            <TextField size="small" type="number" value={selectedFurnitures[f.id]?.quantity || 1} slotProps={{ htmlInput: { min: 1 } }}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={(e) => setSelectedFurnitures({ ...selectedFurnitures, [f.id]: { ...selectedFurnitures[f.id], quantity: Number(e.target.value) } })}
-                              sx={{ width: 70, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "8px", bgcolor: "#fff" } }} />
-                          )}
-                        </Box>
-                      );
-                    })}
-                  </Box>
-                )}
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+                  {furnitureList.filter(f => selectedFurnitures[f.id]?.checked).map((f) => (
+                    <Chip key={f.id} label={`${f.name} (x${selectedFurnitures[f.id].quantity})`}
+                      size="small" sx={{ bgcolor: "#f1f5f9", color: "#0f172a", fontWeight: 600, borderRadius: "8px", fontSize: "0.75rem" }} />
+                  ))}
+                  {!furnitureList.some(f => selectedFurnitures[f.id]?.checked) && (
+                    <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Chưa bàn giao vật dụng</Typography>
+                  )}
+                </Box>
               </Box>
             )}
           </>
@@ -151,7 +113,7 @@ export default function TenantEditModal({
             sx={{ px: 3, py: 1.25, fontSize: "0.75rem", fontWeight: 700, bgcolor: "#2563eb", color: "#fff", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#1d4ed8" }, display: "flex", alignItems: "center", gap: 1 }}
           >
             {contractLoading && <CircularProgress size={14} sx={{ color: "#fff" }} />}
-            {editTenantId ? "Lưu" : "Thêm"}
+            Lưu
           </Box>
         </Box>
       }

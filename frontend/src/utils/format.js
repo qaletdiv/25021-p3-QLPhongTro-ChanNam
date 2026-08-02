@@ -13,5 +13,3 @@ export const nextMonthLabel = () => {
   const year = d.getMonth() === 11 ? d.getFullYear() + 1 : d.getFullYear();
   return `${String(month + 1).padStart(2, "0")}/${year}`;
 };
-
-export const statusLabel = { pending: "Chờ Thu Tiền", submitted: "Đã Gửi Chỉ Số", paid: "Đã Thanh Toán" };

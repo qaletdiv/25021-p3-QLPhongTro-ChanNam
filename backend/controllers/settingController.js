@@ -37,7 +37,7 @@ exports.saveSettings = async (req, res, next) => {
                 const err = validateTemplate(value);
                 if (err) return res.status(400).json({ message: err });
             }
-            const [existing] = await Setting.findAll({
+            const existing = await Setting.findOne({
                 where: { key, landlordId: req.user.id, buildingId: buildingId || null }
             });
             if (existing) {

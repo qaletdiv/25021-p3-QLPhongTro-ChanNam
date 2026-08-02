@@ -1,4 +1,3 @@
-const { Op } = require("sequelize");
 const { Room, Contract, ContractFurniture, Furniture, Tenant, Building } = require("../models");
 
 exports.getRooms = async (req, res, next) => {

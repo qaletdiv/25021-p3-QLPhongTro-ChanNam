@@ -7,7 +7,6 @@ const tenantDashboardController = require('../controllers/tenantDashboardControl
 const tenantInvoiceController = require('../controllers/tenantInvoiceController');
 const tenantIssueController = require('../controllers/tenantIssueController');
 const tenantProfileController = require('../controllers/tenantProfileController');
-const tenantNotificationController = require('../controllers/tenantNotificationController');
 
 const auth = [authenticateToken, authorizeRole('tenant')];
 
@@ -24,7 +23,5 @@ router.post('/issues', ...auth, tenantIssueController.createIssue);
 router.get('/profile', ...auth, tenantProfileController.getProfile);
 router.put('/profile', ...auth, tenantProfileController.updateProfile);
 router.put('/password', ...auth, tenantProfileController.changePassword);
-
-router.put('/notifications/:id/read', ...auth, tenantNotificationController.markAsRead);
 
 module.exports = router;

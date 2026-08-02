@@ -4,9 +4,6 @@ const buildingApi = {
   getAll() {
     return axiosClient.get("/buildings");
   },
-  getById(id) {
-    return axiosClient.get(`/buildings/${id}`);
-  },
   create(data) {
     return axiosClient.post("/buildings", data);
   },

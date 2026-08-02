@@ -58,7 +58,6 @@ export default function NotificationManagement() {
     try {
       const payload = { title, content, targetType: targetRoom === "all" ? "all" : "specific_rooms", targetRoomIds: targetRoom === "all" ? [] : [targetRoom] };
       await notificationApi.create(payload);
-      setSuccessMsg("");
       fetchData();
       setTimeout(() => setSuccessMsg("Đã tự động gửi thông báo Telegram thành công tới danh sách khách hàng!"), 300);
       setTimeout(() => setSuccessMsg(""), 4300);
@@ -69,6 +68,14 @@ export default function NotificationManagement() {
 
   const rentedRooms = (rooms || []).filter(r => r.status === "rented");
   const sentNotifications = (notifications || []).filter(n => n.status === "sent");
+  const roomOptions = [{ id: "all", label: "Tất Cả Các Phòng Đang Cho Thuê" }, ...rentedRooms.map((r) => {
+    const tenant = r.contracts?.[0]?.tenant;
+    return { id: r.id, label: `Phòng ${r.room_number} - ${tenant?.name || "—"} (${tenant?.phone || "—"})` };
+  })];
+
+  const parseRoomIds = (log) => {
+    return typeof log.targetRoomIds === "string" ? JSON.parse(log.targetRoomIds) : log.targetRoomIds || [];
+  };
 
   const resolveLogContent = (log) => {
     const monthStr = (() => {
@@ -78,7 +85,7 @@ export default function NotificationManagement() {
       const mm = String(dt.getMonth() + 1).padStart(2, "0");
       return `${mm}/${dt.getFullYear()}`;
     })();
-    const roomIds = typeof log.targetRoomIds === "string" ? JSON.parse(log.targetRoomIds) : log.targetRoomIds || [];
+    const roomIds = parseRoomIds(log);
     if (roomIds.length === 0) return resolveNotificationTemplate(log.content, { THANG: monthStr });
     return roomIds.map((id) => {
       const room = rooms.find((r) => String(r.id) === String(id));
@@ -148,15 +155,9 @@ export default function NotificationManagement() {
                 <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đối Tượng Nhận Thông Báo *</Typography>
                 <Autocomplete
                   fullWidth size="small" disableClearable
-                  options={[{ id: "all", label: "Tất Cả Các Phòng Đang Cho Thuê" }, ...rentedRooms.map((r) => {
-                    const tenant = r.contracts?.[0]?.tenant;
-                    return { id: r.id, label: `Phòng ${r.room_number} - ${tenant?.name || "—"} (${tenant?.phone || "—"})` };
-                  })]}
+                  options={roomOptions}
                   getOptionLabel={(o) => o.label}
-                  value={[{ id: "all", label: "Tất Cả Các Phòng Đang Cho Thuê" }, ...rentedRooms.map((r) => {
-                    const tenant = r.contracts?.[0]?.tenant;
-                    return { id: r.id, label: `Phòng ${r.room_number} - ${tenant?.name || "—"} (${tenant?.phone || "—"})` };
-                  })].find((o) => String(o.id) === String(targetRoom)) || null}
+                  value={roomOptions.find((o) => String(o.id) === String(targetRoom)) || null}
                   onChange={(e, o) => setTargetRoom(o ? o.id : "all")}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -263,7 +264,7 @@ export default function NotificationManagement() {
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
                     <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.75rem" }}>
                       {(() => {
-                        const roomIds = typeof log.targetRoomIds === "string" ? JSON.parse(log.targetRoomIds) : log.targetRoomIds || [];
+                        const roomIds = parseRoomIds(log);
                         if (roomIds.length === 0) return "Tất cả phòng";
                         const roomNames = roomIds.map((id) => {
                           const room = rooms.find((r) => String(r.id) === String(id));

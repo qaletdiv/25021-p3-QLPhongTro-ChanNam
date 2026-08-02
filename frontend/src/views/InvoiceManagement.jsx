@@ -8,14 +8,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import MessageDialog from "../components/MessageDialog";
 import InvoiceTable from "../components/invoice/InvoiceTable";
 import PrintableInvoiceModal from "../components/invoice/PrintableInvoiceModal";
+import { currentMonthLabel } from "../utils/format";
 import invoiceApi from "../api/invoiceApi";
 import settingApi from "../api/settingApi";
 import buildingApi from "../api/buildingApi";
-
-const currentMonthLabel = () => {
-  const d = new Date();
-  return `${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
-};
 
 const monthOptions = () => {
   const options = [];
@@ -178,7 +174,7 @@ export default function InvoiceManagement() {
         />
       )}
 
-      <PrintableInvoiceModal invoice={printableInvoice} settings={settings} onClose={() => setPrintableInvoice(null)} />
+      <PrintableInvoiceModal invoice={printableInvoice} onClose={() => setPrintableInvoice(null)} />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>

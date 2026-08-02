@@ -70,7 +70,7 @@ exports.generatePdf = async (req, res, next) => {
 
         const contractFurnitures = contract.contractFurnitures?.filter(cf => cf.furniture) || [];
         const furnitureText = contractFurnitures.length > 0
-            ? contractFurnitures.map(cf => `- ${cf.furniture?.name}: ${cf.quantity} cai`).join("\n")
+            ? contractFurnitures.map(cf => `- ${cf.furniture.name}: ${cf.quantity} cai`).join("\n")
             : (await Furniture.findAll({ where: { landlordId: req.user.id }, order: [['name', 'ASC']] }))
                 .map(f => `- ${f.name}: ${f.default_quantity} cai`)
                 .join("\n");

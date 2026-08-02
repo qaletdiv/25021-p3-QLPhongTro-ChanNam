@@ -18,7 +18,7 @@ const Row = (inv) => {
   ];
 };
 
-export default function PrintableInvoiceModal({ invoice, settings, onClose }) {
+export default function PrintableInvoiceModal({ invoice, onClose }) {
   if (!invoice) return null;
 
   return (

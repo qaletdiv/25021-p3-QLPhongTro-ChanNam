@@ -1,9 +1,7 @@
 import roomApi from "../api/roomApi";
 import contractApi from "../api/contractApi";
 import furnitureApi from "../api/furnitureApi";
-import {
-  defaultContractForm, buildExistingFurns, buildDefaultFurns, buildCompanions, buildContractForm,
-} from "../utils/contractFormBuilders";
+import { defaultContractForm, buildDefaultFurns } from "../utils/contractFormBuilders";
 
 export default function useContractEditor({ notify, fetchTenants, formState }) {
   const {
@@ -25,24 +23,6 @@ export default function useContractEditor({ notify, fetchTenants, formState }) {
       setOpenContract(true);
     } catch {
       notify("Lỗi tải dữ liệu", "error");
-    }
-  };
-
-  const openEditContract = async (contractId, tenant) => {
-    try {
-      const res = await contractApi.getById(contractId);
-      const contract = res.data.contract;
-      const [roomsRes, furnRes] = await Promise.all([roomApi.getAll(), furnitureApi.getAll()]);
-      setEmptyRooms(roomsRes.data.rooms.filter(r => r.status === 'empty' || r.id === contract.roomId));
-      setFurnitureList(furnRes.data.furnitures);
-      setSelectedFurnitures(buildExistingFurns(furnRes.data.furnitures, contract));
-      setContractForm(buildContractForm(contract, contract.tenantId));
-      setCompanionFingerprints(buildCompanions(contract.companions));
-      paymentDayManuallyChanged.current = true;
-      setEditContractId(contract.id);
-      setOpenContract(true);
-    } catch {
-      notify("Lỗi tải thông tin hợp đồng", "error");
     }
   };
 
@@ -78,5 +58,5 @@ export default function useContractEditor({ notify, fetchTenants, formState }) {
     } finally { setContractLoading(false); }
   };
 
-  return { openCreateContract, openEditContract, handleSaveContract };
+  return { openCreateContract, handleSaveContract };
 }

@@ -1,5 +1,4 @@
 const { Op } = require("sequelize");
-const { fn, col, literal } = require("sequelize");
 const { Room, Contract, Tenant, Invoice } = require("../models");
 
 function currentMonthStr() {

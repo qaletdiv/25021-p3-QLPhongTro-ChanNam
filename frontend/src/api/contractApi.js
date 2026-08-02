@@ -1,9 +1,6 @@
 import axiosClient from "./axiosClient";
 
 const contractApi = {
-  getAll() {
-    return axiosClient.get("/contracts");
-  },
   create(data) {
     return axiosClient.post("/contracts", data);
   },

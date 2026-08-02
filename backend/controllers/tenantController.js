@@ -23,7 +23,7 @@ exports.getTenants = async (req, res, next) => {
         });
         const filtered = tenants.map((tenant) => {
             const contracts = (tenant.contracts || []).filter((c) => c.room);
-            return contracts.length ? { ...tenant.toJSON(), contracts } : { ...tenant.toJSON(), contracts: [] };
+            return { ...tenant.toJSON(), contracts };
         });
         res.json({ tenants: filtered });
     } catch (error) {
