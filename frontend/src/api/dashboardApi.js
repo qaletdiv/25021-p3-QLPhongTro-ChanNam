@@ -10,6 +10,9 @@ const dashboardApi = {
   getExpiringContracts() {
     return axiosClient.get("/dashboard/expiring-contracts");
   },
+  getNotifications() {
+    return axiosClient.get("/dashboard/notifications");
+  },
 };
 
 export default dashboardApi;

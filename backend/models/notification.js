@@ -16,7 +16,6 @@ module.exports = (sequelize, DataType) => {
         recipientCount: { type: DataType.INTEGER, allowNull: false, defaultValue: 0 },
         status: { type: DataType.ENUM('draft', 'sent'), allowNull: false, defaultValue: 'draft' },
         source: { type: DataType.ENUM('manual', 'auto'), allowNull: false, defaultValue: 'manual' },
-        type: { type: DataType.STRING(20), allowNull: false, defaultValue: 'broadcast' },
         landlordId: { type: DataType.INTEGER, allowNull: false }
     }, {
         sequelize, modelName: "Notification", tableName: "notifications", timestamps: true

@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Room, Contract, Tenant, Invoice } = require("../models");
+const { Room, Contract, Tenant, Invoice, Issue } = require("../models");
 const { monthStr } = require("../utils/dates");
 
 exports.getStats = async (req, res, next) => {
@@ -58,6 +58,34 @@ exports.getMonthlyRevenue = async (req, res, next) => {
 
         const chartData = months.map((m) => ({ month: m, revenue: revenueByMonth[m] }));
         res.json({ chartData });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getNotifications = async (req, res, next) => {
+    try {
+        const landlordId = req.user.id;
+
+        const unpaidInvoices = await Invoice.findAll({
+            where: { status: { [Op.in]: ['pending', 'submitted'] } },
+            attributes: ['id'],
+            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }] }]
+        });
+        const pendingIssues = await Issue.count({
+            where: { status: 'pending' },
+            include: [{ model: Room, as: "room", required: true, where: { landlordId } }]
+        });
+
+        const items = [];
+        if (unpaidInvoices.length > 0) {
+            items.push({ kind: 'invoice', title: 'Hóa đơn chờ xử lý', message: `Có ${unpaidInvoices.length} hóa đơn chưa thanh toán`, count: unpaidInvoices.length, link: '/landlord/invoices' });
+        }
+        if (pendingIssues > 0) {
+            items.push({ kind: 'issue', title: 'Báo hỏng cần xem', message: `Có ${pendingIssues} báo hỏng đang chờ xử lý`, count: pendingIssues, link: '/landlord/issues' });
+        }
+
+        res.json({ unreadCount: unpaidInvoices.length + pendingIssues, items });
     } catch (error) {
         next(error);
     }
