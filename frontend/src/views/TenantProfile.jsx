@@ -20,18 +20,11 @@ const cardSx = {
 
 // MUI v9 outlines a short input (height 1.4375em ~ 23px, padding 4px 0) which
 // pushes the floating label/placeholder to the bottom of an empty field.
-// Give the password fields a proper medium height + balanced padding so text
-// sits vertically centered instead of being pinned to the bottom border.
-const passwordFieldSx = {
+// Global theming (src/theme.js -> MuiOutlinedInput) sets a proper medium height
+// + balanced padding so all inputs are vertically centered.
+const inputFieldSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: "12px",
-    minHeight: "48px",
-  },
-  "& .MuiOutlinedInput-input": {
-    padding: "12px 14px",
-    lineHeight: 1.5,
-    fontSize: "0.9375rem",
-    height: "24px",
   },
 };
 
@@ -95,24 +88,24 @@ export default function TenantProfile() {
         <Grid container spacing={2}>
           <Grid size={6}>
             <TextField fullWidth label="Họ tên" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={inputFieldSx} />
           </Grid>
           <Grid size={6}>
             <TextField fullWidth label="Email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={inputFieldSx} />
           </Grid>
           <Grid size={6}>
             <TextField fullWidth label="Số điện thoại" value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={inputFieldSx} />
           </Grid>
           <Grid size={6}>
             <TextField fullWidth label="CCCD" value={profile.cccd || ""} onChange={(e) => setProfile({ ...profile, cccd: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={inputFieldSx} />
           </Grid>
           <Grid size={12}>
             <TextField fullWidth label="Telegram Chat ID (để nhận thông báo từ chủ trọ)" placeholder="Ví dụ: 123456789" value={profile.telegramChatId || ""}
               onChange={(e) => setProfile({ ...profile, telegramChatId: e.target.value })}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
+              sx={inputFieldSx} />
             <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.5 }}>
               Gửi tin nhắn /start tới bot của chủ trọ trên Telegram, sau đó lấy Chat ID từ tin nhắn hoặc dùng @userinfobot để tra cứu.
             </Typography>
