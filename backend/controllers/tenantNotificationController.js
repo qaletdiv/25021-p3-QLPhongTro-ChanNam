@@ -4,7 +4,7 @@ const { findTenantByUser } = require("../utils/tenantHelpers");
 exports.getNotifications = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const invoices = await Invoice.findAll({
             where: { status: 'paid' },
@@ -59,7 +59,7 @@ exports.getNotifications = async (req, res, next) => {
 exports.markRead = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const items = req.body.items || [];
         for (const item of items) {
@@ -68,7 +68,7 @@ exports.markRead = async (req, res, next) => {
             if (!existing) await TenantNotificationRead.create(row);
         }
 
-        res.json({ message: "Da danh dau da doc" });
+        res.json({ message: "Đã đánh dấu đã đọc" });
     } catch (error) {
         next(error);
     }

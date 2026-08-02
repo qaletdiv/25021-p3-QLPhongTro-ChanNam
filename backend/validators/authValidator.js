@@ -1,17 +1,17 @@
 const { body } = require("express-validator");
 
 const registerValidationRules = () => [
-    body('name').notEmpty().withMessage("Ten khong duoc de trong").trim(),
-    body('email').notEmpty().withMessage("Email khong duoc de trong").isEmail().normalizeEmail(),
-    body('phone').notEmpty().withMessage("SĐT khong duoc de trong").matches(/^(0|\+84)[3-9]\d{8,9}$/).withMessage("SĐT khong hop le"),
-    body('password').notEmpty().withMessage("Password khong duoc de trong").isLength({ min: 6 }),
-    body('role').optional().isIn(['landlord', 'tenant']).withMessage("Role phai la landlord hoac tenant"),
+    body('name').notEmpty().withMessage("Tên không được để trống").trim(),
+    body('email').notEmpty().withMessage("Email không được để trống").isEmail().normalizeEmail(),
+    body('phone').notEmpty().withMessage("SĐT không được để trống").matches(/^(0|\+84)[3-9]\d{8,9}$/).withMessage("SĐT không hợp lệ"),
+    body('password').notEmpty().withMessage("Mật khẩu không được để trống").isLength({ min: 6 }),
+    body('role').optional().isIn(['landlord', 'tenant']).withMessage("Vai trò phải là landlord hoặc tenant"),
     body('cccd').optional({ values: 'falsy' }).trim(),
 ];
 
 const loginValidationRules = () => [
-    body('email').notEmpty().withMessage("Email khong duoc de trong").isEmail().normalizeEmail(),
-    body('password').notEmpty().withMessage("Password khong duoc de trong"),
+    body('email').notEmpty().withMessage("Email không được để trống").isEmail().normalizeEmail(),
+    body('password').notEmpty().withMessage("Mật khẩu không được để trống"),
 ];
 
 module.exports = { registerValidationRules, loginValidationRules };

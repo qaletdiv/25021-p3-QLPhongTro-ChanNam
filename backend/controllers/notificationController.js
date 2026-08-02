@@ -69,7 +69,7 @@ exports.createNotification = async (req, res, next) => {
             }
         }
 
-        res.status(201).json({ message: "Tao thong bao thanh cong", notification, delivered });
+        res.status(201).json({ message: "Tạo thông báo thành công", notification, delivered });
     } catch (error) {
         next(error);
     }

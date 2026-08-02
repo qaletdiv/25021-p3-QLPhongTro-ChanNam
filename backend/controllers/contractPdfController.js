@@ -50,8 +50,8 @@ exports.generatePdf = async (req, res, next) => {
                 { model: ContractFurniture, as: "contractFurnitures", include: [{ model: Furniture, as: "furniture" }] },
             ]
         });
-        if (!contract) return res.status(404).json({ message: "Khong tim thay hop dong" });
-        if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Khong co quyen" });
+        if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
+        if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
 
         const companions = await Companion.findAll({ where: { tenantId: contract.tenantId } });
 
@@ -70,9 +70,9 @@ exports.generatePdf = async (req, res, next) => {
 
         const contractFurnitures = contract.contractFurnitures?.filter(cf => cf.furniture) || [];
         const furnitureText = contractFurnitures.length > 0
-            ? contractFurnitures.map(cf => `- ${cf.furniture.name}: ${cf.quantity} cai`).join("\n")
+            ? contractFurnitures.map(cf => `- ${cf.furniture.name}: ${cf.quantity} cái`).join("\n")
             : (await Furniture.findAll({ where: { landlordId: req.user.id }, order: [['name', 'ASC']] }))
-                .map(f => `- ${f.name}: ${f.default_quantity} cai`)
+                .map(f => `- ${f.name}: ${f.default_quantity} cái`)
                 .join("\n");
 
         const today = new Date().toLocaleDateString("vi-VN");

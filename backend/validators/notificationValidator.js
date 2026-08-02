@@ -1,9 +1,9 @@
 const { body } = require("express-validator");
 
 const createNotificationValidationRules = () => [
-    body('title').notEmpty().withMessage("Tieu de khong duoc de trong"),
-    body('content').notEmpty().withMessage("Noi dung khong duoc de trong"),
-    body('targetType').isIn(['all', 'specific_rooms']).withMessage("Loai doi tuong khong hop le"),
+    body('title').notEmpty().withMessage("Tiêu đề không được để trống"),
+    body('content').notEmpty().withMessage("Nội dung không được để trống"),
+    body('targetType').isIn(['all', 'specific_rooms']).withMessage("Loại đối tượng không hợp lệ"),
     body('targetRoomIds').optional().isArray(),
 ];
 

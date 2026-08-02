@@ -52,7 +52,7 @@ exports.saveTemplate = async (req, res, next) => {
     try {
         const { template } = req.body;
         await Setting.upsert({ key: 'contract_template', value: template, landlordId: req.user.id });
-        res.json({ message: "Luu mau hop dong thanh cong" });
+        res.json({ message: "Lưu mẫu hợp đồng thành công" });
     } catch (error) {
         next(error);
     }

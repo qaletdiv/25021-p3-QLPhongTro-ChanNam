@@ -21,11 +21,11 @@ exports.register = async (req, res, next) => {
 
         const payload = { userId: newUser.id };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-        res.status(201).json({ message: "Dang ky thanh cong", token, user: { id: newUser.id, name, email, phone, role: role || 'tenant' } });
+        res.status(201).json({ message: "Đăng ký thành công", token, user: { id: newUser.id, name, email, phone, role: role || 'tenant' } });
     } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
             const field = error.errors[0].path;
-            return res.status(409).json({ message: `${field === 'email' ? 'Email' : 'SĐT'} da ton tai` });
+            return res.status(409).json({ message: `${field === 'email' ? 'Email' : 'SĐT'} đã tồn tại` });
         }
         next(error);
     }
@@ -35,12 +35,12 @@ exports.login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const user = await User.scope("withPassword").findOne({ where: { email } });
-        if (!user) return res.status(401).json({ message: "Email hoac mat khau khong dung" });
+        if (!user) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ message: "Email hoac mat khau khong dung" });
+        if (!isMatch) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
         const payload = { userId: user.id };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-        res.json({ message: "Dang nhap thanh cong", token, user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
+        res.json({ message: "Đăng nhập thành công", token, user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
     } catch (error) {
         next(error);
     }

@@ -5,7 +5,7 @@ const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers
 exports.getDashboard = async (req, res, next) => {
     try {
         let tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const furnituresInclude = {
             model: ContractFurniture, as: "contractFurnitures",

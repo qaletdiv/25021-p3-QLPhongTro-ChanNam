@@ -16,12 +16,12 @@ exports.getSettings = async (req, res, next) => {
 
 function validateTemplate(value) {
     if (/[`$]/.test(value)) {
-        return "Mau khong duoc chua ky tu dac biet nhu backtick (`) hoac ${...}";
+        return "Mẫu không được chứa ký tự đặc biệt như backtick (`) hoặc ${...}";
     }
     const used = [...value.matchAll(/\{\{\s*([A-Z_]+)\s*\}\}/g)].map((m) => m[1]);
     const unknown = used.find((v) => !ALLOWED_VARS.has(v));
     if (unknown) {
-        return `Bien {{${unknown}}} khong duoc ho tro`;
+        return `Biến {{${unknown}}} không được hỗ trợ`;
     }
     return null;
 }
@@ -46,7 +46,7 @@ exports.saveSettings = async (req, res, next) => {
                 await Setting.create({ key, value, landlordId: req.user.id, buildingId: buildingId || null });
             }
         }
-        res.json({ message: "Luu cai dat thanh cong" });
+        res.json({ message: "Lưu cài đặt thành công" });
     } catch (error) {
         next(error);
     }

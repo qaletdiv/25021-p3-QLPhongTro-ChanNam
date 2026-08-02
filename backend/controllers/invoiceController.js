@@ -43,12 +43,12 @@ exports.markAsPaid = async (req, res, next) => {
         const invoice = await Invoice.findByPk(req.params.id, {
             include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room" }] }]
         });
-        if (!invoice) return res.status(404).json({ message: "Khong tim thay hoa don" });
-        if (invoice.contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Khong co quyen" });
-        if (invoice.status === 'paid') return res.status(400).json({ message: "Hoa don da duoc thanh toan" });
+        if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
+        if (invoice.contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
+        if (invoice.status === 'paid') return res.status(400).json({ message: "Hóa đơn đã được thanh toán" });
 
         await invoice.update({ status: 'paid', paidAt: new Date() });
-        res.json({ message: "Xac nhan thanh toan thanh cong", invoice });
+        res.json({ message: "Xác nhận thanh toán thành công", invoice });
     } catch (error) {
         next(error);
     }
@@ -59,23 +59,23 @@ exports.sendReminder = async (req, res, next) => {
         const invoice = await Invoice.findByPk(req.params.id, {
             include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room" }, { model: Tenant, as: "tenant" }] }]
         });
-        if (!invoice) return res.status(404).json({ message: "Khong tim thay hoa don" });
-        if (invoice.contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Khong co quyen" });
+        if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
+        if (invoice.contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
 
         const tenant = invoice.contract.tenant;
         if (!tenant || !tenant.telegramChatId) {
-            return res.status(400).json({ message: "Khach thue chua cung cap Telegram Chat ID" });
+            return res.status(400).json({ message: "Khách thuê chưa cung cấp Telegram Chat ID" });
         }
 
         const total = Number(invoice.total);
         const totalStr = new Intl.NumberFormat("vi-VN").format(total) + " VND";
         const text = telegram.formatMessage(
-            `Nhac no tien phong ${invoice.month}\n\n` +
-            `Kinh gui anh/chi ${invoice.contract.tenant.name}\n` +
-            `Phong: ${invoice.contract.room.room_number}\n` +
-            `Tong tien can thanh toan: ${totalStr}\n` +
-            `Hoa don thang: ${invoice.month}\n` +
-            `Vui long thanh toan dung han. Cam on!`,
+            `Nhắc nợ tiền phòng ${invoice.month}\n\n` +
+            `Kính gửi anh/chị ${invoice.contract.tenant.name}\n` +
+            `Phòng: ${invoice.contract.room.room_number}\n` +
+            `Tổng tiền cần thanh toán: ${totalStr}\n` +
+            `Hóa đơn tháng: ${invoice.month}\n` +
+            `Vui lòng thanh toán đúng hạn. Cảm ơn!`,
             { tenantName: tenant.name, roomNumber: invoice.contract.room.room_number, totalAmount: totalStr }
         );
 
@@ -90,7 +90,7 @@ exports.sendReminder = async (req, res, next) => {
             return res.status(400).json({ message: e.message });
         }
 
-        res.json({ message: "Da gui nhac no qua Telegram" });
+        res.json({ message: "Đã gửi nhắc nợ qua Telegram" });
     } catch (error) {
         next(error);
     }

@@ -1,7 +1,7 @@
 const { body, param } = require("express-validator");
 
 const createBuildingValidationRules = () => [
-    body('name').notEmpty().withMessage("Ten nha khong duoc de trong").trim(),
+    body('name').notEmpty().withMessage("Tên nhà không được để trống").trim(),
     body('address').optional().trim(),
 ];
 
@@ -11,7 +11,7 @@ const updateBuildingValidationRules = () => [
 ];
 
 const buildingIdParamValidation = () => [
-    param("id").isInt({ min: 1 }).withMessage("ID nha phai la so nguyen duong"),
+    param("id").isInt({ min: 1 }).withMessage("ID nhà phải là số nguyên dương"),
 ];
 
 module.exports = { createBuildingValidationRules, updateBuildingValidationRules, buildingIdParamValidation };

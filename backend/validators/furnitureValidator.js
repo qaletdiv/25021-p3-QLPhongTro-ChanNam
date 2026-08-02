@@ -1,9 +1,9 @@
 const { body, param } = require("express-validator");
 
 const createFurnitureValidationRules = () => [
-    body('name').notEmpty().withMessage("Ten vat dung khong duoc de trong").trim(),
+    body('name').notEmpty().withMessage("Tên vật dụng không được để trống").trim(),
     body('note').optional().trim(),
-    body('default_quantity').optional().isInt({ min: 1 }).withMessage("So luong mac dinh phai >= 1"),
+    body('default_quantity').optional().isInt({ min: 1 }).withMessage("Số lượng mặc định phải >= 1"),
 ];
 
 const updateFurnitureValidationRules = () => [
@@ -13,7 +13,7 @@ const updateFurnitureValidationRules = () => [
 ];
 
 const furnitureIdParamValidation = () => [
-    param("id").isInt({ min: 1 }).withMessage("ID vat dung phai la so nguyen duong"),
+    param("id").isInt({ min: 1 }).withMessage("ID vật dụng phải là số nguyên dương"),
 ];
 
 module.exports = { createFurnitureValidationRules, updateFurnitureValidationRules, furnitureIdParamValidation };

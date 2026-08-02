@@ -7,7 +7,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 exports.getIssues = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const issues = await Issue.findAll({
             where: { tenantId: tenant.id },
@@ -23,10 +23,10 @@ exports.getIssues = async (req, res, next) => {
 exports.createIssue = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const contract = await findActiveContract(tenant.id);
-        if (!contract) return res.status(400).json({ message: "Ban khong co hop dong hoat dong" });
+        if (!contract) return res.status(400).json({ message: "Bạn không có hợp đồng hoạt động" });
 
         const { title, description, images } = req.body;
         const issue = await Issue.create({
@@ -51,7 +51,7 @@ exports.createIssue = async (req, res, next) => {
             }
         }
 
-        res.status(201).json({ message: "Gui bao cao thanh cong", issue });
+        res.status(201).json({ message: "Gửi báo cáo thành công", issue });
     } catch (error) {
         next(error);
     }

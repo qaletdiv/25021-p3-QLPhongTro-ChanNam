@@ -35,7 +35,7 @@ exports.createTenant = async (req, res, next) => {
     try {
         const { name, phone, cccd } = req.body;
         const tenant = await Tenant.create({ name, phone, cccd });
-        res.status(201).json({ message: "Them khach thue thanh cong", tenant });
+        res.status(201).json({ message: "Thêm khách thuê thành công", tenant });
     } catch (error) {
         next(error);
     }
@@ -44,10 +44,10 @@ exports.createTenant = async (req, res, next) => {
 exports.updateTenant = async (req, res, next) => {
     try {
         const tenant = await Tenant.findByPk(req.params.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy khách thuê" });
         const { name, phone, cccd } = req.body;
         await tenant.update({ name, phone, cccd });
-        res.json({ message: "Cap nhat thong tin thanh cong", tenant });
+        res.json({ message: "Cập nhật thông tin thành công", tenant });
     } catch (error) {
         next(error);
     }

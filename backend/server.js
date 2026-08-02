@@ -51,8 +51,8 @@ app.use("/api/issues", issueRoutes);
 app.use(errorHandlerMiddleware);
 
 db.sequelize.sync()
-    .then(() => console.log("Ket noi CSDL & dong bo bang thanh cong"))
-    .catch(err => console.error('Khong the ket noi CSDL', err));
+    .then(() => console.log("Kết nối CSDL & đồng bộ bảng thành công"))
+    .catch(err => console.error('Không thể kết nối CSDL', err));
 
 app.listen(PORT, () => {
     console.log(`Server is listening at http://localhost:${PORT}`);

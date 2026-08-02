@@ -37,7 +37,7 @@ exports.getRoomById = async (req, res, next) => {
                 model: Building, as: "building", attributes: ["id", "name", "address"]
             }]
         });
-        if (!room) return res.status(404).json({ message: "Khong tim thay phong" });
+        if (!room) return res.status(404).json({ message: "Không tìm thấy phòng" });
         res.json({ room });
     } catch (error) {
         next(error);
@@ -49,10 +49,10 @@ exports.createRoom = async (req, res, next) => {
         const { room_number, floor, area, price, buildingId } = req.body;
         if (buildingId) {
             const building = await Building.findOne({ where: { id: buildingId, landlordId: req.user.id } });
-            if (!building) return res.status(400).json({ message: "Nha khong ton tai hoac khong thuoc ve ban" });
+            if (!building) return res.status(400).json({ message: "Nhà không tồn tại hoặc không thuộc về bạn" });
         }
         const room = await Room.create({ room_number, floor, area, price, landlordId: req.user.id, buildingId: buildingId || null });
-        res.status(201).json({ message: "Them phong thanh cong", room });
+        res.status(201).json({ message: "Thêm phòng thành công", room });
     } catch (error) {
         next(error);
     }
@@ -61,14 +61,14 @@ exports.createRoom = async (req, res, next) => {
 exports.updateRoom = async (req, res, next) => {
     try {
         const room = await Room.findOne({ where: { id: req.params.id, landlordId: req.user.id } });
-        if (!room) return res.status(404).json({ message: "Khong tim thay phong" });
+        if (!room) return res.status(404).json({ message: "Không tìm thấy phòng" });
         const { room_number, floor, area, price, buildingId } = req.body;
         if (buildingId !== undefined && buildingId !== null) {
             const building = await Building.findOne({ where: { id: buildingId, landlordId: req.user.id } });
-            if (!building) return res.status(400).json({ message: "Nha khong ton tai hoac khong thuoc ve ban" });
+            if (!building) return res.status(400).json({ message: "Nhà không tồn tại hoặc không thuộc về bạn" });
         }
         await room.update({ room_number, floor, area, price, buildingId: buildingId === undefined ? room.buildingId : buildingId });
-        res.json({ message: "Cap nhat phong thanh cong", room });
+        res.json({ message: "Cập nhật phòng thành công", room });
     } catch (error) {
         next(error);
     }
@@ -77,10 +77,10 @@ exports.updateRoom = async (req, res, next) => {
 exports.deleteRoom = async (req, res, next) => {
     try {
         const room = await Room.findOne({ where: { id: req.params.id, landlordId: req.user.id } });
-        if (!room) return res.status(404).json({ message: "Khong tim thay phong" });
-        if (room.status !== 'empty') return res.status(400).json({ message: "Chi co the xoa phong trong" });
+        if (!room) return res.status(404).json({ message: "Không tìm thấy phòng" });
+        if (room.status !== 'empty') return res.status(400).json({ message: "Chỉ có thể xóa phòng trống" });
         await room.destroy();
-        res.json({ message: "Xoa phong thanh cong" });
+        res.json({ message: "Xóa phòng thành công" });
     } catch (error) {
         next(error);
     }

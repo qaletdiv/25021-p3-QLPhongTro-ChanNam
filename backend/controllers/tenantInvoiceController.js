@@ -10,7 +10,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 exports.getInvoices = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const invoices = await Invoice.findAll({
             include: [{
@@ -29,10 +29,10 @@ exports.getInvoices = async (req, res, next) => {
 exports.getSettings = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room", include: [{ model: Building, as: "building", attributes: ["id", "name", "address"] }] }]);
-        if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
+        if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
         const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
 
@@ -51,17 +51,17 @@ exports.saveInitialReadings = async (req, res, next) => {
     try {
         const { electricity, water, electricityPhoto, waterPhoto } = req.body;
         if (electricity === undefined || water === undefined) {
-            return res.status(400).json({ message: "Thieu chi so dien/nuoc ban dau" });
+            return res.status(400).json({ message: "Thiếu chỉ số điện/nước ban đầu" });
         }
         if (!electricityPhoto || !waterPhoto) {
-            return res.status(400).json({ message: "Vui long upload anh dong ho dien va nuoc" });
+            return res.status(400).json({ message: "Vui lòng upload ảnh đồng hồ điện và nước" });
         }
 
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room" }]);
-        if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
+        if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
         const [elecRes, waterRes] = await Promise.all([
             cloudinary.uploader.upload(electricityPhoto, {
@@ -84,7 +84,7 @@ exports.saveInitialReadings = async (req, res, next) => {
         });
 
         res.json({
-            message: "Da luu chi so ban dau thanh cong",
+            message: "Đã lưu chỉ số ban đầu thành công",
             contract
         });
     } catch (error) {
@@ -96,24 +96,24 @@ exports.submitMeter = async (req, res, next) => {
     try {
         const { electricity, water, electricityPhoto, waterPhoto } = req.body;
         if (electricity === undefined || water === undefined) {
-            return res.status(400).json({ message: "Thieu chi so dien/nuoc" });
+            return res.status(400).json({ message: "Thiếu chỉ số điện/nước" });
         }
         if (!electricityPhoto || !waterPhoto) {
-            return res.status(400).json({ message: "Vui long upload anh dong ho dien va nuoc" });
+            return res.status(400).json({ message: "Vui lòng upload ảnh đồng hồ điện và nước" });
         }
 
         const tenant = await findTenantByUser(req.user.id);
-        if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
         const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room" }]);
-        if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
+        if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
         const now = new Date();
         const monthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
         const month = monthStr(monthDate);
         const existing = await Invoice.findOne({ where: { contractId: contract.id, month } });
         if (existing) {
-            return res.status(400).json({ message: "Hoa don thang nay da ton tai" });
+            return res.status(400).json({ message: "Hóa đơn tháng này đã tồn tại" });
         }
 
         const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
@@ -131,8 +131,8 @@ exports.submitMeter = async (req, res, next) => {
         const elecNew = Number(electricity);
         const waterNew = Number(water);
 
-        if (elecNew < elecOld) return res.status(400).json({ message: "Chi so dien moi nho hon chi so cu" });
-        if (waterNew < waterOld) return res.status(400).json({ message: "Chi so nuoc moi nho hon chi so cu" });
+        if (elecNew < elecOld) return res.status(400).json({ message: "Chỉ số điện mới nhỏ hơn chỉ số cũ" });
+        if (waterNew < waterOld) return res.status(400).json({ message: "Chỉ số nước mới nhỏ hơn chỉ số cũ" });
 
         let elecPhotoUrl = null;
         let waterPhotoUrl = null;
@@ -175,7 +175,7 @@ exports.submitMeter = async (req, res, next) => {
             waterPhoto: waterPhotoUrl
         });
 
-        res.json({ message: "Da gui chi so va chot hoa don thanh cong", invoice });
+        res.json({ message: "Đã gửi chỉ số và chốt hóa đơn thành công", invoice });
 
         try {
             const [mm, yyyy] = month.split("/");

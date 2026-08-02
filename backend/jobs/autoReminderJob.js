@@ -42,7 +42,7 @@ exports.runAutoReminders = async () => {
         if (await isAutoReminderSentThisMonth(room.id)) continue;
 
         const monthLabel = monthStr(new Date());
-        const DEFAULT_TEMPLATE = `Kinh gui {{TENKHACH}} (Phong {{MAPHONG}}), den ky thu tien nha thang {{THANG}}. Vui long thanh toan truoc ngay {{HAN_THANH_TOAN}}. Cam on!`;
+        const DEFAULT_TEMPLATE = `Kính gửi {{TENKHACH}} (Phòng {{MAPHONG}}), đến kỳ thu tiền nhà tháng {{THANG}}. Vui lòng thanh toán trước ngày {{HAN_THANH_TOAN}}. Cảm ơn!`;
         const content = (settings.autoReminderTemplate && settings.autoReminderTemplate.trim())
             ? settings.autoReminderTemplate
             : DEFAULT_TEMPLATE;

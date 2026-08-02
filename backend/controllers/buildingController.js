@@ -28,7 +28,7 @@ exports.getBuildingById = async (req, res, next) => {
             where: { id: req.params.id, landlordId: req.user.id },
             include: [{ model: Room, as: "rooms" }]
         });
-        if (!building) return res.status(404).json({ message: "Khong tim thay nha" });
+        if (!building) return res.status(404).json({ message: "Không tìm thấy nhà" });
         res.json({ building });
     } catch (error) {
         next(error);
@@ -39,7 +39,7 @@ exports.createBuilding = async (req, res, next) => {
     try {
         const { name, address } = req.body;
         const building = await Building.create({ name, address, landlordId: req.user.id });
-        res.status(201).json({ message: "Them nha thanh cong", building });
+        res.status(201).json({ message: "Thêm nhà thành công", building });
     } catch (error) {
         next(error);
     }
@@ -48,10 +48,10 @@ exports.createBuilding = async (req, res, next) => {
 exports.updateBuilding = async (req, res, next) => {
     try {
         const building = await Building.findOne({ where: { id: req.params.id, landlordId: req.user.id } });
-        if (!building) return res.status(404).json({ message: "Khong tim thay nha" });
+        if (!building) return res.status(404).json({ message: "Không tìm thấy nhà" });
         const { name, address } = req.body;
         await building.update({ name, address });
-        res.json({ message: "Cap nhat nha thanh cong", building });
+        res.json({ message: "Cập nhật nhà thành công", building });
     } catch (error) {
         next(error);
     }
@@ -60,11 +60,11 @@ exports.updateBuilding = async (req, res, next) => {
 exports.deleteBuilding = async (req, res, next) => {
     try {
         const building = await Building.findOne({ where: { id: req.params.id, landlordId: req.user.id } });
-        if (!building) return res.status(404).json({ message: "Khong tim thay nha" });
+        if (!building) return res.status(404).json({ message: "Không tìm thấy nhà" });
         const roomCount = await Room.count({ where: { buildingId: building.id } });
-        if (roomCount > 0) return res.status(400).json({ message: "Khong the xoa nha dang co phong" });
+        if (roomCount > 0) return res.status(400).json({ message: "Không thể xóa nhà đang có phòng" });
         await building.destroy();
-        res.json({ message: "Xoa nha thanh cong" });
+        res.json({ message: "Xóa nhà thành công" });
     } catch (error) {
         next(error);
     }
