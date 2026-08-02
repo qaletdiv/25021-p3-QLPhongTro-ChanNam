@@ -22,10 +22,7 @@ export default function Dashboard() {
       .then(([statsRes, expiringRes, revRes]) => {
         setStats(statsRes.data);
         setExpiring(expiringRes.data.contracts);
-        setChartData((revRes.data.chartData || []).map((d) => ({
-          month: `T${d.month.slice(0, 2)}/${d.month.slice(3, 5)}`,
-          revenue: d.revenue,
-        })));
+        setChartData(revRes.data.chartData || []);
       })
       .catch((err) => setError(err.response?.data?.message || "Lỗi tải dữ liệu"))
       .finally(() => setLoading(false));
