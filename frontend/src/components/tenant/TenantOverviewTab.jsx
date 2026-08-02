@@ -21,6 +21,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
   const resolveContent = (content) => resolveNotificationTemplate(content, {
     TENKHACH: tenant?.name || "",
     MAPHONG: room?.room_number || "",
+    THANG: monthStr || "",
     TONG_TIEN: contract?.price != null ? String(contract.price) : room?.price != null ? String(room.price) : "",
     HAN_THANH_TOAN: contract?.paymentDay ? String(contract.paymentDay + 5) : "",
   });
