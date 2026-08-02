@@ -2,6 +2,8 @@ const { getResolvedSettings } = require("./settings");
 
 const API = "https://api.telegram.org";
 
+const escapeHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 async function getBotToken(landlordId, buildingId) {
     const settings = await getResolvedSettings(landlordId, buildingId || null);
     return settings.telegramBotToken || "";
@@ -24,11 +26,13 @@ exports.checkConnection = async (landlordId, buildingId) => {
     return { ok: false, message: data.description || "Khong the ket noi Telegram" };
 };
 
-exports.sendMessage = async ({ landlordId, buildingId, chatId, text }) => {
+exports.sendMessage = async ({ landlordId, buildingId, chatId, text, parseMode }) => {
     const botToken = await getBotToken(landlordId, buildingId);
     if (!botToken) throw new Error("Chua cau hinh Telegram Bot Token trong Cau hinh");
     if (!chatId) throw new Error("Khach thue chua cung cap Telegram Chat ID");
-    const data = await call("sendMessage", botToken, { chat_id: String(chatId).trim(), text });
+    const params = { chat_id: String(chatId).trim(), text };
+    if (parseMode) params.parse_mode = parseMode;
+    const data = await call("sendMessage", botToken, params);
     if (!data.ok) throw new Error(data.description || "Khong gui duoc tin nhan Telegram");
     return data;
 };
@@ -37,8 +41,8 @@ exports.sendToLandlord = async ({ landlordId, buildingId, text, url }) => {
     const settings = await getResolvedSettings(landlordId, buildingId || null);
     const chatId = settings.landlordTelegramId;
     if (!chatId) throw new Error("Chua cau hinh Telegram ID cho chu tro");
-    const link = url ? `\n🔗 Xem ngay: ${url}` : "";
-    return exports.sendMessage({ landlordId, buildingId, chatId, text: `${text}${link}` });
+    const link = url ? `\n🔗 Xem ngay: <a href="${escapeHtml(url)}">${escapeHtml(url)}</a>` : "";
+    return exports.sendMessage({ landlordId, buildingId, chatId, text: `${escapeHtml(text)}${link}`, parseMode: "HTML" });
 };
 
 exports.formatMessage = (template, context) => {
