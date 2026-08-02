@@ -47,18 +47,6 @@ exports.runAutoReminders = async () => {
             ? settings.autoReminderTemplate
             : DEFAULT_TEMPLATE;
 
-        const notification = await Notification.create({
-            title: `Nhắc Tiền Phòng ${monthLabel} (Tự Động)`,
-            content,
-            targetType: 'specific_rooms',
-            targetRoomIds: JSON.stringify([String(room.id)]),
-            sentAt: new Date(),
-            recipientCount: 1,
-            status: 'sent',
-            source: 'auto',
-            landlordId: room.landlordId
-        });
-
         if (tenant.telegramChatId) {
             try {
                 const totalStr = new Intl.NumberFormat("vi-VN").format(Number(contract.price)) + " VND";
@@ -75,8 +63,19 @@ exports.runAutoReminders = async () => {
                     chatId: tenant.telegramChatId,
                     text
                 });
+                await Notification.create({
+                    title: `Nhắc Tiền Phòng ${monthLabel} (Tự Động)`,
+                    content,
+                    targetType: 'specific_rooms',
+                    targetRoomIds: JSON.stringify([String(room.id)]),
+                    sentAt: new Date(),
+                    recipientCount: 1,
+                    status: 'sent',
+                    source: 'auto',
+                    landlordId: room.landlordId
+                });
             } catch (e) {
-                console.error(`Auto reminder Telegram send failed (notification ${notification.id}):`, e.message);
+                console.error(`Auto reminder Telegram send failed (room ${room.room_number}, contract ${contract.id}):`, e.message);
             }
         }
     }
