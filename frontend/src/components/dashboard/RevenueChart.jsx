@@ -19,7 +19,7 @@ export default function RevenueChart({ data, monthlyRevenue }) {
           </Typography>
         </Box>
         <Chip
-          label={`Thực thu T07/26: ${formatCurrency(monthlyRevenue)}`}
+          label={`Thực thu ${data[data.length - 1]?.month || ""}: ${formatCurrency(monthlyRevenue)}`}
           size="small"
           sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, borderRadius: "12px", fontSize: "0.6875rem", border: "1px solid #bfdbfe", alignSelf: "flex-start" }}
         />

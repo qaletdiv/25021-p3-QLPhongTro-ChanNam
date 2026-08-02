@@ -35,6 +35,34 @@ exports.getStats = async (req, res, next) => {
     }
 };
 
+exports.getMonthlyRevenue = async (req, res, next) => {
+    try {
+        const landlordId = req.user.id;
+        const months = [];
+        const now = new Date();
+        for (let i = 5; i >= 0; i--) {
+            months.push(monthStr(new Date(now.getFullYear(), now.getMonth() - i, 1)));
+        }
+
+        const paidInvoices = await Invoice.findAll({
+            where: { status: 'paid', month: { [Op.in]: months } },
+            attributes: ['month', 'total'],
+            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }] }]
+        });
+
+        const revenueByMonth = {};
+        months.forEach((m) => (revenueByMonth[m] = 0));
+        paidInvoices.forEach((inv) => {
+            if (revenueByMonth[inv.month] !== undefined) revenueByMonth[inv.month] += Number(inv.total);
+        });
+
+        const chartData = months.map((m) => ({ month: m, revenue: revenueByMonth[m] }));
+        res.json({ chartData });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getExpiringContracts = async (req, res, next) => {
     try {
         const landlordId = req.user.id;

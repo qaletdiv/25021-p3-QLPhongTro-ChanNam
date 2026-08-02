@@ -5,6 +5,7 @@ const authenticateToken = require('../middlewares/authenticateToken');
 const authorizeRole = require('../middlewares/authorizeRole');
 
 router.get('/stats', authenticateToken, authorizeRole('landlord'), dashboardController.getStats);
+router.get('/monthly-revenue', authenticateToken, authorizeRole('landlord'), dashboardController.getMonthlyRevenue);
 router.get('/expiring-contracts', authenticateToken, authorizeRole('landlord'), dashboardController.getExpiringContracts);
 
 module.exports = router;

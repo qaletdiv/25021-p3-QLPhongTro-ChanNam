@@ -12,15 +12,20 @@ import { useRouter } from "next/navigation";
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [expiring, setExpiring] = useState([]);
+  const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    Promise.all([dashboardApi.getStats(), dashboardApi.getExpiringContracts()])
-      .then(([statsRes, expiringRes]) => {
+    Promise.all([dashboardApi.getStats(), dashboardApi.getExpiringContracts(), dashboardApi.getMonthlyRevenue()])
+      .then(([statsRes, expiringRes, revRes]) => {
         setStats(statsRes.data);
         setExpiring(expiringRes.data.contracts);
+        setChartData((revRes.data.chartData || []).map((d) => ({
+          month: `T${d.month.slice(0, 2)}/${d.month.slice(3, 5)}`,
+          revenue: d.revenue,
+        })));
       })
       .catch((err) => setError(err.response?.data?.message || "Lỗi tải dữ liệu"))
       .finally(() => setLoading(false));
@@ -34,15 +39,6 @@ export default function Dashboard() {
   const rentedRooms = stats.rentedRooms || 0;
   const currentTenants = stats.currentTenants || 0;
   const occupancyRate = totalRooms > 0 ? Math.round((rentedRooms / totalRooms) * 100) : 0;
-
-  const chartData = [
-    { month: "T02/26", revenue: 11200000 },
-    { month: "T03/26", revenue: 11800000 },
-    { month: "T04/26", revenue: 12400000 },
-    { month: "T05/26", revenue: 12100000 },
-    { month: "T06/26", revenue: 12800000 },
-    { month: "T07/26", revenue: stats.monthlyRevenue || 12805000 },
-  ];
 
   const navigate = (path) => router.push(path);
 
