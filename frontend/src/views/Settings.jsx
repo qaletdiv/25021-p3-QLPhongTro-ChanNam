@@ -154,23 +154,23 @@ export default function Settings() {
             <MessageIcon sx={{ fontSize: 18, color: "#2563eb" }} />
             <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>3. Cấu Hình Telegram Bot Gửi Thông Báo</Typography>
           </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
-            <Box sx={{ gridColumn: { xs: "1", sm: "1 / 3" } }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2, alignItems: "center" }}>
+            <Box sx={{ gridColumn: { xs: "1", sm: "1 / 2", lg: "1 / 3" } }}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Telegram Bot Token (lấy từ @BotFather)</Typography>
               <TextField fullWidth type="password" placeholder="123456:ABC-DEF..." value={form.telegramBotToken || ""} onChange={(e) => set("telegramBotToken", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, fontFamily: "monospace" } }} />
               <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.75 }}>
                 Khách thuê cần nhập Telegram Chat ID trong mục "Hồ sơ cá nhân" để nhận thông báo.
               </Typography>
             </Box>
-          </Box>
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 0.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-            <FormControlLabel
-              control={<Checkbox size="small" checked={form.autoReminderEnabled !== "false"} onChange={(e) => set("autoReminderEnabled", e.target.checked ? "true" : "false")} />}
-              label={<Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>Bật Tự Động Nhắc Nợ Qua Telegram</Typography>}
-            />
-            <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", pl: 0.5 }}>
-              Hệ thống tự gửi nhắc nợ vào đúng ngày thu tiền của TỪNG PHÒNG (theo "Ngày thu" trong hợp đồng), mỗi tháng 1 lần cho mỗi phòng.
-            </Typography>
+            <Box sx={{ gridColumn: { xs: "1", sm: "2 / -1", lg: "3 / -1" }, display: "flex", flexDirection: "column", gap: 0.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+              <FormControlLabel
+                control={<Checkbox size="small" checked={form.autoReminderEnabled !== "false"} onChange={(e) => set("autoReminderEnabled", e.target.checked ? "true" : "false")} />}
+                label={<Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>Bật Tự Động Nhắc Nợ Qua Telegram</Typography>}
+              />
+              <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", pl: 0.5 }}>
+                Hệ thống tự gửi nhắc nợ vào đúng ngày thu tiền của TỪNG PHÒNG (theo "Ngày thu" trong hợp đồng), mỗi tháng 1 lần cho mỗi phòng.
+              </Typography>
+            </Box>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 2 }}>
             <Button variant="outlined" size="small" onClick={handleTestTelegram}
