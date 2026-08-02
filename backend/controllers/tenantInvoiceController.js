@@ -2,7 +2,7 @@ const { Invoice, Contract, Room, Building } = require("../models");
 const cloudinary = require("../config/cloudinary");
 const { getResolvedSettings } = require("../utils/settings");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
-const { monthStr } = require("../utils/dates");
+const { monthStr, nextMonthOf } = require("../utils/dates");
 const telegram = require("../utils/telegram");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -119,9 +119,14 @@ exports.submitMeter = async (req, res, next) => {
         const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room" }]);
         if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
+        const lastInvoice = await Invoice.findOne({
+            where: { contractId: contract.id },
+            order: [['createdAt', 'DESC']]
+        });
         const now = new Date();
-        const monthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        const month = monthStr(monthDate);
+        const month = lastInvoice
+            ? nextMonthOf(lastInvoice.month)
+            : monthStr(new Date(now.getFullYear(), now.getMonth() + 1, 1));
         const existing = await Invoice.findOne({ where: { contractId: contract.id, month } });
         if (existing) {
             return res.status(400).json({ message: "Hóa đơn tháng này đã tồn tại" });
@@ -133,10 +138,6 @@ exports.submitMeter = async (req, res, next) => {
         const serviceFee = settings.serviceFee !== undefined && settings.serviceFee !== "" ? Number(settings.serviceFee) || 0 : 0;
         const roomPrice = Number(contract.room.price) || 0;
 
-        const lastInvoice = await Invoice.findOne({
-            where: { contractId: contract.id },
-            order: [['createdAt', 'DESC']]
-        });
         const elecOld = lastInvoice ? Number(lastInvoice.electricityNew) : (Number(contract.initialElectricity) || 0);
         const waterOld = lastInvoice ? Number(lastInvoice.waterNew) : (Number(contract.initialWater) || 0);
         const elecNew = Number(electricity);

@@ -13,3 +13,10 @@ export const nextMonthLabel = () => {
   const year = d.getMonth() === 11 ? d.getFullYear() + 1 : d.getFullYear();
   return `${String(month + 1).padStart(2, "0")}/${year}`;
 };
+
+export const nextMonthOf = (month) => {
+  const [mm, yyyy] = String(month).split("/").map(Number);
+  const m = mm === 12 ? 1 : mm + 1;
+  const year = mm === 12 ? yyyy + 1 : yyyy;
+  return `${String(m).padStart(2, "0")}/${year}`;
+};
