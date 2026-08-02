@@ -117,11 +117,11 @@ export default function MeterInvoiceTab({
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(roomPrice)}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
-              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền điện ({Math.round(calcElecUsage)} kWh x {electricityRate}đ):</Typography>
+              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền điện ({Math.round(calcElecUsage)} kWh x {formatCurrency(electricityRate)}):</Typography>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(Math.round(calcElecAmount))}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
-              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền nước ({Math.round(calcWaterUsage)} m³ x {waterRate}đ):</Typography>
+              <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền nước ({Math.round(calcWaterUsage)} m³ x {formatCurrency(waterRate)}):</Typography>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(Math.round(calcWaterAmount))}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #bfdbfe", pt: 1 }}>
