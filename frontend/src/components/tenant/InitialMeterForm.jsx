@@ -90,17 +90,17 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
         </Typography>
 
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 2 }}>
+          {photoBox(elecPreview, "Ảnh đồng hồ điện", (e) => handlePhoto(e, "elec"))}
+          {photoBox(waterPreview, "Ảnh đồng hồ nước", (e) => handlePhoto(e, "water"))}
+        </Box>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 2 }}>
           <TextField fullWidth label="Chỉ số điện ban đầu (kWh)" type="number" value={elec}
             onChange={(e) => setElec(e.target.value)}
             sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
           <TextField fullWidth label="Chỉ số nước ban đầu (m³)" type="number" value={water}
             onChange={(e) => setWater(e.target.value)}
             sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }} />
-        </Box>
-
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 2 }}>
-          {photoBox(elecPreview, "Ảnh đồng hồ điện", (e) => handlePhoto(e, "elec"))}
-          {photoBox(waterPreview, "Ảnh đồng hồ nước", (e) => handlePhoto(e, "water"))}
         </Box>
 
         {error && (
