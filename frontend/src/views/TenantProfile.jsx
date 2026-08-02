@@ -76,7 +76,7 @@ export default function TenantProfile() {
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" fontWeight="bold" color="#0f172a" sx={{ fontFamily: "'Arial', sans-serif", letterSpacing: "normal" }}>Hồ sơ cá nhân</Typography>
+        <Typography variant="h4" fontWeight="bold" color="#0f172a" sx={{ fontFamily: "'Arial', sans-serif", letterSpacing: "normal" }}>Hồ sơ cá nhân</Typography>
         <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý thông tin cá nhân và thay đổi mật khẩu</Typography>
       </Box>
 

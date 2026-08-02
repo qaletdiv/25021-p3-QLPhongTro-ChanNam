@@ -12,10 +12,10 @@ const theme = createTheme({
     text: { primary: "#0f172a", secondary: "#64748b" },
     divider: "#e2e8f0",
   },
-  typography: {
+   typography: {
     fontFamily: '"Arial", sans-serif',
-    h4: { fontWeight: 800, fontSize: "1.5rem", letterSpacing: "-0.025em" },
-    h5: { fontWeight: 800, fontSize: "1.25rem", letterSpacing: "-0.025em" },
+    h4: { fontWeight: 800, fontSize: "1.75rem", letterSpacing: "normal" },
+    h5: { fontWeight: 700, fontSize: "1.5rem", letterSpacing: "normal" },
     h6: { fontWeight: 700, fontSize: "1rem" },
     subtitle1: { fontWeight: 700, fontSize: "0.875rem" },
     subtitle2: { fontWeight: 600, fontSize: "0.75rem", color: "#64748b" },
