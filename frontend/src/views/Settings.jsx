@@ -202,10 +202,6 @@ export default function Settings() {
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại Liên Hệ</Typography>
               <TextField fullWidth value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email Thông Báo</Typography>
-              <TextField fullWidth type="email" value={form.landlordEmail || ""} onChange={(e) => set("landlordEmail", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
           </Box>
         </Box>
 
