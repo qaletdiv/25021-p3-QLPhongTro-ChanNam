@@ -162,14 +162,6 @@ export default function Settings() {
                 Khách thuê cần nhập Telegram Chat ID trong mục "Hồ sơ cá nhân" để nhận thông báo.
               </Typography>
             </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Chốt Hóa Đơn Hàng Tháng</Typography>
-              <TextField fullWidth type="number" slotProps={{ htmlInput: { min: 1, max: 31 } }} value={form.invoiceClosingDay || ""} onChange={(e) => set("invoiceClosingDay", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Nhắc Nợ Tự Động</Typography>
-              <TextField fullWidth type="number" slotProps={{ htmlInput: { min: 1, max: 31 } }} value={form.defaultRemindDay || ""} onChange={(e) => set("defaultRemindDay", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
           </Box>
           <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 0.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
             <FormControlLabel
