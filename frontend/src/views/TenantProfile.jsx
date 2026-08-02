@@ -127,15 +127,15 @@ export default function TenantProfile() {
          <Grid container spacing={2}>
           <Grid size={4}>
             <TextField fullWidth label="Mật khẩu cũ" type="password" value={passwords.oldPassword} onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
-              sx={passwordFieldSx} />
+              sx={inputFieldSx} />
           </Grid>
           <Grid size={4}>
             <TextField fullWidth label="Mật khẩu mới" type="password" value={passwords.newPassword} onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-              sx={passwordFieldSx} />
+              sx={inputFieldSx} />
           </Grid>
           <Grid size={4}>
             <TextField fullWidth label="Xác nhận mật khẩu" type="password" value={passwords.confirmPassword} onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-              sx={passwordFieldSx} />
+              sx={inputFieldSx} />
           </Grid>
         </Grid>
         <Box sx={{ mt: 2, textAlign: "center" }}>
