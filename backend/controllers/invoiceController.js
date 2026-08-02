@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { Invoice, Contract, Room, Tenant, Building } = require("../models");
 const telegram = require("../utils/telegram");
 
@@ -20,6 +21,18 @@ exports.getInvoices = async (req, res, next) => {
             order: [['createdAt', 'DESC']]
         });
         res.json({ invoices });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getPendingCount = async (req, res, next) => {
+    try {
+        const count = await Invoice.count({
+            where: { status: { [Op.in]: ['pending', 'submitted'] } },
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId: req.user.id }, required: true }] }]
+        });
+        res.json({ count });
     } catch (error) {
         next(error);
     }

@@ -7,6 +7,7 @@ const { invoiceIdParamValidation } = require('../validators/invoiceValidator');
 const handleValidationErrors = require('../middlewares/validationErrorHandler');
 
 router.get('/', authenticateToken, authorizeRole('landlord'), invoiceController.getInvoices);
+router.get('/pending-count', authenticateToken, authorizeRole('landlord'), invoiceController.getPendingCount);
 router.put('/:id/paid', authenticateToken, authorizeRole('landlord'), invoiceIdParamValidation(), handleValidationErrors, invoiceController.markAsPaid);
 router.post('/:id/remind', authenticateToken, authorizeRole('landlord'), invoiceIdParamValidation(), handleValidationErrors, invoiceController.sendReminder);
 

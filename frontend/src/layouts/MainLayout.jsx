@@ -21,6 +21,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import { useAuth } from "../contexts/AuthContext";
 import issueApi from "../api/issueApi";
+import invoiceApi from "../api/invoiceApi";
 
 const drawerWidth = 260;
 
@@ -30,8 +31,8 @@ const menuItems = [
   { label: "Phòng", icon: <MeetingRoomIcon />, path: "/landlord/rooms" },
   { label: "Vật Dụng", icon: <ChairIcon />, path: "/landlord/furnitures" },
   { label: "Hợp Đồng", icon: <PeopleIcon />, path: "/landlord/tenants" },
-  { label: "Hóa Đơn", icon: <ReceiptIcon />, path: "/landlord/invoices" },
-  { label: "Báo Hỏng", icon: <BugReportIcon />, path: "/landlord/issues", badge: true },
+  { label: "Hóa Đơn", icon: <ReceiptIcon />, path: "/landlord/invoices", badgeKey: "invoices" },
+  { label: "Báo Hỏng", icon: <BugReportIcon />, path: "/landlord/issues", badgeKey: "issues" },
   { label: "Thông Báo", icon: <NotificationsIcon />, path: "/landlord/notifications" },
   { label: "Cài Đặt", icon: <SettingsIcon />, path: "/landlord/settings" },
   { label: "Mẫu Hợp Đồng", icon: <DescriptionIcon />, path: "/landlord/contract-template" },
@@ -45,16 +46,20 @@ export default function MainLayout({ children }) {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingIssues, setPendingIssues] = useState(0);
+  const [pendingInvoices, setPendingInvoices] = useState(0);
 
   useEffect(() => {
     let active = true;
-    const loadCount = () => {
+    const loadCounts = () => {
       issueApi.getPendingCount()
         .then((res) => { if (active) setPendingIssues(res.data.count || 0); })
         .catch(() => {});
+      invoiceApi.getPendingCount()
+        .then((res) => { if (active) setPendingInvoices(res.data.count || 0); })
+        .catch(() => {});
     };
-    loadCount();
-    const timer = setInterval(loadCount, 60000);
+    loadCounts();
+    const timer = setInterval(loadCounts, 60000);
     return () => { active = false; clearInterval(timer); };
   }, []);
 
@@ -94,8 +99,8 @@ export default function MainLayout({ children }) {
               }}
             >
               <ListItemIcon sx={{ minWidth: 34, color: selected ? "#2563eb" : "#64748b" }}>
-                {item.badge ? (
-                  <Badge badgeContent={pendingIssues > 0 ? pendingIssues : null} color="error" sx={{ "& .MuiBadge-badge": { fontSize: "0.5625rem", minWidth: 16, height: 16, borderRadius: "8px" } }}>
+                {item.badgeKey ? (
+                  <Badge badgeContent={(item.badgeKey === "issues" ? pendingIssues : pendingInvoices) > 0 ? (item.badgeKey === "issues" ? pendingIssues : pendingInvoices) : null} color="error" sx={{ "& .MuiBadge-badge": { fontSize: "0.5625rem", minWidth: 16, height: 16, borderRadius: "8px" } }}>
                     {item.icon}
                   </Badge>
                 ) : item.icon}

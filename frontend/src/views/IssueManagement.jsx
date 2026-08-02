@@ -5,7 +5,6 @@ import {
   Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody,
   TableContainer, Paper, Chip, CircularProgress,
 } from "@mui/material";
-import BugReportIcon from "@mui/icons-material/BugReport";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import MessageDialog from "../components/MessageDialog";
 import issueApi from "../api/issueApi";
@@ -14,15 +13,13 @@ const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
 
 export default function IssueManagement() {
   const [issues, setIssues] = useState([]);
-  const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const fetchData = useCallback(async () => {
     try {
-      const [listRes, countRes] = await Promise.all([issueApi.getAll(), issueApi.getPendingCount()]);
+      const listRes = await issueApi.getAll();
       setIssues(listRes.data.issues || []);
-      setPendingCount(countRes.data.count || 0);
     } catch {
       setSnack({ open: true, message: "Lỗi tải danh sách báo hỏng", severity: "error" });
     } finally {
@@ -46,19 +43,11 @@ export default function IssueManagement() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Báo Hỏng</Typography>
-          <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
-            Các báo cáo hỏng hóc từ khách thuê được gửi đến chủ trọ.
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 2.5, py: 1.25, bgcolor: pendingCount > 0 ? "#fef3c7" : "#f1f5f9", borderRadius: "12px", border: `1px solid ${pendingCount > 0 ? "#fde68a" : "#e2e8f0"}` }}>
-          <BugReportIcon sx={{ fontSize: 18, color: pendingCount > 0 ? "#d97706" : "#64748b" }} />
-          <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: pendingCount > 0 ? "#92400e" : "#334155" }}>
-            {pendingCount} báo hỏng chờ xử lý
-          </Typography>
-        </Box>
+      <Box>
+        <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.025em" }}>Quản Lý Báo Hỏng</Typography>
+        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
+          Các báo cáo hỏng hóc từ khách thuê được gửi đến chủ trọ.
+        </Typography>
       </Box>
 
       <TableContainer component={Paper} sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}>
