@@ -7,6 +7,7 @@ const tenantDashboardController = require('../controllers/tenantDashboardControl
 const tenantInvoiceController = require('../controllers/tenantInvoiceController');
 const tenantIssueController = require('../controllers/tenantIssueController');
 const tenantProfileController = require('../controllers/tenantProfileController');
+const tenantNotificationController = require('../controllers/tenantNotificationController');
 
 const auth = [authenticateToken, authorizeRole('tenant')];
 
@@ -19,6 +20,9 @@ router.post('/meter-submit', ...auth, tenantInvoiceController.submitMeter);
 
 router.get('/issues', ...auth, tenantIssueController.getIssues);
 router.post('/issues', ...auth, tenantIssueController.createIssue);
+
+router.get('/notifications', ...auth, tenantNotificationController.getNotifications);
+router.post('/notifications/read', ...auth, tenantNotificationController.markRead);
 
 router.get('/profile', ...auth, tenantProfileController.getProfile);
 router.put('/profile', ...auth, tenantProfileController.updateProfile);
