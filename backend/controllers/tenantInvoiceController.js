@@ -178,10 +178,11 @@ exports.submitMeter = async (req, res, next) => {
         res.json({ message: "Da gui chi so va chot hoa don thanh cong", invoice });
 
         try {
+            const [mm, yyyy] = month.split("/");
             await telegram.sendToLandlord({
                 landlordId: contract.room.landlordId,
                 buildingId: contract.room.buildingId,
-                text: `🧾 Hóa đơn mới chờ xử lý\nPhòng ${contract.room.room_number} tháng ${month}: ${Math.round(total).toLocaleString("vi-VN")}₫`,
+                text: `🧾 Có phòng ${contract.room.room_number} gửi tiền nhà tháng ${mm} năm ${yyyy} chờ xác nhận.`,
                 url: `${FRONTEND_URL}/landlord/invoices`
             });
         } catch (e) {

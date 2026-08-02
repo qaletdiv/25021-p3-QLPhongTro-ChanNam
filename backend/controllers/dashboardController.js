@@ -69,8 +69,8 @@ exports.getNotifications = async (req, res, next) => {
 
         const unpaidInvoices = await Invoice.findAll({
             where: { status: { [Op.in]: ['pending', 'submitted'] } },
-            attributes: ['id'],
-            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }] }]
+            attributes: ['id', 'month'],
+            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: ['room_number'] }] }]
         });
         const pendingIssues = await Issue.count({
             where: { status: 'pending' },
@@ -78,8 +78,15 @@ exports.getNotifications = async (req, res, next) => {
         });
 
         const items = [];
-        if (unpaidInvoices.length > 0) {
-            items.push({ kind: 'invoice', title: 'Hóa đơn chờ xử lý', message: `Có ${unpaidInvoices.length} hóa đơn chưa thanh toán`, count: unpaidInvoices.length, link: '/landlord/invoices' });
+        for (const inv of unpaidInvoices) {
+            const [mm, yyyy] = String(inv.month).split("/");
+            items.push({
+                kind: 'invoice',
+                title: 'Hóa đơn cần xử lý',
+                message: `Có phòng ${inv.contract?.room?.room_number || "?"} gửi tiền nhà tháng ${mm} năm ${yyyy} chờ xác nhận`,
+                count: 1,
+                link: '/landlord/invoices'
+            });
         }
         if (pendingIssues > 0) {
             items.push({ kind: 'issue', title: 'Báo hỏng cần xem', message: `Có ${pendingIssues} báo hỏng đang chờ xử lý`, count: pendingIssues, link: '/landlord/issues' });
