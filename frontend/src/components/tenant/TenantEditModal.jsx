@@ -2,6 +2,7 @@
 
 import { Box, Typography, TextField, CircularProgress, Grid, Autocomplete, Chip } from "@mui/material";
 import ModalShell from "../ui/ModalShell";
+import DateField from "../ui/DateField";
 import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
 
@@ -61,12 +62,12 @@ export default function TenantEditModal({
                   sx={inputSx} />
               </Grid>
               <Grid size={6}>
-                <TextField fullWidth size="small" label="Ngày bắt đầu" type="date" value={contractForm.startDate} onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} required
-                  sx={inputSx} />
+              <DateField fullWidth size="small" label="Ngày bắt đầu" value={contractForm.startDate} onChange={(v) => setContractForm({ ...contractForm, startDate: v })} required
+                sx={inputSx} />
               </Grid>
               <Grid size={6}>
-                <TextField fullWidth size="small" label="Ngày kết thúc" type="date" value={contractForm.endDate} onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })} slotProps={{ inputLabel: { shrink: true } }} required
-                  sx={inputSx} />
+                <DateField fullWidth size="small" label="Ngày kết thúc" value={contractForm.endDate} onChange={(v) => setContractForm({ ...contractForm, endDate: v })} required
+                sx={inputSx} />
               </Grid>
               <Grid size={6}>
                 <TextField fullWidth size="small" label="Ngày thu tiền" type="number" value={contractForm.paymentDay} onChange={(e) => { paymentDayManuallyChanged.current = true; setContractForm({ ...contractForm, paymentDay: e.target.value }); }} slotProps={{ htmlInput: { min: 1, max: 31 } }} required

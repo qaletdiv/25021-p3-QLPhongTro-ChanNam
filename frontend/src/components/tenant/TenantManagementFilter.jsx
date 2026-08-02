@@ -1,5 +1,6 @@
 import { Box, Paper, Typography, TextField, Select, MenuItem, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import DateField from "../ui/DateField";
 
 export default function TenantManagementFilter({ statusFilter, search, dateFrom, dateTo, onChange }) {
   return (
@@ -34,15 +35,15 @@ export default function TenantManagementFilter({ statusFilter, search, dateFrom,
         <Box>
           <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Thời Gian</Typography>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }}>
-            <TextField
-              size="small" type="date" value={dateFrom} onChange={(e) => onChange("dateFrom", e.target.value)}
-              label="Từ ngày" slotProps={{ inputLabel: { shrink: true } }}
-              sx={{ width: 150, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
+            <DateField
+              size="small" value={dateFrom} onChange={(v) => onChange("dateFrom", v)}
+              label="Từ ngày"
+              sx={{ width: 165, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
             />
-            <TextField
-              size="small" type="date" value={dateTo} onChange={(e) => onChange("dateTo", e.target.value)}
-              label="Đến ngày" slotProps={{ inputLabel: { shrink: true } }}
-              sx={{ width: 150, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
+            <DateField
+              size="small" value={dateTo} onChange={(v) => onChange("dateTo", v)}
+              label="Đến ngày"
+              sx={{ width: 165, "& .MuiOutlinedInput-root": { fontSize: "0.75rem", borderRadius: "12px", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
             />
             {(dateFrom || dateTo) && (
               <Box onClick={() => onChange("clearDates")}

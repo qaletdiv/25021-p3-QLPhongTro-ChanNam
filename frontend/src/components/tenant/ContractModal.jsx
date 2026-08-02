@@ -3,6 +3,7 @@
 import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocomplete } from "@mui/material";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import ModalShell from "../ui/ModalShell";
+import DateField from "../ui/DateField";
 import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
 
@@ -133,21 +134,19 @@ export default function ContractModal({
           <Grid container spacing={1.5}>
             <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Bắt Đầu Hợp Đồng</Typography>
-              <TextField
-                fullWidth size="small" type="date"
+              <DateField
+                fullWidth size="small"
                 value={contractForm.startDate}
-                onChange={(e) => setContractForm({ ...contractForm, startDate: e.target.value })}
-                slotProps={{ inputLabel: { shrink: true } }}
+                onChange={(v) => setContractForm({ ...contractForm, startDate: v })}
                 sx={inputSx}
               />
             </Grid>
             <Grid size={6}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Kết Thúc Hợp Đồng</Typography>
-              <TextField
-                fullWidth size="small" type="date"
+              <DateField
+                fullWidth size="small"
                 value={contractForm.endDate}
-                onChange={(e) => setContractForm({ ...contractForm, endDate: e.target.value })}
-                slotProps={{ inputLabel: { shrink: true } }}
+                onChange={(v) => setContractForm({ ...contractForm, endDate: v })}
                 sx={inputSx}
               />
             </Grid>
