@@ -11,32 +11,190 @@ const decodeEntities = (s) =>
         .replace(/&quot;/g, '"')
         .replace(/&#39;/g, "'");
 
+const LINE_HEIGHT = 14;
+const CELL_VPAD = 6;
+const FONT_REGULAR = "Arial";
+const FONT_BOLD = "Arial-Bold";
+const FONT_SIZE = 11;
+
+// Parse the inline content of a single "line" into segments {text, bold} and an align.
+const parseSegmentsForHtml = (html) => {
+    const parts = String(html || "").split(/(<[^>]+>)/g);
+    const segments = [];
+    let currentBold = false;
+    for (const part of parts) {
+        if (/^<\/?(strong|b)(\s|>|$)/i.test(part) && /^<[^>]+>$/.test(part)) {
+            currentBold = !part.startsWith("</");
+            continue;
+        }
+        if (/^<[^>]+>$/.test(part)) continue;
+        if (part.trim() === "" && !part.includes("\n")) continue;
+        segments.push({ text: decodeEntities(part), bold: currentBold });
+    }
+    return segments;
+};
+
+// Render the (already-decoded) segments of one line at (x,y). Returns the next y.
+const drawSegmentsLine = (doc, segments, x, y, fontSize = FONT_SIZE) => {
+    let cx = x;
+    segments.forEach((seg, i) => {
+        const text = seg.text || "\u00a0";
+        doc.font(seg.bold ? FONT_BOLD : FONT_REGULAR).fontSize(fontSize);
+        doc.text(text, cx, y, { continued: i < segments.length - 1 });
+        cx += doc.widthOfString(text, { fontSize, font: seg.bold ? FONT_BOLD : FONT_REGULAR });
+    });
+    return y + LINE_HEIGHT;
+};
+
+// Parse a single cell's inner HTML (which may contain <br>) into array of lines, each {segments, align}.
+const parseTableCellLines = (cellHtml) => {
+    let raw = String(cellHtml || "").replace(/<br\s*\/?>/gi, "\n");
+    const align = /text-align:\s*center/i.test(raw) || /ql-align[-]?center/i.test(raw)
+        ? "center"
+        : /text-align:\s*right/i.test(raw) || /ql-align[-]?right/i.test(raw)
+        ? "right"
+        : "left";
+    const lines = [];
+    for (const l of raw.split("\n")) {
+        const segments = parseSegmentsForHtml(l);
+        lines.push({ segments, align });
+    }
+    // drop a single trailing empty line
+    while (lines.length && lines[lines.length - 1].segments.length === 0) lines.pop();
+    return lines.length ? lines : [{ segments: [{ text: "", bold: false }], align: "left" }];
+};
+
+const parseTable = (tableHtml) => {
+    const rows = [];
+    const tBody = String(tableHtml || "").replace(/\n/g, " ");
+    const trMatches = [...tBody.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
+    let cols = 0;
+    for (const tm of trMatches) {
+        const cells = [];
+        const tdMatches = [...tm[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)];
+        for (const td of tdMatches) cells.push(parseTableCellLines(td[1]));
+        if (cells.length > cols) cols = cells.length;
+        rows.push(cells);
+    }
+    return { cols: cols || 1, rows: rows.filter((r) => r.length) };
+};
+
+// Render a text line at (x,y). Returns the next y.
+const drawLine = (doc, line, x, y) => {
+    if (!line) {
+        doc.y = y;
+        return y + LINE_HEIGHT;
+    }
+    const { segments, align } = line;
+    const text = segments.map((s) => s.text).join(" ").trim();
+    if (align === "center") {
+        const allBold = segments.length > 0 && segments.every((s) => s.bold);
+        doc.font(allBold ? FONT_BOLD : FONT_REGULAR).fontSize(allBold && !text ? FONT_SIZE + 2 : FONT_SIZE);
+        const w = doc.page.width - 100;
+        const tx = x + w / 2;
+        doc.text(text, tx, y, { align: "center", width: w });
+        return y + LINE_HEIGHT;
+    }
+    doc.fontSize(FONT_SIZE);
+    let cx = x;
+    segments.forEach((seg, i) => {
+        const segText = seg.text || "";
+        const font = seg.bold ? FONT_BOLD : FONT_REGULAR;
+        doc.font(font).fontSize(FONT_SIZE);
+        doc.text(segText, cx, y, { continued: i < segments.length - 1 });
+        cx += doc.widthOfString(segText, { fontSize: FONT_SIZE, font });
+    });
+    return y + LINE_HEIGHT;
+};
+
+// Render a table block. `block` = { type:'table', cols, rows }
+const renderTable = (doc, block) => {
+    const cols = block.cols;
+    const leftMargin = doc.page.margins.left || 50;
+    const rightMargin = doc.page.margins.right || 50;
+    const contentWidth = doc.page.width - leftMargin - rightMargin;
+    const gutter = 8;
+    const colW = (contentWidth - gutter * (cols - 1)) / cols;
+
+    const lineHeight = LINE_HEIGHT + 4;
+    const rows = block.rows.map((r) => {
+        // pad/shorten rows to `cols`; compute height per row
+        const cells = [];
+        for (let c = 0; c < cols; c++) cells.push(r[c] || [{ segments: [{ text: "", bold: false }], align: "left" }]);
+        let maxH = 0;
+        for (const cell of cells) {
+            const h = cell.length * lineHeight + CELL_VPAD * 2;
+            if (h > maxH) maxH = h;
+        }
+        return { cells, height: maxH };
+    });
+
+    let y = doc.y;
+    rows.forEach((row) => {
+        const x0 = leftMargin;
+        let cx = x0;
+        // page break
+        if (y + row.height > doc.page.height - (doc.page.margins.bottom || 50) && y > leftMargin + 20) {
+            doc.addPage();
+            y = doc.page.margins.top || 50;
+            cx = leftMargin;
+        }
+        row.cells.forEach((cell, c) => {
+            const colX = cx;
+            // draw border
+            doc.rect(colX, y, colW, row.height).stroke();
+            let ty = y + CELL_VPAD;
+            cell.forEach((line) => {
+                const text = line.segments.map((s) => s.text).join(" ").trim();
+                const allBold = line.segments.length > 0 && line.segments.every((s) => s.bold);
+                doc.font(allBold ? FONT_BOLD : FONT_REGULAR).fontSize(FONT_SIZE);
+                if (line.align === "center") {
+                    doc.text(text, colX + 6, ty, { align: "center", width: colW - 12, continued: false });
+                } else if (line.align === "right") {
+                    doc.text(text, colX + 6, ty, { align: "right", width: colW - 12, continued: false });
+                } else {
+                    doc.text(text, colX + 6, ty, { align: "left", width: colW - 12, continued: false });
+                }
+                ty += lineHeight;
+            });
+            cx += colW + gutter;
+        });
+        y += row.height;
+    });
+    doc.x = leftMargin;
+    doc.y = y;
+};
+
+const linesFromText = (text) => {
+    const result = [];
+    for (const raw of text.split("\n")) {
+        const align = /text-align:\s*center/i.test(raw) || /ql-align[-]?center/i.test(raw) ? "center" : "left";
+        const segments = parseSegmentsForHtml(raw);
+        result.push(segments.length === 0 ? null : { segments, align });
+    }
+    return result;
+};
+
 const parseHtmlToLines = (html) => {
     if (!html) return [];
     let s = html
+        .replace(/\r\n/g, "\n")
         .replace(/<br\s*\/?>/gi, "\n")
         .replace(/<\/(p|div|h[1-6]|li|ul|ol|blockquote)>/gi, "\n")
         .replace(/<li[^>]*>/gi, "- ")
         .replace(/<ul[^>]*>/gi, "")
         .replace(/<ol[^>]*>/gi, "");
 
+    // Split body around <table>...</table> blocks
+    const parts = s.split(/(<table\b[\s\S]*?<\/table>)/gi);
     const result = [];
-    for (const raw of s.split("\n")) {
-        const align = /ql-align[-]?center/i.test(raw) ? "center" : "left";
-        const parts = raw.split(/(<[^>]+>)/g);
-        const segments = [];
-        let currentBold = false;
-        for (const part of parts) {
-            if (/^<\/?(strong|b)(\s|>)/i.test(part) && /^<[^>]+>$/i.test(part)) {
-                currentBold = !part.startsWith("</");
-                continue;
-            }
-            if (/^<[^>]+>$/i.test(part)) continue;
-            if (part.trim() === "") continue;
-            segments.push({ text: decodeEntities(part), bold: currentBold });
+    for (const part of parts) {
+        if (/^<table\b/i.test(part.trim())) {
+            const table = parseTable(part);
+            if (table.rows.length) result.push({ type: "table", cols: table.cols, rows: table.rows });
+        } else {
+            for (const line of linesFromText(part)) result.push(line);
         }
-        if (segments.length === 0) result.push(null);
-        else result.push({ segments, align });
     }
     return result;
 };
@@ -111,27 +269,19 @@ exports.generatePdf = async (req, res, next) => {
         res.setHeader('Content-Disposition', `inline; filename=hop_dong_${contract.room?.room_number}.pdf`);
         doc.pipe(res);
 
+        doc.font(FONT_REGULAR).fontSize(FONT_SIZE);
+
         const lines = parseHtmlToLines(content);
         for (const line of lines) {
+            if (line && line.type === "table") {
+                renderTable(doc, line);
+                continue;
+            }
             if (!line) {
                 doc.moveDown(0.5);
                 continue;
             }
-            const { segments, align } = line;
-            const allBold = segments.length > 0 && segments.every((seg) => seg.bold);
-            if (align === "center") {
-                const text = segments.map((seg) => seg.text).join(" ").trim();
-                doc.font(allBold ? 'Arial-Bold' : 'Arial').fontSize(allBold ? 13 : 11).text(text, { align: 'center' });
-            } else {
-                doc.fontSize(11);
-                for (const [i, seg] of segments.entries()) {
-                    doc.font(seg.bold ? 'Arial-Bold' : 'Arial');
-                    const opts = { align: 'left', continued: i < segments.length - 1 };
-                    if (i === 0 && segments[0].text.startsWith('- ')) opts.indent = 20;
-                    doc.text(seg.text, opts);
-                }
-                doc.text("");
-            }
+            doc.y = drawLine(doc, line, doc.page.margins.left, doc.y);
         }
 
         doc.end();
