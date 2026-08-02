@@ -1,4 +1,4 @@
-const { Invoice, Room, Building } = require("../models");
+const { Invoice, Contract, Room, Building } = require("../models");
 const cloudinary = require("../config/cloudinary");
 const { getResolvedSettings } = require("../utils/settings");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
