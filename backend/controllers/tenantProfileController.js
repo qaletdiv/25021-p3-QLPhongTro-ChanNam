@@ -1,9 +1,10 @@
 const bcrypt = require("bcrypt");
-const { User, Tenant } = require("../models");
+const { User } = require("../models");
+const { findTenantByUser } = require("../utils/tenantHelpers");
 
 exports.getProfile = async (req, res, next) => {
     try {
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         const profile = {
             name: req.user.name,
             email: req.user.email,
@@ -29,7 +30,7 @@ exports.updateProfile = async (req, res, next) => {
 
         await req.user.update(updateData);
 
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         if (tenant && cccd !== undefined) {
             await tenant.update({ cccd });
         }

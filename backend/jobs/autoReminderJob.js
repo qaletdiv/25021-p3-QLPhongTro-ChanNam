@@ -1,14 +1,10 @@
 const { Op } = require("sequelize");
 const { Notification, Contract, Room, Tenant } = require("../models");
 const { getResolvedSettings } = require("../utils/settings");
+const { monthStr } = require("../utils/dates");
 const telegram = require("../utils/telegram");
 
 const CHECK_INTERVAL_MS = 30 * 60 * 1000;
-
-function formatMonth(date) {
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    return `${mm}/${date.getFullYear()}`;
-}
 
 async function isAutoReminderSentThisMonth(roomId) {
     const start = new Date();
@@ -45,14 +41,14 @@ exports.runAutoReminders = async () => {
 
         if (await isAutoReminderSentThisMonth(room.id)) continue;
 
-        const monthStr = formatMonth(new Date());
+        const monthLabel = monthStr(new Date());
         const DEFAULT_TEMPLATE = `Kinh gui {{TENKHACH}} (Phong {{MAPHONG}}), den ky thu tien nha thang {{THANG}}. Vui long thanh toan truoc ngay {{HAN_THANH_TOAN}}. Cam on!`;
         const content = (settings.autoReminderTemplate && settings.autoReminderTemplate.trim())
             ? settings.autoReminderTemplate
             : DEFAULT_TEMPLATE;
 
         const notification = await Notification.create({
-            title: `Nhắc Tiền Phòng ${monthStr} (Tự Động)`,
+            title: `Nhắc Tiền Phòng ${monthLabel} (Tự Động)`,
             content,
             targetType: 'specific_rooms',
             targetRoomIds: JSON.stringify([String(room.id)]),
@@ -70,7 +66,7 @@ exports.runAutoReminders = async () => {
                     tenantName: tenant.name,
                     roomNumber: room.room_number,
                     totalAmount: totalStr,
-                    month: monthStr,
+                    month: monthLabel,
                     dueDate: String(contract.paymentDay + 5)
                 });
                 await telegram.sendMessage({

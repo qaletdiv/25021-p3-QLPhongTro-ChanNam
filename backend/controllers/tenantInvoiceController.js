@@ -1,10 +1,12 @@
-const { Invoice, Contract, Tenant, Room, Building } = require("../models");
+const { Invoice, Room, Building } = require("../models");
 const cloudinary = require("../config/cloudinary");
 const { getResolvedSettings } = require("../utils/settings");
+const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
+const { monthStr } = require("../utils/dates");
 
 exports.getInvoices = async (req, res, next) => {
     try {
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
         const invoices = await Invoice.findAll({
@@ -23,13 +25,10 @@ exports.getInvoices = async (req, res, next) => {
 
 exports.getSettings = async (req, res, next) => {
     try {
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
-        const contract = await Contract.findOne({
-            where: { tenantId: tenant.id, status: 'active' },
-            include: [{ model: Room, as: "room", include: [{ model: Building, as: "building", attributes: ["id", "name", "address"] }] }]
-        });
+        const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room", include: [{ model: Building, as: "building", attributes: ["id", "name", "address"] }] }]);
         if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
 
         const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
@@ -55,13 +54,10 @@ exports.saveInitialReadings = async (req, res, next) => {
             return res.status(400).json({ message: "Vui long upload anh dong ho dien va nuoc" });
         }
 
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
-        const contract = await Contract.findOne({
-            where: { tenantId: tenant.id, status: 'active' },
-            include: [{ model: Room, as: "room" }]
-        });
+        const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room" }]);
         if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
 
         const [elecRes, waterRes] = await Promise.all([
@@ -103,18 +99,15 @@ exports.submitMeter = async (req, res, next) => {
             return res.status(400).json({ message: "Vui long upload anh dong ho dien va nuoc" });
         }
 
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
-        const contract = await Contract.findOne({
-            where: { tenantId: tenant.id, status: 'active' },
-            include: [{ model: Room, as: "room" }]
-        });
+        const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room" }]);
         if (!contract) return res.status(404).json({ message: "Khong co hop dong hoat dong" });
 
         const now = new Date();
         const monthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        const month = `${String(monthDate.getMonth() + 1).padStart(2, "0")}/${monthDate.getFullYear()}`;
+        const month = monthStr(monthDate);
         const existing = await Invoice.findOne({ where: { contractId: contract.id, month } });
         if (existing) {
             return res.status(400).json({ message: "Hoa don thang nay da ton tai" });

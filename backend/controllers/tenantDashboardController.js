@@ -1,9 +1,10 @@
 const { Op } = require("sequelize");
 const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notification, Invoice } = require("../models");
+const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 
 exports.getDashboard = async (req, res, next) => {
     try {
-        let tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        let tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
         const furnituresInclude = {
@@ -13,16 +14,15 @@ exports.getDashboard = async (req, res, next) => {
 
         const buildingInclude = { model: Building, as: "building", attributes: ["id", "name", "address"] };
 
+        const invoiceInclude = { model: Invoice, as: "invoices", required: false, order: [['createdAt', 'DESC']] };
+
         const contractInclude = [
             { model: Room, as: "room", include: [buildingInclude] },
             furnituresInclude,
-            { model: Invoice, as: "invoices", required: false, order: [['createdAt', 'DESC']] }
+            invoiceInclude
         ];
 
-        let contract = await Contract.findOne({
-            where: { tenantId: tenant.id, status: 'active' },
-            include: contractInclude
-        });
+        let contract = await findActiveContract(tenant.id, contractInclude);
 
         if (!contract) {
             contract = await Contract.findOne({
@@ -32,7 +32,7 @@ exports.getDashboard = async (req, res, next) => {
                 }, {
                     model: Tenant, as: "tenant",
                     where: { name: req.user.name, phone: req.user.phone }
-                }, furnituresInclude, { model: Invoice, as: "invoices", required: false, order: [['createdAt', 'DESC']] }]
+                }, furnituresInclude, invoiceInclude]
             });
             if (contract) tenant = contract.tenant;
         }

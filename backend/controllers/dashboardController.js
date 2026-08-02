@@ -1,11 +1,6 @@
 const { Op } = require("sequelize");
 const { Room, Contract, Tenant, Invoice } = require("../models");
-
-function currentMonthStr() {
-    const now = new Date();
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    return `${mm}/${now.getFullYear()}`;
-}
+const { monthStr } = require("../utils/dates");
 
 exports.getStats = async (req, res, next) => {
     try {
@@ -21,7 +16,7 @@ exports.getStats = async (req, res, next) => {
         });
         const currentTenants = activeContracts.length;
 
-        const cMonth = currentMonthStr();
+        const cMonth = monthStr(new Date());
         const paidInvoices = await Invoice.findAll({
             where: { status: 'paid', month: cMonth },
             include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }] }]

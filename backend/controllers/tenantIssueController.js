@@ -1,8 +1,9 @@
-const { Tenant, Issue, Contract, Room } = require("../models");
+const { Issue, Room } = require("../models");
+const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 
 exports.getIssues = async (req, res, next) => {
     try {
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
         const issues = await Issue.findAll({
@@ -18,12 +19,10 @@ exports.getIssues = async (req, res, next) => {
 
 exports.createIssue = async (req, res, next) => {
     try {
-        const tenant = await Tenant.findOne({ where: { userId: req.user.id } });
+        const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Khong tim thay thong tin khach thue" });
 
-        const contract = await Contract.findOne({
-            where: { tenantId: tenant.id, status: 'active' }
-        });
+        const contract = await findActiveContract(tenant.id);
         if (!contract) return res.status(400).json({ message: "Ban khong co hop dong hoat dong" });
 
         const { title, description, images } = req.body;
