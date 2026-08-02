@@ -43,7 +43,7 @@ export default function MeterInvoiceTab({
           </Box>
         )}
 
-        <Box component="form" onSubmit={handleMeterSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box component="form" id="meter-form" onSubmit={handleMeterSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {/* Electricity */}
           <Box sx={{ p: 2.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
@@ -102,7 +102,7 @@ export default function MeterInvoiceTab({
             )}
           </Box>
 
-          {/* Estimate */}
+{/* Estimate */}
           <Box sx={{ p: 2.5, bgcolor: "#eff6ff", borderRadius: "12px", border: "1px solid #bfdbfe" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
               <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền phòng:</Typography>
@@ -121,12 +121,6 @@ export default function MeterInvoiceTab({
               <Typography sx={{ fontSize: "0.875rem", fontWeight: 900, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Typography>
             </Box>
           </Box>
-
-          <Button type="submit" variant="contained" disabled={submitting}
-            sx={{ width: "100%", py: 1.5, fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            {submitting ? "Đang gửi..." : "Gửi Chỉ Số & Chốt Hóa Đơn Mới"}
-          </Button>
         </Box>
       </Paper>
 
@@ -167,6 +161,12 @@ export default function MeterInvoiceTab({
             <Typography sx={{ fontWeight: 900, fontSize: "0.875rem" }}>{formatCurrency(calcTotal)}</Typography>
           </Box>
         </Box>
+
+        <Button type="submit" form="meter-form" variant="contained" disabled={submitting}
+          sx={{ width: "100%", py: 1.5, fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          {submitting ? "Đang gửi..." : "Thanh toán và gửi chỉ số"}
+        </Button>
       </Paper>
     </Box>
   );
