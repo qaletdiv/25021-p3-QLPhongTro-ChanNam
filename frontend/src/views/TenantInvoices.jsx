@@ -8,7 +8,7 @@ import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
 import InitialMeterForm from "../components/tenant/InitialMeterForm";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
-import { nextMonthLabel } from "../utils/format";
+import { nextMonthLabel, formatCurrency } from "../utils/format";
 
 export default function TenantInvoices() {
   const [invoices, setInvoices] = useState([]);
