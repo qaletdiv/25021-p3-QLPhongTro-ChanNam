@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
 import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
 import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
@@ -23,6 +23,7 @@ export default function TenantInvoices() {
   const [elecPhoto, setElecPhoto] = useState("");
   const [waterPhoto, setWaterPhoto] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const loadData = useCallback(() => {
     setLoading(true);
@@ -93,6 +94,15 @@ export default function TenantInvoices() {
       setWarningMsg("⚠ Vui lòng chụp ảnh đồng hồ điện và nước làm bằng chứng!");
       return;
     }
+    setConfirmOpen(true);
+  };
+
+  const confirmPaidSubmit = async (paid) => {
+    setConfirmOpen(false);
+    if (!paid) {
+      setWarningMsg("⚠ Vui lòng quét mã QR và thanh toán đúng số tiền trên hóa đơn trước khi gửi!");
+      return;
+    }
     try {
       setSubmitting(true);
       await tenantInvoiceApi.submitMeter({
@@ -154,6 +164,25 @@ export default function TenantInvoices() {
       )}
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
+
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ textAlign: "center", color: "#0f172a", fontWeight: 800, fontSize: "1rem" }}>
+          Bạn đã thanh toán chưa?
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: "center", color: "#475569", fontSize: "0.875rem", lineHeight: 1.6 }}>
+          Vui lòng quét mã QR bên cạnh và chuyển khoản đúng số tiền{" "}
+          <Box component="span" sx={{ fontWeight: 800, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Box> trước khi
+          gửi chỉ số. Sau khi gửi, hóa đơn sẽ được chốt.
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 2.5 }}>
+          <Button variant="outlined" color="warning" sx={{ borderRadius: "10px", fontWeight: 700 }} onClick={() => confirmPaidSubmit(false)}>
+            Chưa thanh toán
+          </Button>
+          <Button variant="contained" color="success" sx={{ borderRadius: "10px", fontWeight: 700 }} onClick={() => confirmPaidSubmit(true)}>
+            Đã thanh toán
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
