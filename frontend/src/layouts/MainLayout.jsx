@@ -56,9 +56,12 @@ export default function MainLayout({ children }) {
         </Box>
       </Box>
       <Divider sx={{ mx: 2 }} />
-      <Box sx={{ mx: 2, my: 1.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+      <Box sx={{ mx: 2, my: 1.5, p: 1.5, textAlign: "center", bgcolor: "#f8fafc", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
         <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{user?.name}</Typography>
         <Typography sx={{ fontSize: "0.65rem", color: "#64748b" }}>{user?.email}</Typography>
+        <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}
+          sx={{ mt: 1.25, borderRadius: "8px", fontSize: "0.75rem", color: "#64748b", borderColor: "#e2e8f0", "&:hover": { borderColor: "#ef4444", color: "#ef4444", bgcolor: "#fef2f2" } }}
+        >Đăng xuất</Button>
       </Box>
       <List sx={{ px: 1, py: 0.5, flex: 1 }}>
         {menuItems.map((item) => {
@@ -80,11 +83,6 @@ export default function MainLayout({ children }) {
           );
         })}
       </List>
-      <Box sx={{ p: 2, borderTop: "1px solid #e2e8f0" }}>
-        <Button fullWidth variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}
-          sx={{ borderRadius: "8px", fontSize: "0.75rem", color: "#64748b", borderColor: "#e2e8f0" }}
-        >Đăng xuất</Button>
-      </Box>
     </Box>
   );
 

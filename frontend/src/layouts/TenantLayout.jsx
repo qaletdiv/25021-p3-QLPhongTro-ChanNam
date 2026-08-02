@@ -46,9 +46,12 @@ export default function TenantLayout({ children }) {
         </Box>
       </Box>
       <Divider sx={{ mx: 2 }} />
-      <Box sx={{ mx: 2, my: 1.5, p: 1.5, bgcolor: "#f0fdf4", borderRadius: "10px", border: "1px solid #bbf7d0" }}>
+      <Box sx={{ mx: 2, my: 1.5, p: 1.5, textAlign: "center", bgcolor: "#f0fdf4", borderRadius: "10px", border: "1px solid #bbf7d0" }}>
         <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#065f46" }}>{user?.name}</Typography>
         <Typography sx={{ fontSize: "0.65rem", color: "#047857" }}>{user?.email}</Typography>
+        <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}
+          sx={{ mt: 1.25, borderRadius: "8px", fontSize: "0.75rem", color: "#047857", borderColor: "#a7f3d0", "&:hover": { borderColor: "#dc2626", color: "#dc2626", bgcolor: "#fef2f2" } }}
+        >Đăng xuất</Button>
       </Box>
       <List sx={{ px: 1, py: 0.5, flex: 1 }}>
         {menuItems.map((item) => {
@@ -69,11 +72,6 @@ export default function TenantLayout({ children }) {
           );
         })}
       </List>
-      <Box sx={{ p: 2, borderTop: "1px solid #e2e8f0" }}>
-        <Button fullWidth variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}
-          sx={{ borderRadius: "8px", fontSize: "0.75rem", color: "#64748b", borderColor: "#e2e8f0" }}
-        >Đăng xuất</Button>
-      </Box>
     </Box>
   );
 
