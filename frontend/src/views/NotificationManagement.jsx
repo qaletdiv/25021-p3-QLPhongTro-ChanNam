@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box, Typography, CircularProgress, Paper, TextField, Button, Autocomplete,
 } from "@mui/material";
@@ -32,6 +32,18 @@ export default function NotificationManagement() {
   const [successMsg, setSuccessMsg] = useState("");
   const [autoTemplate, setAutoTemplate] = useState("");
   const [autoSavedMsg, setAutoSavedMsg] = useState("");
+  const leftColRef = useRef(null);
+  const [leftColHeight, setLeftColHeight] = useState(null);
+
+  useEffect(() => {
+    if (!leftColRef.current) return;
+    const el = leftColRef.current;
+    const measure = () => setLeftColHeight(el.offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [loading]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -134,7 +146,7 @@ export default function NotificationManagement() {
       {loading ? <CircularProgress /> : (
         <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: 3 }}>
           {/* Left column: Form + Auto template */}
-          <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
+          <Box ref={leftColRef} sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
           {/* Left: Form */}
           <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
@@ -250,7 +262,7 @@ export default function NotificationManagement() {
           </Box>
 
           {/* Right: History (stretches to match left column height) */}
-          <Box sx={{ flex: 1, minWidth: 0, bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column" }}>
+          <Box sx={{ flex: 1, minWidth: 0, bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", maxHeight: leftColHeight ? `${leftColHeight}px` : "none" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <HistoryIcon sx={{ fontSize: 18, color: "#64748b" }} />
               <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>
@@ -258,7 +270,7 @@ export default function NotificationManagement() {
               </Typography>
             </Box>
 
-            <Box sx={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", gap: 1.5, pr: 0.5 }}>
+            <Box sx={{ flex: 1, overflow: "auto", minHeight: 0, display: "flex", flexDirection: "column", gap: 1.5, pr: 0.5 }}>
               {sentNotifications.map((log) => (
                 <Paper key={log.id} sx={{ p: 1.75, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
