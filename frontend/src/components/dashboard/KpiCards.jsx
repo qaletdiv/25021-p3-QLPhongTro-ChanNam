@@ -16,7 +16,7 @@ export default function KpiCards({ totalRooms, rentedRooms, vacantRooms, current
     { label: "Phòng Trống", value: vacantRooms, sub: "Sẵn sàng bàn giao", icon: <MeetingRoomIcon />, color: "#d97706", bg: "#fef3c7", valueColor: "#d97706" },
     { label: "Khách Thuê", value: currentTenants, sub: "Trong hợp đồng", icon: <PeopleIcon />, color: "#7c3aed", bg: "#ede9fe", valueColor: "#7c3aed" },
     { label: "Thực Thu", value: formatCurrency(monthlyRevenue), sub: "Đã ghi nhận", icon: <PaidIcon />, color: "#2563eb", bg: "#eff6ff", valueColor: "#0f172a", subIcon: <TrendingUpIcon sx={{ fontSize: 12, mr: 0.25 }} />, subColor: "#059669" },
-    { label: "Công Nợ", value: formatCurrency(totalDebt), sub: "Chưa thanh toán", icon: <WarningIcon />, color: "#e11d48", bg: "#ffe4e6", valueColor: "#e11d48" },
+    { label: "Chờ Thu", value: formatCurrency(totalDebt), sub: "Chờ xác nhận thu tiền", icon: <WarningIcon />, color: "#e11d48", bg: "#ffe4e6", valueColor: "#e11d48" },
   ];
 
   return (
