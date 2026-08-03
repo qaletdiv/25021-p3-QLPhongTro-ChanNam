@@ -12,29 +12,34 @@ import buildingApi from "../../api/buildingApi";
 
 export default function UtilityUsageChart() {
   const [buildings, setBuildings] = useState([]);
-  const [selected, setSelected] = useState("all");
+  const [selected, setSelected] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     buildingApi.getAll()
-      .then((res) => setBuildings(res.data.buildings || []))
+      .then((res) => {
+        const list = res.data.buildings || [];
+        setBuildings(list);
+        if (list.length > 0) setSelected((prev) => prev || String(list[0].id));
+      })
       .catch(() => {});
   }, []);
 
   useEffect(() => {
+    if (!selected) { setLoading(false); setData([]); return; }
     let active = true;
     setLoading(true);
     setError("");
-    dashboardApi.getUtilityUsage(selected === "all" ? null : Number(selected))
+    dashboardApi.getUtilityUsage(Number(selected))
       .then((res) => { if (active) setData(res.data.chartData || []); })
       .catch(() => { if (active) setError("Lỗi tải dữ liệu điện nước"); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [selected]);
 
-  const buildingOptions = [{ id: "all", label: "Tất cả nhà" }, ...buildings.map((b) => ({ id: b.id, label: b.name }))];
+  const buildingOptions = buildings.map((b) => ({ id: String(b.id), label: b.name }));
 
   return (
     <Card sx={{ borderRadius: "16px", p: 3 }}>
