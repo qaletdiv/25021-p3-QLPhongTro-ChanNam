@@ -12,6 +12,7 @@ const tenantNotificationController = require('../controllers/tenantNotificationC
 const auth = [authenticateToken, authorizeRole('tenant')];
 
 router.get('/dashboard', ...auth, tenantDashboardController.getDashboard);
+router.get('/dashboard/utility-usage', ...auth, tenantDashboardController.getUtilityUsage);
 
 router.get('/invoices', ...auth, tenantInvoiceController.getInvoices);
 router.get('/invoice-settings', ...auth, tenantInvoiceController.getSettings);

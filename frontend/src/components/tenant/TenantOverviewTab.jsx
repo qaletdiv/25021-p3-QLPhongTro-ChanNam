@@ -5,6 +5,7 @@ import { Box, Typography, Chip, Paper } from "@mui/material";
 import { formatCurrency, formatDate } from "../../utils/format";
 import { resolveNotificationTemplate } from "../../utils/notificationTemplate";
 import ModalShell from "../ui/ModalShell";
+import TenantUtilityUsageChart from "./TenantUtilityUsageChart";
 
 export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice, landlordAddress }) {
   const [furnitureOpen, setFurnitureOpen] = useState(false);
@@ -93,6 +94,9 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
           </Typography>
         </Paper>
       </Box>
+
+      {/* Utility usage chart */}
+      <TenantUtilityUsageChart />
 
       {/* Notifications */}
       <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>

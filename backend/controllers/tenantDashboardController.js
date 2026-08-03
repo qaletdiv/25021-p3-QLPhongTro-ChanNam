@@ -58,3 +58,39 @@ exports.getDashboard = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getUtilityUsage = async (req, res, next) => {
+    try {
+        const tenant = await findTenantByUser(req.user.id);
+        if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
+
+        const contract = await findActiveContract(tenant.id);
+        if (!contract) return res.json({ year: null, chartData: [] });
+
+        const year = new Date(contract.startDate).getFullYear();
+
+        const invoices = await Invoice.findAll({
+            where: { contractId: contract.id },
+            attributes: ["month", "electricityNew", "electricityOld", "waterNew", "waterOld"]
+        });
+
+        const byMonth = {};
+        invoices.forEach((inv) => {
+            byMonth[inv.month] = {
+                electricity: Math.max(0, Number(inv.electricityNew) - Number(inv.electricityOld)),
+                water: Math.max(0, Number(inv.waterNew) - Number(inv.waterOld)),
+            };
+        });
+
+        const chartData = [];
+        for (let m = 1; m <= 12; m++) {
+            const key = `${String(m).padStart(2, "0")}/${year}`;
+            const d = byMonth[key] || { electricity: 0, water: 0 };
+            chartData.push({ month: key, label: `T${m}`, electricity: d.electricity, water: d.water });
+        }
+
+        res.json({ year, chartData });
+    } catch (error) {
+        next(error);
+    }
+};
