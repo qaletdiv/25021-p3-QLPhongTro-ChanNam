@@ -144,7 +144,7 @@ export default function NotificationManagement() {
       </Box>
 
       {loading ? <CircularProgress /> : (
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: 3, alignItems: { lg: "flex-start" } }}>
           {/* Left column: Form + Auto template */}
           <Box ref={leftColRef} sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
           {/* Left: Form */}
@@ -262,7 +262,7 @@ export default function NotificationManagement() {
           </Box>
 
           {/* Right: History (stretches to match left column height) */}
-          <Box sx={{ flex: 1, minWidth: 0, bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", maxHeight: leftColHeight ? `${leftColHeight}px` : "none" }}>
+          <Box sx={{ flex: 1, minWidth: 0, bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", height: leftColHeight ? `${leftColHeight}px` : "auto" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <HistoryIcon sx={{ fontSize: 18, color: "#64748b" }} />
               <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>
