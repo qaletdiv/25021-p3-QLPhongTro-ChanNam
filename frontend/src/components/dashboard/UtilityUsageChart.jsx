@@ -38,19 +38,23 @@ export default function UtilityUsageChart() {
 
   return (
     <Card sx={{ borderRadius: "16px", p: 3 }}>
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 1.5, mb: 2 }}>
-        <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
-            Điện Nước Tiêu Thụ Theo Phòng
-          </Typography>
-          <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-            Mức tiêu thụ mới nhất của từng phòng (điện kWh, nước m³)
-          </Typography>
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { sm: "center" }, gap: 1.5, mb: 2 }}>
+        <Box sx={{ flex: { sm: 1 }, display: "flex", alignItems: "center", justifyContent: { xs: "space-between", sm: "flex-start" }, gap: 1.5 }}>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
+              Điện Nước Tiêu Thụ Theo Phòng
+            </Typography>
+            <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
+              Mức tiêu thụ mới nhất của từng phòng (điện kWh, nước m³)
+            </Typography>
+          </Box>
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+        <Box sx={{ flex: 1, textAlign: { sm: "center" }, display: { xs: "none", sm: "block" } }}>
           <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a" }}>
             Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
           </Typography>
+        </Box>
+        <Box sx={{ flex: { sm: 1 }, display: "flex", justifyContent: { sm: "flex-end" } }}>
           <FormControl size="small" sx={{ minWidth: 180 }}>
             <Select
               value={selected}
