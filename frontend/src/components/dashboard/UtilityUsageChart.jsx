@@ -54,7 +54,9 @@ export default function UtilityUsageChart() {
           variant="scrollable" scrollButtons="auto"
           sx={{ minHeight: "auto", "& .MuiTab-root": { fontSize: "0.6875rem" } }}
         >
-          {buildingOptions}
+          {buildingOptions.map((b) => (
+            <Tab key={String(b.id)} label={b.label} value={String(b.id)} />
+          ))}
         </Tabs>
       </Box>
 
