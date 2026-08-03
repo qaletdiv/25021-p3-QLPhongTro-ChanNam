@@ -23,9 +23,9 @@ export default function NotificationManagement() {
   const [loading, setLoading] = useState(true);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
-  const [title, setTitle] = useState("Thông báo thu tiền phòng tháng 07/2026");
+  const [title, setTitle] = useState("");
   const [content, setContent] = useState(
-    "Kính gửi {{TENKHACH}} (Phòng {{MAPHONG}}), hóa đơn tháng này là {{TONG_TIEN}}₫. Vui lòng thanh toán trước ngày {{HAN_THANH_TOAN}}. Cảm ơn!"
+    "Kính gửi {{TENKHACH}} (Phòng {{MAPHONG}}),\n Cảm ơn!"
   );
   const [targetRoom, setTargetRoom] = useState("all");
   const [isSending, setIsSending] = useState(false);
