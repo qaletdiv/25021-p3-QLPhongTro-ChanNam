@@ -30,7 +30,7 @@ export default function ExpiringContracts({ expiring, onManage }) {
           </Typography>
         </Box>
       ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, flex: 1, minHeight: 0, overflowY: "auto" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, flex: 1, minHeight: 0, overflowY: "auto", maxHeight: 180 }}>
           {expiring.slice(0, 6).map((c) => {
             const end = new Date(c.endDate);
             const daysLeft = Math.ceil((end.getTime() - Date.now()) / (1000 * 3600 * 24));
