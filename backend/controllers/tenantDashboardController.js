@@ -67,7 +67,9 @@ exports.getUtilityUsage = async (req, res, next) => {
         const contract = await findActiveContract(tenant.id);
         if (!contract) return res.json({ year: null, chartData: [] });
 
-        const year = new Date(contract.startDate).getFullYear();
+        const start = new Date(contract.startDate);
+        const startYear = start.getFullYear();
+        const startMonth = start.getMonth(); // 0-based
 
         const invoices = await Invoice.findAll({
             where: { contractId: contract.id },
@@ -83,13 +85,20 @@ exports.getUtilityUsage = async (req, res, next) => {
         });
 
         const chartData = [];
-        for (let m = 1; m <= 12; m++) {
-            const key = `${String(m).padStart(2, "0")}/${year}`;
-            const d = byMonth[key] || { electricity: 0, water: 0 };
-            chartData.push({ month: key, label: `T${m}`, electricity: d.electricity, water: d.water });
+        for (let i = 0; i < 12; i++) {
+            const d = new Date(startYear, startMonth + i, 1);
+            const key = `${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+            const entry = byMonth[key] || { electricity: 0, water: 0 };
+            chartData.push({
+                month: key,
+                label: `T${i + 1}`,
+                monthLabel: `${d.getMonth() + 1}/${d.getFullYear()}`,
+                electricity: entry.electricity,
+                water: entry.water,
+            });
         }
 
-        res.json({ year, chartData });
+        res.json({ year: startYear, chartData });
     } catch (error) {
         next(error);
     }

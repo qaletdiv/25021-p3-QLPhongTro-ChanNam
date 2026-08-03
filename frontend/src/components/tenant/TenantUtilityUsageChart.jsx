@@ -9,14 +9,13 @@ import tenantDashboardApi from "../../api/tenantDashboardApi";
 
 export default function TenantUtilityUsageChart() {
   const [data, setData] = useState([]);
-  const [year, setYear] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
     tenantDashboardApi.getUtilityUsage()
-      .then((res) => { if (active) { setData(res.data.chartData || []); setYear(res.data.year); } })
+      .then((res) => { if (active) setData(res.data.chartData || []); })
       .catch(() => { if (active) setError("Lỗi tải dữ liệu điện nước"); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
@@ -30,7 +29,7 @@ export default function TenantUtilityUsageChart() {
             Điện Nước Tiêu Thụ Theo Tháng
           </Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-            Mức tiêu thụ từ tháng 1 đến tháng 12{year ? ` năm ${year}` : ""} (điện kWh, nước m³)
+            12 tháng từ tháng người thuê chuyển vào (điện kWh, nước m³)
           </Typography>
         </Box>
       </Box>
