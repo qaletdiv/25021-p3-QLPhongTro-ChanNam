@@ -9,6 +9,7 @@ import DashboardBanner from "../components/dashboard/DashboardBanner";
 import KpiCards from "../components/dashboard/KpiCards";
 import RevenueChart from "../components/dashboard/RevenueChart";
 import ExpiringContracts from "../components/dashboard/ExpiringContracts";
+import UtilityUsageChart from "../components/dashboard/UtilityUsageChart";
 import dashboardApi from "../api/dashboardApi";
 import { useRouter } from "next/navigation";
 
@@ -121,6 +122,9 @@ export default function Dashboard() {
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 8 }}>
           <RevenueChart data={chartData} monthlyRevenue={stats.monthlyRevenue} />
+          <Box sx={{ mt: 2 }}>
+            <UtilityUsageChart />
+          </Box>
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
           <ExpiringContracts expiring={expiring} onManage={navigate} />

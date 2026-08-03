@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Room, Contract, Tenant, Invoice, Issue } = require("../models");
+const { Room, Contract, Tenant, Invoice, Issue, Building } = require("../models");
 const { monthStr } = require("../utils/dates");
 
 exports.getStats = async (req, res, next) => {
@@ -117,6 +117,55 @@ exports.getExpiringContracts = async (req, res, next) => {
         });
 
         res.json({ contracts });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getUtilityUsage = async (req, res, next) => {
+    try {
+        const landlordId = req.user.id;
+        const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
+
+        const roomWhere = { landlordId };
+        if (buildingId) roomWhere.buildingId = buildingId;
+
+        const rooms = await Room.findAll({
+            where: roomWhere,
+            attributes: ["id", "room_number", "buildingId"],
+            include: [{ model: Building, as: "building", attributes: ["name"] }],
+            order: [["room_number", "ASC"]]
+        });
+
+        const invoices = await Invoice.findAll({
+            attributes: ["contractId", "month", "electricityOld", "electricityNew", "waterOld", "waterNew"],
+            include: [{ model: Contract, as: "contract", attributes: ["roomId"], where: { status: "active" } }]
+        });
+
+        const roomMap = new Map(rooms.map((r) => [r.id, r]));
+        const latestByRoom = new Map();
+        for (const inv of invoices) {
+            const roomId = inv.contract?.roomId;
+            if (!roomId || !roomMap.has(roomId)) continue;
+            const key = `${roomId}|${inv.month}`;
+            const prev = latestByRoom.get(roomId);
+            if (!prev || inv.month > prev.month) latestByRoom.set(roomId, inv);
+        }
+
+        const chartData = [];
+        for (const [roomId, inv] of latestByRoom) {
+            const room = roomMap.get(roomId);
+            chartData.push({
+                roomId,
+                room: room.room_number,
+                building: room.building?.name || "—",
+                electricity: Math.max(0, Number(inv.electricityNew) - Number(inv.electricityOld)),
+                water: Math.max(0, Number(inv.waterNew) - Number(inv.waterOld)),
+                month: inv.month,
+            });
+        }
+
+        res.json({ chartData });
     } catch (error) {
         next(error);
     }

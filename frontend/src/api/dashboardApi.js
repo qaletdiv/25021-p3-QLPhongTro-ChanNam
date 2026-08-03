@@ -13,6 +13,9 @@ const dashboardApi = {
   getNotifications() {
     return axiosClient.get("/dashboard/notifications");
   },
+  getUtilityUsage(buildingId) {
+    return axiosClient.get("/dashboard/utility-usage", { params: buildingId ? { buildingId } : {} });
+  },
 };
 
 export default dashboardApi;

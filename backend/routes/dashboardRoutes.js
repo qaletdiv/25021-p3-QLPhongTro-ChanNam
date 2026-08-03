@@ -8,5 +8,6 @@ router.get('/stats', authenticateToken, authorizeRole('landlord'), dashboardCont
 router.get('/notifications', authenticateToken, authorizeRole('landlord'), dashboardController.getNotifications);
 router.get('/monthly-revenue', authenticateToken, authorizeRole('landlord'), dashboardController.getMonthlyRevenue);
 router.get('/expiring-contracts', authenticateToken, authorizeRole('landlord'), dashboardController.getExpiringContracts);
+router.get('/utility-usage', authenticateToken, authorizeRole('landlord'), dashboardController.getUtilityUsage);
 
 module.exports = router;
