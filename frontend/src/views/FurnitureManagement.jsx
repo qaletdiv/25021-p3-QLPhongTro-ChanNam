@@ -58,7 +58,7 @@ export default function FurnitureManagement() {
       {/* Header */}
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 2 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 900 }}>Quản Lý Vật Dụng & Thiết Bị Phòng Trọ</Typography>
+          <Typography variant="h5" fontWeight="bold">Quản Lý Vật Dụng & Thiết Bị Phòng Trọ</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
             Danh mục tài sản mặc định dùng để bàn giao và tạo phụ lục hợp đồng khi khách nhận phòng.
           </Typography>

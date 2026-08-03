@@ -125,7 +125,7 @@ export default function NotificationManagement() {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header */}
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 900 }}>Quản Lý Thông Báo Telegram</Typography>
+        <Typography variant="h5" fontWeight="bold">Quản Lý Thông Báo Telegram</Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
           Soạn mẫu thông báo tự động cá nhân hóa biến động và gửi đồng loạt qua Telegram Bot.
         </Typography>

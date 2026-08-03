@@ -38,7 +38,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
           <Box>
             <Chip label="Cư Dân SmartRent" size="small"
               sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "#fff", fontWeight: 700, fontSize: "0.6875rem", borderRadius: "9999px", mb: 1.5 }} />
-            <Typography sx={{ fontSize: "1.75rem", fontWeight: 900, color: "#0f172a" }}>
+            <Typography variant="h5" fontWeight="bold" color="#fff">
               Phòng Trọ {room?.room_number || "—"} - {tenant?.name || ""}
             </Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "#bfdbfe", mt: 0.5, fontWeight: 500 }}>
@@ -98,7 +98,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
       <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 2 }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <Typography sx={{ fontSize: "0.875rem", fontWeight: 800, color: "#0f172a" }}>Thông Báo Nhận Từ Chủ Trọ (Telegram)</Typography>
+          <Typography variant="h6" fontWeight="bold" color="#0f172a">Thông Báo Nhận Từ Chủ Trọ (Telegram)</Typography>
         </Box>
         {notifications.length === 0 ? (
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", textAlign: "center", py: 4 }}>

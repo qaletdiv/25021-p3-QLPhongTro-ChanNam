@@ -61,7 +61,7 @@ export default function BuildingManagement() {
       {/* Header */}
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 2 }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 900 }}>Quản Lý Nhà Trọ</Typography>
+          <Typography variant="h5" fontWeight="bold">Quản Lý Nhà Trọ</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
             Nhóm phòng theo từng nhà, mỗi nhà có thể cấu hình riêng và lọc báo cáo độc lập.
           </Typography>

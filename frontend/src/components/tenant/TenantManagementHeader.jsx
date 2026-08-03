@@ -5,7 +5,7 @@ export default function TenantManagementHeader({ onCreateContract }) {
   return (
     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
       <Box>
-        <Typography variant="h4" sx={{ fontWeight: 900 }}>
+        <Typography variant="h5" fontWeight="bold">
           Quản Lý Khách & Hợp Đồng Cho Thuê
         </Typography>
         <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
