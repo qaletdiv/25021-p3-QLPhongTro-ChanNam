@@ -24,7 +24,7 @@ export default function MeterInvoiceTab({
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            <Typography sx={{ fontSize: "0.875rem", fontWeight: 800, color: "#0f172a" }}>
+            <Typography sx={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f172a" }}>
               Nhập Chỉ Số Điện & Nước Tháng {monthStr}
             </Typography>
           </Box>
@@ -47,7 +47,7 @@ export default function MeterInvoiceTab({
           {/* Electricity */}
           <Box sx={{ p: 2.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", display: "flex", alignItems: "center", gap: 0.75 }}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: 0.75 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
                 Chỉ Số Điện (kWh)
               </Typography>
@@ -63,7 +63,7 @@ export default function MeterInvoiceTab({
               </Button>
               <TextField fullWidth size="small" type="number" value={elecVal} required
                 onChange={(e) => setElecVal(Number(e.target.value))}
-                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
+                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 700 } }} />
             </Box>
             {elecPhoto && (
               <Typography sx={{ mt: 1, fontSize: "0.625rem", color: "#059669", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -76,7 +76,7 @@ export default function MeterInvoiceTab({
           {/* Water */}
           <Box sx={{ p: 2.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", display: "flex", alignItems: "center", gap: 0.75 }}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: 0.75 }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
                 Chỉ Số Nước (m³)
               </Typography>
@@ -92,7 +92,7 @@ export default function MeterInvoiceTab({
               </Button>
               <TextField fullWidth size="small" type="number" value={waterVal} required
                 onChange={(e) => setWaterVal(Number(e.target.value))}
-                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 800 } }} />
+                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 700 } }} />
             </Box>
             {waterPhoto && (
               <Typography sx={{ mt: 1, fontSize: "0.625rem", color: "#059669", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -106,19 +106,19 @@ export default function MeterInvoiceTab({
           <Box sx={{ p: 2.5, bgcolor: "#eff6ff", borderRadius: "12px", border: "1px solid #bfdbfe" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
               <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền phòng:</Typography>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(roomPrice)}</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{formatCurrency(roomPrice)}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
               <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền điện ({Math.round(calcElecUsage)} kWh x {formatCurrency(electricityRate)}):</Typography>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(Math.round(calcElecAmount))}</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{formatCurrency(Math.round(calcElecAmount))}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
               <Typography sx={{ fontSize: "0.75rem", color: "#475569" }}>Tiền nước ({Math.round(calcWaterUsage)} m³ x {formatCurrency(waterRate)}):</Typography>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(Math.round(calcWaterAmount))}</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{formatCurrency(Math.round(calcWaterAmount))}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #bfdbfe", pt: 1 }}>
-              <Typography sx={{ fontSize: "0.875rem", fontWeight: 900, color: "#0f172a" }}>TỔNG CỘNG DỰ TÍNH:</Typography>
-              <Typography sx={{ fontSize: "0.875rem", fontWeight: 900, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Typography>
+              <Typography sx={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f172a" }}>TỔNG CỘNG DỰ TÍNH:</Typography>
+              <Typography sx={{ fontSize: "0.875rem", fontWeight: 700, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Typography>
             </Box>
           </Box>
         </Box>
@@ -127,7 +127,7 @@ export default function MeterInvoiceTab({
       {/* VietQR */}
       <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
         <Box sx={{ textAlign: "center" }}>
-          <Typography sx={{ fontSize: "1rem", fontWeight: 900, color: "#0f172a" }}>Mã QR Thanh Toán VietQR</Typography>
+          <Typography sx={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>Mã QR Thanh Toán VietQR</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5, fontWeight: 500 }}>
             Quét bằng ứng dụng Ngân hàng (MB, VCB, Techcombank...) để thanh toán ngay.
           </Typography>
@@ -146,19 +146,19 @@ export default function MeterInvoiceTab({
         <Box sx={{ width: "100%", fontSize: "0.75rem", bgcolor: "#f8fafc", p: 2.5, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
             <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Ngân hàng:</Typography>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a" }}>{s.bankName || "MBBank"}</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>{s.bankName || "MBBank"}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
             <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Số tài khoản:</Typography>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontFamily: "monospace" }}>{s.bankAccount || "0988776655"}</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontFamily: "monospace" }}>{s.bankAccount || "0988776655"}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
             <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Chủ tài khoản:</Typography>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", textTransform: "uppercase" }}>{s.bankHolder || "CHU TRO"}</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", textTransform: "uppercase" }}>{s.bankHolder || "CHU TRO"}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #e2e8f0", pt: 1.5, color: "#2563eb" }}>
-            <Typography sx={{ fontWeight: 900, fontSize: "0.875rem" }}>Số tiền chuyển:</Typography>
-            <Typography sx={{ fontWeight: 900, fontSize: "0.875rem" }}>{formatCurrency(calcTotal)}</Typography>
+            <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>Số tiền chuyển:</Typography>
+            <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>{formatCurrency(calcTotal)}</Typography>
           </Box>
         </Box>
 

@@ -12,7 +12,7 @@ export default function ExpiringContracts({ expiring, onManage }) {
             <CalendarMonthIcon sx={{ fontSize: 20 }} />
           </Box>
           <Box>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: "#0f172a" }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
               Hợp Đồng Sắp Hết Hạn
             </Typography>
             <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>

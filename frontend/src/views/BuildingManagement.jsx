@@ -84,7 +84,7 @@ export default function BuildingManagement() {
                 <ApartmentIcon sx={{ fontSize: 20 }} />
               </Box>
               <Box sx={{ minWidth: 0 }}>
-                <Typography sx={{ fontSize: "1.0625rem", fontWeight: 900, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.name}</Typography>
+                <Typography sx={{ fontSize: "1.0625rem", fontWeight: 700, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.name}</Typography>
                 <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.address || "Chưa có địa chỉ"}</Typography>
               </Box>
             </Box>
@@ -92,7 +92,7 @@ export default function BuildingManagement() {
             <Paper sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #f1f5f9", mb: 1.5 }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
                 <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>Tổng phòng:</Typography>
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a" }}>{b.roomCount || 0}</Typography>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{b.roomCount || 0}</Typography>
               </Box>
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.75 }}>
                 <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>Đang cho thuê:</Typography>

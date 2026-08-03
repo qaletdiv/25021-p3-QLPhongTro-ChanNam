@@ -24,7 +24,7 @@ export default function PrintableInvoiceModal({ invoice, onClose }) {
   return (
     <ModalShell open={!!invoice} onClose={onClose} headerBg="#0f172a" maxWidth={560}
       header={
-        <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Phiếu Bảng Kê Thanh Toán</Typography>
+        <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9375rem" }}>Phiếu Bảng Kê Thanh Toán</Typography>
       }
       headerRight={
         <Box onClick={() => window.print()} sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, px: 1.5, py: 0.9, bgcolor: "#2563eb", color: "#fff", borderRadius: "12px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
@@ -35,7 +35,7 @@ export default function PrintableInvoiceModal({ invoice, onClose }) {
       body={
         <Box sx={{ p: 3, overflow: "auto" }}>
           <Box sx={{ textAlign: "center", borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
-            <Typography sx={{ fontSize: "1.25rem", fontWeight: 900, color: "#0f172a", textTransform: "uppercase" }}>BẢNG KÊ TIỀN PHÒNG</Typography>
+            <Typography sx={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", textTransform: "uppercase" }}>BẢNG KÊ TIỀN PHÒNG</Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>Tháng {invoice.month}</Typography>
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5, p: 2, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0", mb: 3, fontSize: "0.75rem" }}>
@@ -53,9 +53,9 @@ export default function PrintableInvoiceModal({ invoice, onClose }) {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem" }}>
               <thead>
                 <tr style={{ backgroundColor: "#0f172a", color: "#fff" }}>
-                  <th style={{ padding: "10px 14px", fontWeight: 800, textAlign: "left" }}>Khoản Mục</th>
-                  <th style={{ padding: "10px 14px", fontWeight: 800, textAlign: "center" }}>Chỉ Số / Chi Tiết</th>
-                  <th style={{ padding: "10px 14px", fontWeight: 800, textAlign: "right" }}>Thành Tiền</th>
+                  <th style={{ padding: "10px 14px", fontWeight: 700, textAlign: "left" }}>Khoản Mục</th>
+                  <th style={{ padding: "10px 14px", fontWeight: 700, textAlign: "center" }}>Chỉ Số / Chi Tiết</th>
+                  <th style={{ padding: "10px 14px", fontWeight: 700, textAlign: "right" }}>Thành Tiền</th>
                 </tr>
               </thead>
               <tbody>
@@ -63,14 +63,14 @@ export default function PrintableInvoiceModal({ invoice, onClose }) {
                   <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
                     <td style={{ padding: "10px 14px", fontWeight: 700, color: "#0f172a" }}>{row.label}</td>
                     <td style={{ padding: "10px 14px", textAlign: "center", color: "#64748b" }}>{row.detail}</td>
-                    <td style={{ padding: "10px 14px", textAlign: "right", fontWeight: 800, color: "#0f172a" }}>{formatCurrency(row.amount)}</td>
+                    <td style={{ padding: "10px 14px", textAlign: "right", fontWeight: 700, color: "#0f172a" }}>{formatCurrency(row.amount)}</td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
                 <tr style={{ backgroundColor: "#eff6ff", borderTop: "2px solid #bfdbfe" }}>
-                  <td colSpan={2} style={{ padding: "10px 14px", textAlign: "right", fontWeight: 800, fontSize: "0.75rem", textTransform: "uppercase" }}>TỔNG CỘNG THANH TOÁN:</td>
-                  <td style={{ padding: "10px 14px", textAlign: "right", fontWeight: 900, fontSize: "0.9375rem", color: "#1d4ed8" }}>{formatCurrency(invoice.total)}</td>
+                  <td colSpan={2} style={{ padding: "10px 14px", textAlign: "right", fontWeight: 700, fontSize: "0.75rem", textTransform: "uppercase" }}>TỔNG CỘNG THANH TOÁN:</td>
+                  <td style={{ padding: "10px 14px", textAlign: "right", fontWeight: 700, fontSize: "0.9375rem", color: "#1d4ed8" }}>{formatCurrency(invoice.total)}</td>
                 </tr>
               </tfoot>
             </table>

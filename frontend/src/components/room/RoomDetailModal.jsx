@@ -17,7 +17,7 @@ export default function RoomDetailModal({
     <ModalShell open={!!detailRoom} onClose={onClose} headerBg="#0f172a" maxWidth={520}
       header={
         <Box>
-          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>Chi Tiết Phòng {detailRoom.room_number}</Typography>
+          <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9375rem" }}>Chi Tiết Phòng {detailRoom.room_number}</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8", mt: 0.25 }}>
             {detailRoom.building ? `${detailRoom.building.name}${detailRoom.building.address ? " - " + detailRoom.building.address : ""}` : "Chưa thuộc nhà nào"}
           </Typography>
@@ -29,13 +29,13 @@ export default function RoomDetailModal({
           <Paper sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Box>
               <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8" }}>Trạng thái:</Typography>
-              <Typography sx={{ fontSize: "0.8125rem", fontWeight: 800, color: detailRoom.status === "rented" ? "#059669" : "#d97706" }}>
+              <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: detailRoom.status === "rented" ? "#059669" : "#d97706" }}>
                 {detailRoom.status === "rented" ? "Đã Cho Thuê" : "Đang Trống"}
               </Typography>
             </Box>
             {contract?.fingerprintCode && (
               <Box sx={{ fontSize: "0.75rem", color: "#0f172a" }}>
-                Mã Vân Tay: <Box component="span" sx={{ fontFamily: "monospace", fontWeight: 800, bgcolor: "#0f172a", color: "#fcd34d", px: 1, py: 0.25, borderRadius: "6px", ml: 0.5 }}>{contract.fingerprintCode}</Box>
+                Mã Vân Tay: <Box component="span" sx={{ fontFamily: "monospace", fontWeight: 700, bgcolor: "#0f172a", color: "#fcd34d", px: 1, py: 0.25, borderRadius: "6px", ml: 0.5 }}>{contract.fingerprintCode}</Box>
               </Box>
             )}
           </Paper>
@@ -43,7 +43,7 @@ export default function RoomDetailModal({
           {/* Inventory Items */}
           <Box>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 Danh Sách Vật Dụng Trong Phòng
               </Typography>
               {contract && !furnitureEditMode && (
@@ -104,7 +104,7 @@ export default function RoomDetailModal({
       }
       footer={
         <Box sx={{ px: 3, py: 2, borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end" }}>
-          <Box onClick={onClose} sx={{ px: 4, py: 1.25, fontSize: "0.75rem", fontWeight: 800, bgcolor: "#0f172a", color: "#fff", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#1e293b" }, boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}>
+          <Box onClick={onClose} sx={{ px: 4, py: 1.25, fontSize: "0.75rem", fontWeight: 700, bgcolor: "#0f172a", color: "#fff", borderRadius: "12px", cursor: "pointer", "&:hover": { bgcolor: "#1e293b" }, boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}>
             Đóng Chi Tiết
           </Box>
         </Box>

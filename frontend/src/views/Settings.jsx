@@ -105,7 +105,7 @@ export default function Settings() {
         <Box sx={sectionSx}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
             <BoltIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>1. Đơn Giá Tiện Ích & Dịch Vụ Mặc Định</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>1. Đơn Giá Tiện Ích & Dịch Vụ Mặc Định</Typography>
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
@@ -127,7 +127,7 @@ export default function Settings() {
         <Box sx={sectionSx}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
             <CreditCardIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>2. Thông Tin Ngân Hàng Tích Hợp VietQR Automate</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>2. Thông Tin Ngân Hàng Tích Hợp VietQR Automate</Typography>
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
@@ -140,7 +140,7 @@ export default function Settings() {
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Chủ Tài Khoản</Typography>
-              <TextField fullWidth placeholder="NGUYEN VAN A" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} slotProps={{ htmlInput: { style: { textTransform: "uppercase", fontWeight: 800 } } }} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+              <TextField fullWidth placeholder="NGUYEN VAN A" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} slotProps={{ htmlInput: { style: { textTransform: "uppercase", fontWeight: 700 } } }} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chi Nhánh Ngân Hàng</Typography>
@@ -153,7 +153,7 @@ export default function Settings() {
         <Box sx={sectionSx}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
             <MessageIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>3. Cấu Hình Telegram Bot Gửi Thông Báo</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>3. Cấu Hình Telegram Bot Gửi Thông Báo</Typography>
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2, alignItems: "center" }}>
             <Box sx={{ gridColumn: { xs: "1", sm: "1 / 2", lg: "1 / 3" } }}>
@@ -192,7 +192,7 @@ export default function Settings() {
         <Box sx={sectionSx}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
             <PersonIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>4. Thông Tin Chủ Trọ Quản Lý</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>4. Thông Tin Chủ Trọ Quản Lý</Typography>
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
             <Box>

@@ -11,7 +11,7 @@ export default function RevenueChart({ data, monthlyRevenue }) {
     <Card sx={{ borderRadius: "16px", p: 3 }}>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 1, mb: 3 }}>
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: "#0f172a" }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
             Doanh Thu 6 Tháng Gần Nhất
           </Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>

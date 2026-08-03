@@ -82,7 +82,7 @@ export default function Dashboard() {
         </IconButton>
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}
           slotProps={{ paper: { sx: { mt: 1, width: 340, borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 10px 30px rgba(0,0,0,0.08)" } } }}>
-          <Box sx={{ px: 2, py: 1.25, borderBottom: "1px solid #f1f5f9", fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem" }}>
+          <Box sx={{ px: 2, py: 1.25, borderBottom: "1px solid #f1f5f9", fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>
             Thông báo chưa đọc ({notifCount})
           </Box>
           {notifItems.length === 0 && (

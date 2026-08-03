@@ -72,7 +72,7 @@ export default function MainLayout({ children }) {
           <HomeIcon />
         </Avatar>
         <Box>
-          <Typography sx={{ fontWeight: 800, fontSize: "1rem", lineHeight: 1.2, color: "#0f172a" }}>SmartRent</Typography>
+          <Typography sx={{ fontWeight: 700, fontSize: "1rem", lineHeight: 1.2, color: "#0f172a" }}>SmartRent</Typography>
           <Typography sx={{ fontSize: "0.6rem", color: "#64748b", fontWeight: 500 }}>Quản Lý Phòng Trọ</Typography>
         </Box>
       </Box>

@@ -28,7 +28,7 @@ export default function FurnitureModal({ open, editItem, onClose, onSave }) {
       header={
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <InventoryIcon sx={{ color: "#fff", fontSize: 20 }} />
-          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+          <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9375rem" }}>
             {editItem ? "Sửa Vật Dụng" : "Thêm Vật Dụng Mới"}
           </Typography>
         </Box>

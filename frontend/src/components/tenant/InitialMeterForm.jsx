@@ -58,7 +58,7 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
 
   const photoBox = (preview, label, onPick) => (
     <Box sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-      <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1.5 }}>{label}</Typography>
+      <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1.5 }}>{label}</Typography>
       {preview ? (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <Box component="img" src={preview} alt={label}

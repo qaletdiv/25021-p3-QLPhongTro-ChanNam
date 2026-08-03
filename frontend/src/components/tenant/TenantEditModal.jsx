@@ -19,7 +19,7 @@ export default function TenantEditModal({
   return (
     <ModalShell open maxWidth={editContractId ? 640 : 420}
       header={
-        <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+        <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9375rem" }}>
           Sửa Thông Tin
         </Typography>
       }
@@ -33,7 +33,7 @@ export default function TenantEditModal({
             sx={inputSx} />
 
           <>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem", mt: 1 }}>Thông tin hợp đồng</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem", mt: 1 }}>Thông tin hợp đồng</Typography>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phòng</Typography>
               {emptyRooms.length === 0 ? (
@@ -82,7 +82,7 @@ export default function TenantEditModal({
 
             {companionFingerprints.length > 0 && (
               <Box>
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Mã số vân tay người đi kèm</Typography>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>Mã số vân tay người đi kèm</Typography>
                 {companionFingerprints.map((c, i) => (
                   <TextField key={c.id} fullWidth size="small" label={`Vân tay: ${c.name}`} value={c.fingerprintCode}
                     onChange={(e) => { const updated = [...companionFingerprints]; updated[i] = { ...updated[i], fingerprintCode: e.target.value }; setCompanionFingerprints(updated); }}
@@ -93,7 +93,7 @@ export default function TenantEditModal({
 
             {furnitureList.length > 0 && (
               <Box>
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Vật dụng trong phòng</Typography>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>Vật dụng trong phòng</Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
                   {furnitureList.filter(f => selectedFurnitures[f.id]?.checked).map((f) => (
                     <Chip key={f.id} label={`${f.name} (x${selectedFurnitures[f.id].quantity})`}

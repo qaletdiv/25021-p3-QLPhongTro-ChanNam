@@ -10,7 +10,7 @@ const HEADERS = ["Phòng / Khách", "Tiền Phòng", "Tiền Điện (kWh)", "H�
 const StatusBadge = ({ status }) => {
   if (status === "paid") {
     return (
-      <span style={{ padding: "4px 10px", backgroundColor: "#d1fae5", color: "#065f46", fontSize: "0.6875rem", fontWeight: 800, borderRadius: "9999px", border: "1px solid #a7f3d0", display: "inline-flex", alignItems: "center", gap: 4 }}>
+      <span style={{ padding: "4px 10px", backgroundColor: "#d1fae5", color: "#065f46", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "9999px", border: "1px solid #a7f3d0", display: "inline-flex", alignItems: "center", gap: 4 }}>
         <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#059669", display: "inline-block" }} />
         Đã Thanh Toán
       </span>
@@ -18,14 +18,14 @@ const StatusBadge = ({ status }) => {
   }
   if (status === "submitted") {
     return (
-      <span style={{ padding: "4px 10px", backgroundColor: "#fef3c7", color: "#92400e", fontSize: "0.6875rem", fontWeight: 800, borderRadius: "9999px", border: "1px solid #fde68a", display: "inline-flex", alignItems: "center", gap: 4 }}>
+      <span style={{ padding: "4px 10px", backgroundColor: "#fef3c7", color: "#92400e", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "9999px", border: "1px solid #fde68a", display: "inline-flex", alignItems: "center", gap: 4 }}>
         <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#d97706", display: "inline-block" }} />
         Đã Gửi Chỉ Số
       </span>
     );
   }
   return (
-    <span style={{ padding: "4px 10px", backgroundColor: "#f1f5f9", color: "#475569", fontSize: "0.6875rem", fontWeight: 800, borderRadius: "9999px", border: "1px solid #e2e8f0" }}>
+    <span style={{ padding: "4px 10px", backgroundColor: "#f1f5f9", color: "#475569", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "9999px", border: "1px solid #e2e8f0" }}>
       ○ Chờ Thu Tiền
     </span>
   );
@@ -78,7 +78,7 @@ const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint, onViewPhoto }) =
     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
   >
     <td style={{ padding: "12px 16px" }}>
-      <div style={{ fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem" }}>Phòng {inv.contract?.room?.room_number || "—"}</div>
+      <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>Phòng {inv.contract?.room?.room_number || "—"}</div>
       <div style={{ fontSize: "0.6875rem", color: "#64748b" }}>{inv.contract?.tenant?.name || "—"} ({inv.month})</div>
       {inv.contract?.room?.building?.name && (
         <div style={{ fontSize: "0.625rem", color: "#2563eb", fontWeight: 600 }}>{inv.contract.room.building.name}</div>
@@ -102,7 +102,7 @@ const InvoiceRow = ({ inv, prev, onMarkPaid, onRemind, onPrint, onViewPhoto }) =
     <PhotoCell photo={inv.waterPhoto} alt="Ảnh đồng hồ nước" onView={onViewPhoto} />
     <PhotoCell photo={prev?.waterPhoto || inv.contract?.initialWaterPhoto} alt="Ảnh đồng hồ nước tháng trước" onView={onViewPhoto} />
     <td style={{ padding: "12px 16px", color: "#475569" }}>{formatCurrency(inv.serviceFee + inv.otherFees)}</td>
-    <td style={{ padding: "12px 16px", fontWeight: 800, color: "#2563eb", fontSize: "0.8125rem" }}>{formatCurrency(inv.total)}</td>
+    <td style={{ padding: "12px 16px", fontWeight: 700, color: "#2563eb", fontSize: "0.8125rem" }}>{formatCurrency(inv.total)}</td>
     <td style={{ padding: "12px 16px" }}>
       <StatusBadge status={inv.status} />
     </td>

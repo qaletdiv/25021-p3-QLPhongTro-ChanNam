@@ -41,7 +41,7 @@ export default function TenantLayout({ children }) {
           <ApartmentIcon />
         </Avatar>
         <Box>
-          <Typography sx={{ fontWeight: 800, fontSize: "1rem", lineHeight: 1.2, color: "#0f172a" }}>Phòng Trọ</Typography>
+          <Typography sx={{ fontWeight: 700, fontSize: "1rem", lineHeight: 1.2, color: "#0f172a" }}>Phòng Trọ</Typography>
           <Typography sx={{ fontSize: "0.6rem", color: "#64748b", fontWeight: 500 }}>Cổng thông tin người thuê</Typography>
         </Box>
       </Box>

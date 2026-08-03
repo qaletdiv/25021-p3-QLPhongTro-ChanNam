@@ -172,12 +172,12 @@ export default function TenantInvoices() {
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
 
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ textAlign: "center", color: "#0f172a", fontWeight: 800, fontSize: "1rem" }}>
+        <DialogTitle sx={{ textAlign: "center", color: "#0f172a", fontWeight: 700, fontSize: "1rem" }}>
           Bạn đã thanh toán chưa?
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center", color: "#475569", fontSize: "0.875rem", lineHeight: 1.6 }}>
           Vui lòng quét mã QR bên trên và chuyển khoản đúng số tiền{" "}
-          <Box component="span" sx={{ fontWeight: 800, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Box> trước khi
+          <Box component="span" sx={{ fontWeight: 700, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Box> trước khi
           gửi chỉ số. Sau khi gửi, hóa đơn sẽ được chốt.
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2.5 }}>

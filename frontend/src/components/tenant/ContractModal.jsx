@@ -21,7 +21,7 @@ export default function ContractModal({
       header={
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <HowToRegIcon sx={{ color: "#fff", fontSize: 20 }} />
-          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+          <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9375rem" }}>
             {editContractId ? "Sửa Hợp Đồng" : "Lập Hợp Đồng Cho Thuê Mới"}
           </Typography>
         </Box>
@@ -156,7 +156,7 @@ export default function ContractModal({
           {/* Companion Fingerprints */}
           {companionFingerprints.length > 0 && (
             <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>Mã Số Vân Tay Người Đi Kèm</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>Mã Số Vân Tay Người Đi Kèm</Typography>
               {companionFingerprints.map((c, i) => (
                 <TextField
                   key={c.id} fullWidth size="small"
@@ -176,7 +176,7 @@ export default function ContractModal({
           {/* Furniture Selection */}
           {furnitureList.length > 0 && (
             <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mb: 1 }}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>
                 Danh Sách Vật Dụng Bàn Giao Trong Phòng:
               </Typography>
               <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 1, p: 1.5, border: "1px solid #e2e8f0", borderRadius: "16px", bgcolor: "rgba(248,250,252,0.8)" }}>

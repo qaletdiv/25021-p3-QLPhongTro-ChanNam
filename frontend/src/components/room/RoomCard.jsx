@@ -50,10 +50,10 @@ export default function RoomCard({ room, onOpenDetail, onOpenEdit, onDelete }) {
 
       {/* Room Number & Price */}
       <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: 2 }}>
-        <Typography sx={{ fontSize: "1.5rem", fontWeight: 900, color: "#0f172a" }}>
+        <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
           Phòng {room.room_number}
         </Typography>
-        <Typography sx={{ fontSize: "1.125rem", fontWeight: 800, color: "#2563eb" }}>
+        <Typography sx={{ fontSize: "1.125rem", fontWeight: 700, color: "#2563eb" }}>
           {formatCurrency(room.price)}
           <Typography component="span" sx={{ fontSize: "0.6875rem", color: "#94a3b8", fontWeight: 400 }}>/tháng</Typography>
         </Typography>
@@ -73,7 +73,7 @@ export default function RoomCard({ room, onOpenDetail, onOpenEdit, onDelete }) {
           <>
             <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #e2e8f0", pt: 0.75, mt: 0.75 }}>
               <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>Khách thuê:</Typography>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#059669" }}>{tenant.name}</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#059669" }}>{tenant.name}</Typography>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>Số điện thoại:</Typography>

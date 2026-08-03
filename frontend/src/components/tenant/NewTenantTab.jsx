@@ -28,7 +28,7 @@ export default function NewTenantTab({ settings, roomPrice, roomNumber, onSaveMe
       {/* VietQR - Tiền phòng tháng đầu */}
       <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
         <Box sx={{ textAlign: "center" }}>
-          <Typography sx={{ fontSize: "1rem", fontWeight: 900, color: "#0f172a" }}>
+          <Typography sx={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}>
             Mã QR Thanh Toán Tiền Phòng
           </Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5, fontWeight: 500 }}>
@@ -49,19 +49,19 @@ export default function NewTenantTab({ settings, roomPrice, roomNumber, onSaveMe
         <Box sx={{ width: "100%", fontSize: "0.75rem", bgcolor: "#f8fafc", p: 2.5, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
             <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Ngân hàng:</Typography>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a" }}>{s.bankName || "MBBank"}</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>{s.bankName || "MBBank"}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
             <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Số tài khoản:</Typography>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontFamily: "monospace" }}>{s.bankAccount || "0988776655"}</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontFamily: "monospace" }}>{s.bankAccount || "0988776655"}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
             <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Chủ tài khoản:</Typography>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", textTransform: "uppercase" }}>{s.bankHolder || "CHU TRO"}</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", textTransform: "uppercase" }}>{s.bankHolder || "CHU TRO"}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #e2e8f0", pt: 1.5, color: "#2563eb" }}>
-            <Typography sx={{ fontWeight: 900, fontSize: "0.875rem" }}>Số tiền chuyển:</Typography>
-            <Typography sx={{ fontWeight: 900, fontSize: "0.875rem" }}>{formatCurrency(roomPrice)}</Typography>
+            <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>Số tiền chuyển:</Typography>
+            <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>{formatCurrency(roomPrice)}</Typography>
           </Box>
         </Box>
       </Paper>
@@ -70,12 +70,12 @@ export default function NewTenantTab({ settings, roomPrice, roomNumber, onSaveMe
       <InitialMeterForm roomNumber={roomNumber} onSaved={beginSave} />
 
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ textAlign: "center", color: "#0f172a", fontWeight: 800, fontSize: "1rem" }}>
+        <DialogTitle sx={{ textAlign: "center", color: "#0f172a", fontWeight: 700, fontSize: "1rem" }}>
           Bạn đã thanh toán tiền phòng chưa?
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center", color: "#475569", fontSize: "0.875rem", lineHeight: 1.6 }}>
           Vui lòng quét mã QR bên trái và chuyển khoản đúng số tiền{" "}
-          <Box component="span" sx={{ fontWeight: 800, color: "#2563eb" }}>{formatCurrency(roomPrice)}</Box> cho tháng
+          <Box component="span" sx={{ fontWeight: 700, color: "#2563eb" }}>{formatCurrency(roomPrice)}</Box> cho tháng
           đầu nhận phòng trước khi lưu chỉ số ban đầu.
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2.5 }}>

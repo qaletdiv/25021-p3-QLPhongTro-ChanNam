@@ -17,7 +17,7 @@ export default function RoomFormModal({ open, editRoom, form, setForm, buildings
       header={
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <MeetingRoomIcon sx={{ color: "#fcd34d", fontSize: 20 }} />
-          <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+          <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9375rem" }}>
             {editRoom ? "Cập Nhật Phòng" : "Thêm Phòng Trọ Mới"}
           </Typography>
         </Box>

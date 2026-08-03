@@ -53,7 +53,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             <Typography sx={{ fontSize: "0.6875rem", color: "#bfdbfe", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               Thời Hạn Hợp Đồng
             </Typography>
-            <Typography sx={{ fontSize: "1.5rem", fontWeight: 900, color: "#fcd34d", mt: 0.5 }}>
+            <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#fcd34d", mt: 0.5 }}>
               Còn {daysLeft} Ngày
             </Typography>
             <Typography sx={{ fontSize: "0.6875rem", color: "#bfdbfe", mt: 0.5, fontWeight: 500 }}>
@@ -67,22 +67,22 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Giá Thuê Phòng Hàng Tháng</Typography>
-          <Typography sx={{ fontSize: "1.5rem", fontWeight: 900, color: "#2563eb" }}>{formatCurrency(room?.price || roomPrice)}</Typography>
+          <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#2563eb" }}>{formatCurrency(room?.price || roomPrice)}</Typography>
           <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>Ngày thu tiền: Ngày {contract?.paymentDay || 5} hàng tháng</Typography>
         </Paper>
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Trạng Thái Hóa Đơn Tháng {monthStr}</Typography>
           <Box>
             <Chip label={statusInfo.label} size="small"
-              sx={{ bgcolor: statusInfo.bgcolor, color: statusInfo.color, fontWeight: 800, fontSize: "0.6875rem", borderRadius: "9999px", border: statusInfo.border }} />
+              sx={{ bgcolor: statusInfo.bgcolor, color: statusInfo.color, fontWeight: 700, fontSize: "0.6875rem", borderRadius: "9999px", border: statusInfo.border }} />
           </Box>
-          <Typography sx={{ fontSize: "0.75rem", fontWeight: 800, color: "#0f172a", mt: 0.5 }}>
+          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mt: 0.5 }}>
             Tổng cộng: {formatCurrency(calcTotal)}
           </Typography>
         </Paper>
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Khóa Cửa & Bàn Giao</Typography>
-          <Box sx={{ fontSize: "0.8125rem", fontFamily: "monospace", fontWeight: 800, color: "#2563eb", bgcolor: "#f8fafc", p: 1.5, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+          <Box sx={{ fontSize: "0.8125rem", fontFamily: "monospace", fontWeight: 700, color: "#2563eb", bgcolor: "#f8fafc", p: 1.5, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
             Mã Vân Tay: {contract?.fingerprintCode || "FP-101-88"}
           </Box>
           <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>
@@ -109,7 +109,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             {notifications.map((n) => (
               <Paper key={n.id} sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
-                  <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.75rem" }}>{n.title}</Typography>
+                  <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.75rem" }}>{n.title}</Typography>
                   <Typography sx={{ fontSize: "0.625rem", color: "#94a3b8", fontWeight: 500 }}>{n.createdAt ? formatDate(n.createdAt) : ""}</Typography>
                 </Box>
                 <Typography sx={{ fontSize: "0.6875rem", color: "#475569", lineHeight: 1.6 }}>{resolveContent(n.content)}</Typography>
@@ -124,7 +124,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
         header={
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M3 7V5a2 2 0 0 1 2-2h4l2 3h6a2 2 0 0 1 2 2v2"/></svg>
-            <Typography sx={{ fontWeight: 800, color: "#fff", fontSize: "0.9375rem" }}>
+            <Typography sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9375rem" }}>
               Vật Dụng Bàn Giao - Phòng {room?.room_number || "—"}
             </Typography>
           </Box>
@@ -139,13 +139,13 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
               handoverItems.map((item) => (
                 <Paper key={item.id} sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
                   <Box>
-                    <Typography sx={{ fontSize: "0.8125rem", fontWeight: 800, color: "#0f172a" }}>{item.furniture?.name || "—"}</Typography>
+                    <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a" }}>{item.furniture?.name || "—"}</Typography>
                     {item.furniture?.note && (
                       <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", mt: 0.25 }}>{item.furniture.note}</Typography>
                     )}
                   </Box>
                   <Chip label={`x${item.quantity || 1}`} size="small"
-                    sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 800, fontSize: "0.6875rem", borderRadius: "9999px", border: "1px solid #bfdbfe", flexShrink: 0 }} />
+                    sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, fontSize: "0.6875rem", borderRadius: "9999px", border: "1px solid #bfdbfe", flexShrink: 0 }} />
                 </Paper>
               ))
             )}

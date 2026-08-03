@@ -139,7 +139,7 @@ export default function NotificationManagement() {
           <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <SendIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-              <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>Gửi Thông Báo Mới Telegram</Typography>
+              <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>Gửi Thông Báo Mới Telegram</Typography>
             </Box>
 
             {successMsg && (
@@ -212,7 +212,7 @@ export default function NotificationManagement() {
           <Box sx={{ bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 2.5 }}>
               <BoltIcon sx={{ fontSize: 18, color: "#d97706" }} />
-              <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>Mẫu Thông Báo Nhắc Nợ Tự Động</Typography>
+              <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>Mẫu Thông Báo Nhắc Nợ Tự Động</Typography>
             </Box>
             <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 2 }}>
               Nội dung này sẽ được hệ thống dùng để <b>tự động gửi nhắc nợ</b> qua Telegram vào đúng <b>ngày thu tiền</b> của từng phòng. Nếu để trống, hệ thống dùng mẫu mặc định.
@@ -253,7 +253,7 @@ export default function NotificationManagement() {
           <Box sx={{ flex: 1, minWidth: 0, bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
               <HistoryIcon sx={{ fontSize: 18, color: "#64748b" }} />
-              <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.875rem" }}>
+              <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>
                 Lịch Sử Đã Gửi Telegram ({sentNotifications.length})
               </Typography>
             </Box>
@@ -262,7 +262,7 @@ export default function NotificationManagement() {
               {sentNotifications.map((log) => (
                 <Paper key={log.id} sx={{ p: 1.75, bgcolor: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
-                    <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.75rem" }}>
+                    <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.75rem" }}>
                       {(() => {
                         const roomIds = parseRoomIds(log);
                         if (roomIds.length === 0) return "Tất cả phòng";
@@ -275,11 +275,11 @@ export default function NotificationManagement() {
                     </Typography>
                     <Box sx={{ display: "flex", gap: 0.75 }}>
                       {log.source === "auto" && (
-                        <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#fef3c7", color: "#92400e", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #fde68a" }}>
+                        <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#fef3c7", color: "#92400e", fontWeight: 700, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #fde68a" }}>
                           Tự động
                         </Typography>
                       )}
-                      <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 800, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
+                      <Typography sx={{ px: 1.5, py: 0.25, bgcolor: "#d1fae5", color: "#065f46", fontWeight: 700, fontSize: "0.625rem", borderRadius: "9999px", border: "1px solid #a7f3d0" }}>
                         Gửi thành công
                       </Typography>
                     </Box>

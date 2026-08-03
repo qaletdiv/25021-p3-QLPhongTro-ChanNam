@@ -94,7 +94,7 @@ export default function TenantDashboard() {
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}
           slotProps={{ paper: { sx: { mt: 1, width: 340, borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 10px 30px rgba(0,0,0,0.08)" } } }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2, py: 1.25, borderBottom: "1px solid #f1f5f9" }}>
-            <Typography sx={{ fontWeight: 800, color: "#0f172a", fontSize: "0.8125rem" }}>Thông báo chưa đọc ({notifCount})</Typography>
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>Thông báo chưa đọc ({notifCount})</Typography>
             {notifItems.some((i) => !i.read) && (
               <Button size="small" onClick={handleMarkAllRead} sx={{ fontSize: "0.6875rem", fontWeight: 700, textTransform: "none", color: "#2563eb" }}>
                 Đánh dấu đã đọc
