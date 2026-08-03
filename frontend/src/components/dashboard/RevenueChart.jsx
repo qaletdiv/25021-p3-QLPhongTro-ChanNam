@@ -2,7 +2,7 @@
 
 import { Box, Card, Typography, Chip } from "@mui/material";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList,
 } from "recharts";
 import { formatCurrency } from "../../utils/format";
 
@@ -26,7 +26,7 @@ export default function RevenueChart({ data, monthlyRevenue }) {
       </Box>
       <Box sx={{ height: 260 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <BarChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
             <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#64748b", fontWeight: 600 }} />
             <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} />
@@ -34,7 +34,9 @@ export default function RevenueChart({ data, monthlyRevenue }) {
               formatter={(value) => [formatCurrency(value), "Doanh Thu"]}
               contentStyle={{ backgroundColor: "#0f172a", color: "#f8fafc", borderRadius: "12px", fontSize: "12px", border: "1px solid #334155" }}
             />
-            <Bar dataKey="revenue" fill="#2563eb" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="revenue" fill="#2563eb" radius={[6, 6, 0, 0]}>
+              <LabelList dataKey="revenue" position="top" fill="#0f172a" fontSize={11} fontWeight={700} formatter={(v) => formatCurrency(v)} />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </Box>
