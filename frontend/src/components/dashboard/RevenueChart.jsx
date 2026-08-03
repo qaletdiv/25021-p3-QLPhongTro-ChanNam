@@ -1,12 +1,12 @@
 "use client";
 
-import { Box, Card, Typography, Chip } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList,
 } from "recharts";
 import { formatCurrency } from "../../utils/format";
 
-export default function RevenueChart({ data, monthlyRevenue }) {
+export default function RevenueChart({ data }) {
   return (
     <Card sx={{ borderRadius: "16px", p: 3 }}>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 1, mb: 3 }}>
@@ -18,11 +18,6 @@ export default function RevenueChart({ data, monthlyRevenue }) {
             Thống kê doanh thu thực nhận định kỳ
           </Typography>
         </Box>
-        <Chip
-          label={`Thực thu ${data[data.length - 1]?.month || ""}: ${formatCurrency(monthlyRevenue)}`}
-          size="small"
-          sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, borderRadius: "12px", fontSize: "0.6875rem", border: "1px solid #bfdbfe", alignSelf: "flex-start" }}
-        />
       </Box>
       <Box sx={{ height: 260 }}>
         <ResponsiveContainer width="100%" height="100%">
