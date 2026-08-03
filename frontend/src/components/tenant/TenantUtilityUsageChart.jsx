@@ -47,7 +47,7 @@ export default function TenantUtilityUsageChart() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 0 }} barGap={2}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b", fontWeight: 600 }} />
+              <XAxis dataKey="monthLabel" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b", fontWeight: 600 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} />
               <Bar dataKey="electricity" fill="#f59e0b" radius={[4, 4, 0, 0]}>
                 <LabelList dataKey="electricity" position="top" fill="#92400e" fontSize={9} fontWeight={700} formatter={(v) => (v > 0 ? v : "")} />
