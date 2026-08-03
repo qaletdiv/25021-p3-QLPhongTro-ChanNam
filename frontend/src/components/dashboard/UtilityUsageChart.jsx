@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Card, Typography, Tabs, Tab, CircularProgress, Alert } from "@mui/material";
+import { Box, Card, Typography, Select, MenuItem, InputLabel, FormControl, CircularProgress, Alert } from "@mui/material";
 import BoltIcon from "@mui/icons-material/Bolt";
-import OpacityIcon from "@mui/icons-material/Opacity";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList,
 } from "recharts";
 import dashboardApi from "../../api/dashboardApi";
 import buildingApi from "../../api/buildingApi";
@@ -48,16 +47,22 @@ export default function UtilityUsageChart() {
             Mức tiêu thụ mới nhất của từng phòng (điện kWh, nước m³)
           </Typography>
         </Box>
-        <Tabs
-          value={selected}
-          onChange={(e, v) => setSelected(v)}
-          variant="scrollable" scrollButtons="auto"
-          sx={{ minHeight: "auto", "& .MuiTab-root": { fontSize: "0.6875rem" } }}
-        >
-          {buildingOptions.map((b) => (
-            <Tab key={String(b.id)} label={b.label} value={String(b.id)} />
-          ))}
-        </Tabs>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+          <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a" }}>
+            Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
+          </Typography>
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <Select
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
+              sx={{ fontSize: "0.8125rem", borderRadius: "10px", bgcolor: "#f8fafc", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e2e8f0" } }}
+            >
+              {buildingOptions.map((b) => (
+                <MenuItem key={String(b.id)} value={String(b.id)}>{b.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
 
       {loading ? (
@@ -75,10 +80,6 @@ export default function UtilityUsageChart() {
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
               <XAxis dataKey="room" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b", fontWeight: 600 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} />
-              <Legend
-                iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 8 }}
-                formatter={(value) => <span style={{ color: "#475569", fontWeight: 600 }}>{value === "electricity" ? "Điện (kWh)" : "Nước (m³)"}</span>}
-              />
               <Bar dataKey="electricity" fill="#f59e0b" radius={[4, 4, 0, 0]}>
                 <LabelList dataKey="electricity" position="top" fill="#92400e" fontSize={10} fontWeight={700} formatter={(v) => (v > 0 ? v : "")} />
               </Bar>

@@ -8,7 +8,7 @@ import { formatCurrency } from "../../utils/format";
 
 export default function RevenueChart({ data }) {
   return (
-    <Card sx={{ borderRadius: "16px", p: 3 }}>
+    <Card sx={{ borderRadius: "16px", p: 3, height: "100%" }}>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { sm: "center" }, gap: 1, mb: 3 }}>
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>

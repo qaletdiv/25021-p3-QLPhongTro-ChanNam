@@ -153,15 +153,16 @@ exports.getUtilityUsage = async (req, res, next) => {
         }
 
         const chartData = [];
-        for (const [roomId, inv] of latestByRoom) {
+        for (const roomId of roomMap.keys()) {
             const room = roomMap.get(roomId);
+            const inv = latestByRoom.get(roomId);
             chartData.push({
                 roomId,
                 room: room.room_number,
                 building: room.building?.name || "—",
-                electricity: Math.max(0, Number(inv.electricityNew) - Number(inv.electricityOld)),
-                water: Math.max(0, Number(inv.waterNew) - Number(inv.waterOld)),
-                month: inv.month,
+                electricity: inv ? Math.max(0, Number(inv.electricityNew) - Number(inv.electricityOld)) : 0,
+                water: inv ? Math.max(0, Number(inv.waterNew) - Number(inv.waterOld)) : 0,
+                month: inv?.month || null,
             });
         }
 

@@ -122,12 +122,12 @@ export default function Dashboard() {
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 8 }}>
           <RevenueChart data={chartData} monthlyRevenue={stats.monthlyRevenue} />
-          <Box sx={{ mt: 2 }}>
-            <UtilityUsageChart />
-          </Box>
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
           <ExpiringContracts expiring={expiring} onManage={navigate} />
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <UtilityUsageChart />
         </Grid>
       </Grid>
     </Box>
