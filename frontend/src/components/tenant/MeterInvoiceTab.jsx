@@ -62,7 +62,8 @@ export default function MeterInvoiceTab({
                 <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e, "electricity")} />
               </Button>
               <TextField fullWidth size="small" type="number" value={elecVal} required
-                onChange={(e) => setElecVal(Number(e.target.value))}
+                onChange={(e) => setElecVal(Math.max(0, Number(e.target.value) || 0))}
+                inputProps={{ min: 0, step: 1 }}
                 sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 700 } }} />
             </Box>
             {elecPhoto && (
@@ -91,7 +92,8 @@ export default function MeterInvoiceTab({
                 <input type="file" accept="image/*" hidden onChange={(e) => handlePhotoUpload(e, "water")} />
               </Button>
               <TextField fullWidth size="small" type="number" value={waterVal} required
-                onChange={(e) => setWaterVal(Number(e.target.value))}
+                onChange={(e) => setWaterVal(Math.max(0, Number(e.target.value) || 0))}
+                inputProps={{ min: 0, step: 1 }}
                 sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 700 } }} />
             </Box>
             {waterPhoto && (

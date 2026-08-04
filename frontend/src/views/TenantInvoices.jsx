@@ -83,6 +83,10 @@ export default function TenantInvoices() {
     e.preventDefault();
     setWarningMsg("");
     setSubmitSuccess("");
+    if (elecVal < 0 || waterVal < 0) {
+      setWarningMsg("⚠ Chỉ số không được nhập số âm.");
+      return;
+    }
     if (elecVal < (contract?.lastElectricity || 0)) {
       setWarningMsg("⚠ Chỉ số điện mới nhỏ hơn chỉ số cũ!");
       return;
