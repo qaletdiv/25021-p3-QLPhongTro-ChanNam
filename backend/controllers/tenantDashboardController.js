@@ -76,6 +76,8 @@ exports.getUtilityUsage = async (req, res, next) => {
             attributes: ["month", "electricityNew", "electricityOld", "waterNew", "waterOld"]
         });
 
+        const moveInKey = `${String(start.getMonth() + 1).padStart(2, "0")}/${startYear}`;
+
         const byMonth = {};
         invoices.forEach((inv) => {
             byMonth[inv.month] = {
@@ -83,6 +85,10 @@ exports.getUtilityUsage = async (req, res, next) => {
                 water: Math.max(0, Number(inv.waterNew) - Number(inv.waterOld)),
             };
         });
+        // Chỉ số ban đầu (tháng vào) không tính là tiêu thụ, chỉ số cũ = 0 là baseline
+        if (byMonth[moveInKey]) {
+            byMonth[moveInKey] = { electricity: 0, water: 0 };
+        }
 
         const chartData = [];
         for (let i = 0; i < 12; i++) {
