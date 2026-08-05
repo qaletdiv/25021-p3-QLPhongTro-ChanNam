@@ -1,9 +1,12 @@
 "use client";
 
+import { useState, Fragment } from "react";
 import { Box, Paper, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import PrintIcon from "@mui/icons-material/Print";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { formatCurrency, formatDate } from "../../utils/format";
 
 const HEADERS = ["Phòng", "Khách Thuê", "Số Điện Thoại", "Telegram", "Tiền Cọc", "Thời Hạn HĐ", "Ngày Thu", "Mã Vân Tay", "Trạng Thái", ""];
@@ -32,6 +35,10 @@ const StatusBadge = ({ active, ended }) => {
 };
 
 export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
+  const [expandedId, setExpandedId] = useState(null);
+
+  const toggleExpand = (tenantId) => setExpandedId((cur) => (cur === tenantId ? null : tenantId));
+
   return (
     <Paper sx={{ borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0" }}>
       <Box sx={{ overflowX: "auto" }}>
@@ -49,8 +56,10 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
               const active = contracts.find((c) => c.status === "active");
               const ended = !active && contracts.some((c) => c.status === "ended");
               const displayContract = active || contracts[0];
+              const companions = tenant.companions || [];
               return (
-                <tr key={tenant.id} style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
+                <Fragment key={tenant.id}>
+                <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                 >
@@ -61,7 +70,19 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                     )}
                   </td>
                   <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
-                    {tenant.name}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                      {tenant.name}
+                      {(tenant.companions?.length || 0) > 0 && (
+                        <Box component="span" sx={{ color: "#2563eb", fontSize: "0.6875rem", fontWeight: 700 }}>({1 + (tenant.companions.length)} người)</Box>
+                      )}
+                      {(tenant.companions?.length || 0) > 0 && (
+                        <IconButton size="small" onClick={() => toggleExpand(tenant.id)}
+                          title={expandedId === tenant.id ? "Thu gọn người đi kèm" : "Xem người đi kèm"}
+                          sx={{ color: "#2563eb", bgcolor: "#eff6ff", "&:hover": { bgcolor: "#dbeafe" }, p: 0.25 }}>
+                          {expandedId === tenant.id ? <RemoveIcon sx={{ fontSize: 14 }} /> : <AddIcon sx={{ fontSize: 14 }} />}
+                        </IconButton>
+                      )}
+                    </span>
                   </td>
                   <td style={{ padding: "12px 16px", color: "#64748b", fontWeight: 600 }}>
                     {tenant.phone || "-"}
@@ -113,6 +134,26 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                     )}
                   </td>
                 </tr>
+                {expandedId === tenant.id && companions.length > 0 && (
+                  <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                    <td style={{ padding: "0 16px" }} colSpan={HEADERS.length}>
+                      <Box sx={{ py: 1.5, display: "flex", flexDirection: "column", gap: 0.75 }}>
+                        <Box sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          Người đi kèm ({companions.length})
+                        </Box>
+                        {companions.map((c, idx) => (
+                          <Box key={c.id || idx} sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap" }}>
+                            <Box component="span" sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.75rem" }}>{c.name}</Box>
+                            {c.relationship && <Box component="span" sx={{ fontSize: "0.6875rem", color: "#64748b" }}>· {c.relationship}</Box>}
+                            {c.phone && <Box component="span" sx={{ fontSize: "0.6875rem", color: "#64748b" }}>· {c.phone}</Box>}
+                            {c.cccd && <Box component="span" sx={{ fontSize: "0.6875rem", color: "#64748b" }}>· CCCD: {c.cccd}</Box>}
+                          </Box>
+                        ))}
+                      </Box>
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               );
             })}
           </tbody>
