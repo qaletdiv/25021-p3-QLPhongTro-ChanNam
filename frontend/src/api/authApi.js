@@ -7,6 +7,9 @@ const authApi = {
   login(data) {
     return axiosClient.post("/auth/login", data);
   },
+  logout() {
+    return axiosClient.post("/auth/logout");
+  },
   getMe() {
     return axiosClient.get("/auth/me");
   },

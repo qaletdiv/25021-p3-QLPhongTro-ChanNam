@@ -15,31 +15,35 @@ export function AuthProvider({ children }) {
     if (stored) {
       try { setUser(JSON.parse(stored)); } catch { /* ignore */ }
     }
-    const token = localStorage.getItem("token");
-    if (!token) { setLoading(false); return; }
+    // Restore session via cookie (JWT + cookies). Force-refresh session validity (e.g. after another device logs in).
     authApi.getMe()
-      .then((res) => { setUser(res.data.user); localStorage.setItem("user", JSON.stringify(res.data.user)); })
-      .catch(() => { localStorage.removeItem("token"); localStorage.removeItem("user"); setUser(null); })
+      .then((res) => {
+        setUser(res.data.user);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      })
+      .catch(() => { localStorage.removeItem("user"); setUser(null); })
       .finally(() => setLoading(false));
   }, []);
 
   const login = async (data) => {
     const res = await authApi.login(data);
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    setUser(res.data.user);
-    return res.data.user;
+    const u = res.data.user;
+    setUser(u);
+    localStorage.setItem("user", JSON.stringify(u));
+    // token is carried by the HttpOnly cookie set by the server.
+    return u;
   };
 
   const register = async (data) => {
     const res = await authApi.register(data);
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    setUser(res.data.user);
-    return res.data.user;
+    const u = res.data.user;
+    setUser(u);
+    localStorage.setItem("user", JSON.stringify(u));
+    return u;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try { await authApi.logout(); } catch { /* ignore */ }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);

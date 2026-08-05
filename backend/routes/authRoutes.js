@@ -7,6 +7,7 @@ const authenticateToken = require('../middlewares/authenticateToken');
 
 router.post('/register', registerValidationRules(), handleValidationErrors, authController.register);
 router.post('/login', loginValidationRules(), handleValidationErrors, authController.login);
+router.post('/logout', authenticateToken, authController.logout);
 router.get('/me', authenticateToken, authController.getMe);
 
 module.exports = router;

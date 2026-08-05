@@ -16,6 +16,7 @@ module.exports = (sequelize, DataType) => {
         password: { type: DataType.STRING, allowNull: false },
         name: { type: DataType.STRING(100), allowNull: false },
         role: { type: DataType.ENUM('landlord', 'tenant'), allowNull: false, defaultValue: 'tenant' },
+        currentSessionToken: { type: DataType.STRING(255), allowNull: true },
         avatar: { type: DataType.STRING },
         cccd: { type: DataType.STRING(20) }
     }, {

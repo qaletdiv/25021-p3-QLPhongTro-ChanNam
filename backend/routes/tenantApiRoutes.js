@@ -8,11 +8,14 @@ const tenantInvoiceController = require('../controllers/tenantInvoiceController'
 const tenantIssueController = require('../controllers/tenantIssueController');
 const tenantProfileController = require('../controllers/tenantProfileController');
 const tenantNotificationController = require('../controllers/tenantNotificationController');
+const authController = require('../controllers/authController');
 
 const auth = [authenticateToken, authorizeRole('tenant')];
 
 router.get('/dashboard', ...auth, tenantDashboardController.getDashboard);
 router.get('/dashboard/utility-usage', ...auth, tenantDashboardController.getUtilityUsage);
+
+router.post('/logout', ...auth, authController.logout);
 
 router.get('/invoices', ...auth, tenantInvoiceController.getInvoices);
 router.get('/invoice-settings', ...auth, tenantInvoiceController.getSettings);

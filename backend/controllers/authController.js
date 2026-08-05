@@ -1,6 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User, Tenant, Companion } = require("../models");
+const { generateSessionToken, setAuthCookie } = require("../utils/cookies");
+
+const signToken = (user, sessionId) => jwt.sign(
+    { userId: user.id, role: user.role, sessionId },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+);
 
 exports.register = async (req, res, next) => {
     try {
@@ -19,9 +26,11 @@ exports.register = async (req, res, next) => {
             }
         }
 
-        const payload = { userId: newUser.id };
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-        res.status(201).json({ message: "Đăng ký thành công", token, user: { id: newUser.id, name, email, phone, role: role || 'tenant' } });
+        const sessionId = generateSessionToken();
+        await newUser.update({ currentSessionToken: sessionId });
+        const token = signToken(newUser, sessionId);
+        setAuthCookie(res, token);
+        res.status(201).json({ message: "Đăng ký thành công", user: { id: newUser.id, name, email, phone, role: role || 'tenant' } });
     } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
             const field = error.errors[0].path;
@@ -38,9 +47,27 @@ exports.login = async (req, res, next) => {
         if (!user) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
-        const payload = { userId: user.id };
-        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-        res.json({ message: "Đăng nhập thành công", token, user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
+
+        // Single active session: a new login invalidates any previous session for this account.
+        const sessionId = generateSessionToken();
+        await user.update({ currentSessionToken: sessionId });
+        const token = signToken(user, sessionId);
+        setAuthCookie(res, token);
+
+        res.json({ message: "Đăng nhập thành công", user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.logout = async (req, res, next) => {
+    try {
+        if (req.user) {
+            await req.user.update({ currentSessionToken: null });
+        }
+        const { clearAuthCookie } = require("../utils/cookies");
+        clearAuthCookie(res);
+        res.json({ message: "Đăng xuất thành công" });
     } catch (error) {
         next(error);
     }
