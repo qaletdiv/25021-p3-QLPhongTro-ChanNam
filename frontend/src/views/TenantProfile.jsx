@@ -3,9 +3,12 @@
 import { useState, useEffect } from "react";
 import {
   Box, Typography, TextField, Button, Paper, Grid, CircularProgress,
+  IconButton,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import MessageDialog from "../components/MessageDialog";
 import tenantProfileApi from "../api/tenantProfileApi";
 
@@ -31,7 +34,7 @@ const inputFieldSx = {
 export default function TenantProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [profile, setProfile] = useState({ name: "", email: "", phone: "", cccd: "", telegramChatId: "" });
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "", cccd: "", telegramChatId: "", companions: [] });
   const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
@@ -69,6 +72,19 @@ export default function TenantProfile() {
     } finally {
       setSaving(false);
     }
+  };
+   const addCompanion = () => {
+    const companions = profile.companions || [];
+    setProfile({ ...profile, companions: [...companions, { name: "", phone: "", cccd: "", relationship: "" }] });
+  };
+  const removeCompanion = (i) => {
+    const companions = profile.companions || [];
+    setProfile({ ...profile, companions: companions.filter((_, idx) => idx !== i) });
+  };
+  const updateCompanion = (i, field, value) => {
+    const companions = profile.companions ? [...profile.companions] : [];
+    companions[i] = { ...companions[i], [field]: value };
+    setProfile({ ...profile, companions });
   };
 
   if (loading) return <CircularProgress />;
@@ -121,10 +137,44 @@ export default function TenantProfile() {
 
       <Paper sx={cardSx}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
+          <PersonIcon sx={{ color: "#059669", fontSize: 20 }} />
+          <Typography variant="h6" fontWeight="bold" color="#0f172a">Người đi kèm</Typography>
+        </Box>
+        {(profile.companions || []).map((c, i) => (
+          <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "end", mb: 2, flexWrap: "wrap" }}>
+            <TextField size="small" label="Họ tên" value={c.name || ""} required
+              onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 12px)" }} />
+            <TextField size="small" label="Số điện thoại" value={c.phone || ""}
+              onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 12px)" }} />
+            <TextField size="small" label="CCCD" value={c.cccd || ""}
+              onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 12px)" }} />
+            <TextField size="small" label="Quan hệ" value={c.relationship || ""}
+              onChange={(e) => updateCompanion(i, "relationship", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 48px)" }} />
+            <IconButton size="small" color="error" onClick={() => removeCompanion(i)} aria-label="Xoá người đi kèm">
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        ))}
+        <Box sx={{ mt: 1 }}>
+          <Button startIcon={<AddIcon />} size="small" onClick={addCompanion}
+            sx={{ textTransform: "none", color: "#059669" }}>
+            Thêm người đi kèm
+          </Button>
+        </Box>
+        <Box sx={{ mt: 2, textAlign: "center" }}>
+          <Button variant="contained" onClick={handleUpdateProfile} disabled={saving}
+            sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
+            Lưu thay đổi
+          </Button>
+        </Box>
+      </Paper>
+
+      <Paper sx={cardSx}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
           <LockIcon sx={{ color: "#059669", fontSize: 20 }} />
           <Typography variant="h6" fontWeight="bold" color="#0f172a">Đổi mật khẩu</Typography>
         </Box>
-         <Grid container spacing={2}>
+        <Grid container spacing={2}>
           <Grid size={4}>
             <TextField fullWidth label="Mật khẩu cũ" type="password" value={passwords.oldPassword} onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
               sx={inputFieldSx} />

@@ -1,17 +1,23 @@
 const bcrypt = require("bcrypt");
-const { User } = require("../models");
+const { User, Companion } = require("../models");
 const { findTenantByUser } = require("../utils/tenantHelpers");
+
+const COMPANION_ATTRS = ["id", "name", "phone", "cccd", "relationship"];
 
 exports.getProfile = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
+        const companions = tenant
+            ? await Companion.findAll({ where: { tenantId: tenant.id }, attributes: COMPANION_ATTRS, order: [["createdAt", "DESC"]] })
+            : [];
         const profile = {
             name: req.user.name,
             email: req.user.email,
             phone: req.user.phone,
             cccd: req.user.cccd || (tenant ? tenant.cccd : ""),
             telegramChatId: tenant ? tenant.telegramChatId || "" : "",
-            avatar: req.user.avatar
+            avatar: req.user.avatar,
+            companions: companions.map((c) => c.get())
         };
         res.json({ profile });
     } catch (error) {
@@ -21,7 +27,7 @@ exports.getProfile = async (req, res, next) => {
 
 exports.updateProfile = async (req, res, next) => {
     try {
-        const { name, email, phone, cccd, telegramChatId } = req.body;
+        const { name, email, phone, cccd, telegramChatId, companions } = req.body;
         const updateData = {};
         if (name) updateData.name = name;
         if (email) updateData.email = email;
@@ -31,11 +37,30 @@ exports.updateProfile = async (req, res, next) => {
         await req.user.update(updateData);
 
         const tenant = await findTenantByUser(req.user.id);
-        if (tenant && cccd !== undefined) {
-            await tenant.update({ cccd });
-        }
-        if (tenant && telegramChatId !== undefined) {
-            await tenant.update({ telegramChatId: String(telegramChatId).trim() });
+        if (tenant) {
+            if (cccd !== undefined) await tenant.update({ cccd });
+            if (telegramChatId !== undefined) {
+                await tenant.update({ telegramChatId: String(telegramChatId).trim() });
+            }
+            if (Array.isArray(companions)) {
+                const incoming = companions.filter((c) => (c.name || "").trim());
+                const existing = await Companion.findAll({ where: { tenantId: tenant.id } });
+                const existingById = new Map(existing.map((c) => [c.id, c]));
+                const keptIds = [];
+                for (const c of incoming) {
+                    if (c.id && existingById.has(c.id)) {
+                        await existingById.get(c.id).update({
+                            name: c.name, phone: c.phone || null, cccd: c.cccd || null, relationship: c.relationship || null,
+                        });
+                        keptIds.push(c.id);
+                    } else {
+                        const created = await Companion.create({ name: c.name, phone: c.phone || null, cccd: c.cccd || null, relationship: c.relationship || null, tenantId: tenant.id });
+                        keptIds.push(created.id);
+                    }
+                }
+                const removeIds = existing.filter((c) => !keptIds.includes(c.id)).map((c) => c.id);
+                if (removeIds.length) await Companion.destroy({ where: { id: removeIds } });
+            }
         }
 
         res.json({ message: "Cập nhật thông tin thành công" });
