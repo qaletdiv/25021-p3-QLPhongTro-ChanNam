@@ -25,7 +25,7 @@ export default function RevenueChart({ data }) {
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
             <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#64748b", fontWeight: 600 }} />
             <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} />
-            <Bar dataKey="revenue" fill="#2563eb" radius={[6, 6, 0, 0]}>
+            <Bar dataKey="revenue" fill="#059669" radius={[6, 6, 0, 0]}>
               <LabelList dataKey="revenue" position="top" fill="#0f172a" fontSize={11} fontWeight={700} formatter={(v) => formatCurrency(v)} />
             </Bar>
           </BarChart>
