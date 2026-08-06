@@ -15,6 +15,33 @@ async function run() {
     }
   } catch(e) { console.log('companions error:', e.message); }
 
+  // 1b. Add status if missing
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM companions LIKE 'status'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE companions ADD COLUMN status VARCHAR(20) DEFAULT 'active' AFTER fingerprintCode");
+      console.log('Added status to companions');
+    }
+  } catch(e) { console.log('companions status error:', e.message); }
+
+  // 1c. Add endedAt to companions if missing
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM companions LIKE 'endedAt'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE companions ADD COLUMN endedAt DATETIME NULL DEFAULT NULL AFTER status");
+      console.log('Added endedAt to companions');
+    }
+  } catch(e) { console.log('companions endedAt error:', e.message); }
+
+  // 1d. Add telegramChatId to companions if missing
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM companions LIKE 'telegramChatId'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE companions ADD COLUMN telegramChatId VARCHAR(64) NULL DEFAULT NULL AFTER relationship");
+      console.log('Added telegramChatId to companions');
+    }
+  } catch(e) { console.log('companions telegramChatId error:', e.message); }
+
   // 2. Add unique index on settings(key, landlordId) if missing
   try {
     const [idx] = await seq.query("SHOW INDEX FROM settings WHERE Key_name = 'idx_key_landlord'");
@@ -24,6 +51,15 @@ async function run() {
       console.log('Added unique index to settings');
     }
   } catch(e) { console.log('settings error:', e.message); }
+
+  // 2b. Add checkoutDate to contracts if missing
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM contracts LIKE 'checkoutDate'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE contracts ADD COLUMN checkoutDate DATE NULL DEFAULT NULL AFTER status");
+      console.log('Added checkoutDate to contracts');
+    }
+  } catch(e) { console.log('contracts checkoutDate error:', e.message); }
 
   console.log('Done');
   process.exit(0);

@@ -6,7 +6,8 @@ export default function useCheckout({ notify, fetchTenants }) {
 
   const openCheckoutConfirm = (tenant) => {
     const ac = tenant.contracts?.find(c => c.status === "active");
-    setCheckoutConfirm(ac ? { ...ac, roomNumber: ac.room?.room_number, tenantName: tenant.name } : null);
+    const activeCompanions = (tenant.companions || []).filter(c => c.status !== "ended");
+    setCheckoutConfirm(ac ? { ...ac, roomNumber: ac.room?.room_number, tenantName: tenant.name, activeCompanions } : null);
   };
 
   const handleCheckoutConfirm = () => {

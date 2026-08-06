@@ -14,7 +14,7 @@ const theme = createTheme({
   },
    typography: {
     fontFamily: '"Arial", sans-serif',
-    h4: { fontWeight: 800, fontSize: "1.75rem", letterSpacing: "normal" },
+    h4: { fontWeight: 700, fontSize: "1.75rem", letterSpacing: "normal" },
     h5: { fontWeight: 700, fontSize: "1.5rem", letterSpacing: "normal" },
     h6: { fontWeight: 700, fontSize: "1rem", letterSpacing: "normal" },
     subtitle1: { fontWeight: 700, fontSize: "0.875rem", letterSpacing: "normal" },

@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, TextField, Button, Paper, Grid, CircularProgress,
-  IconButton,
+  Box, Typography, TextField, Button, Paper, Grid, CircularProgress, IconButton,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import MessageDialog from "../components/MessageDialog";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import tenantProfileApi from "../api/tenantProfileApi";
 
 const cardSx = {
@@ -37,6 +38,7 @@ export default function TenantProfile() {
   const [profile, setProfile] = useState({ name: "", email: "", phone: "", cccd: "", telegramChatId: "", companions: [] });
   const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+  const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null);
 
   useEffect(() => {
     tenantProfileApi.getProfile()
@@ -75,11 +77,12 @@ export default function TenantProfile() {
   };
    const addCompanion = () => {
     const companions = profile.companions || [];
-    setProfile({ ...profile, companions: [...companions, { name: "", phone: "", cccd: "", relationship: "" }] });
+    setProfile({ ...profile, companions: [...companions, { name: "", phone: "", cccd: "", relationship: "", telegramChatId: "" }] });
   };
   const removeCompanion = (i) => {
     const companions = profile.companions || [];
     setProfile({ ...profile, companions: companions.filter((_, idx) => idx !== i) });
+    setConfirmDeleteIndex(null);
   };
   const updateCompanion = (i, field, value) => {
     const companions = profile.companions ? [...profile.companions] : [];
@@ -92,7 +95,7 @@ export default function TenantProfile() {
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight="bold" color="#0f172a" sx={{ fontFamily: "'Arial', sans-serif", letterSpacing: "normal" }}>Hồ sơ cá nhân</Typography>
+        <Typography variant="h4" fontWeight="bold" color="#0f172a" sx={{ lineHeight: 1.4 }}>Hồ sơ cá nhân</Typography>
         <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý thông tin cá nhân và thay đổi mật khẩu</Typography>
       </Box>
 
@@ -140,21 +143,64 @@ export default function TenantProfile() {
           <PersonIcon sx={{ color: "#059669", fontSize: 20 }} />
           <Typography variant="h6" fontWeight="bold" color="#0f172a">Người đi kèm</Typography>
         </Box>
-        {(profile.companions || []).map((c, i) => (
-          <Box key={i} sx={{ display: "flex", gap: 1.5, alignItems: "end", mb: 2, flexWrap: "wrap" }}>
-            <TextField size="small" label="Họ tên" value={c.name || ""} required
-              onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 12px)" }} />
-            <TextField size="small" label="Số điện thoại" value={c.phone || ""}
-              onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 12px)" }} />
-            <TextField size="small" label="CCCD" value={c.cccd || ""}
-              onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 12px)" }} />
-            <TextField size="small" label="Quan hệ" value={c.relationship || ""}
-              onChange={(e) => updateCompanion(i, "relationship", e.target.value)} sx={{ ...inputFieldSx, width: "calc(25% - 48px)" }} />
-            <IconButton size="small" color="error" onClick={() => removeCompanion(i)} aria-label="Xoá người đi kèm">
-              <DeleteOutlineIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        ))}
+        <TableContainer>
+          <Table size="small" sx={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
+            <TableHead>
+              <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                <TableCell sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0", width: 44 }}>#</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0" }}>Họ tên</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0" }}>Số điện thoại</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0" }}>CCCD</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0" }}>Quan hệ</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0" }}>Telegram</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0" }}>Vân tay</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700, color: "#475569", fontSize: "0.75rem", borderBottom: "1px solid #e2e8f0" }}></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(profile.companions || []).map((c, i) => (
+                <TableRow key={i} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1, color: "#64748b" }}>{i + 1}</TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1 }}>
+                    <TextField size="small" fullWidth value={c.name || ""} required
+                      onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={inputFieldSx} />
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1 }}>
+                    <TextField size="small" fullWidth value={c.phone || ""}
+                      onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={inputFieldSx} />
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1 }}>
+                    <TextField size="small" fullWidth value={c.cccd || ""}
+                      onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={inputFieldSx} />
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1 }}>
+                    <TextField size="small" fullWidth value={c.relationship || ""}
+                      onChange={(e) => updateCompanion(i, "relationship", e.target.value)} sx={inputFieldSx} />
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1 }}>
+                    <TextField size="small" fullWidth value={c.telegramChatId || ""} placeholder="Chat ID"
+                      onChange={(e) => updateCompanion(i, "telegramChatId", e.target.value)} sx={inputFieldSx} />
+                  </TableCell>
+                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1, color: c.fingerprintCode ? "#475569" : "#cbd5e1", fontSize: "0.8125rem" }}>
+                    {c.fingerprintCode || "—"}
+                  </TableCell>
+                  <TableCell align="right" sx={{ borderBottom: "1px solid #f1f5f9", p: 1 }}>
+                    <IconButton size="small" color="error" onClick={() => setConfirmDeleteIndex(i)} aria-label="Xoá người đi kèm">
+                      <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {(profile.companions || []).length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 3, color: "#94a3b8", fontSize: "0.8125rem", border: 0 }}>
+                    Chưa có người đi kèm
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
         <Box sx={{ mt: 1 }}>
           <Button startIcon={<AddIcon />} size="small" onClick={addCompanion}
             sx={{ textTransform: "none", color: "#059669" }}>
@@ -196,6 +242,14 @@ export default function TenantProfile() {
         </Box>
       </Paper>
 
+      <ConfirmDialog
+        open={confirmDeleteIndex !== null}
+        title="Xóa người đi kèm"
+        message={confirmDeleteIndex !== null && profile.companions?.[confirmDeleteIndex]?.name ? `Bạn có chắc muốn xóa "${profile.companions[confirmDeleteIndex].name}" khỏi danh sách người đi kèm không?` : "Bạn có chắc muốn xóa người đi kèm này không?"}
+        confirmText="Xóa"
+        onClose={() => setConfirmDeleteIndex(null)}
+        onConfirm={() => removeCompanion(confirmDeleteIndex)}
+      />
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
     </Box>
   );

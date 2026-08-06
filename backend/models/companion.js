@@ -12,7 +12,10 @@ module.exports = (sequelize, DataType) => {
         phone: { type: DataType.STRING(20) },
         cccd: { type: DataType.STRING(20) },
         relationship: { type: DataType.STRING(50) },
-        fingerprintCode: { type: DataType.STRING(255) }
+        telegramChatId: { type: DataType.STRING(64) },
+        fingerprintCode: { type: DataType.STRING(255) },
+        status: { type: DataType.STRING(20), defaultValue: 'active' },
+        endedAt: { type: DataType.DATE, allowNull: true }
     }, {
         sequelize, modelName: "Companion", tableName: "companions", timestamps: true
     })

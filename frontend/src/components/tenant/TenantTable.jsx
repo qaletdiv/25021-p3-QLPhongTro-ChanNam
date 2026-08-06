@@ -9,7 +9,44 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { formatCurrency, formatDate } from "../../utils/format";
 
-const HEADERS = ["Phòng", "Khách Thuê", "Số Điện Thoại", "Telegram", "Tiền Cọc", "Thời Hạn HĐ", "Ngày Thu", "Mã Vân Tay", "Trạng Thái", ""];
+const HEADERS = ["Phòng", "Khách Thuê", "Số Điện Thoại", "Telegram", "Tiền Cọc", "Thời Hạn HĐ", "Thời Gian Thuê TT", "Ngày Thu", "Mã Vân Tay", "Trạng Thái", "Quan Hệ", ""];
+
+const formatDuration = (contract) => {
+  if (!contract?.startDate) return "-";
+  let end = null;
+  if (contract.status === "ended") {
+    end = contract.checkoutDate ? new Date(contract.checkoutDate) : new Date(contract.endDate);
+  }
+  const startText = formatDate(contract.startDate);
+  const endText = end ? formatDate(end) : "";
+  return `${startText} - ${endText}`;
+};
+
+const formatCompanionDuration = (companion) => {
+  if (!companion?.createdAt) return "-";
+  let ended = null;
+  if (companion.status === "ended") {
+    ended = companion.endedAt ? new Date(companion.endedAt) : companion.updatedAt ? new Date(companion.updatedAt) : new Date();
+  }
+  const startText = formatDate(companion.createdAt);
+  const endText = ended ? formatDate(ended) : "";
+  return `${startText} - ${endText}`;
+};
+
+const TreeCell = ({ isFirst, isLast }) => {
+  const color = "#94a3b8";
+  const spineX = 7;
+  const branchX = 21;
+  const cy = 16;
+  return (
+    <svg width={28} height={32} style={{ display: "block" }}>
+      <line x1={spineX} y1={0} x2={spineX} y2={isLast ? cy : 32} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+      {isFirst && <line x1={0} y1={0} x2={spineX} y2={0} stroke={color} strokeWidth={1.5} strokeLinecap="round" />}
+      <line x1={spineX} y1={cy} x2={branchX} y2={cy} stroke={color} strokeWidth={1.5} strokeLinecap="round" />
+      <circle cx={branchX} cy={cy} r={3.5} fill="#2563eb" stroke="#bfdbfe" strokeWidth={1} />
+    </svg>
+  );
+};
 
 const StatusBadge = ({ active, ended }) => {
   if (active) {
@@ -57,6 +94,7 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
               const ended = !active && contracts.some((c) => c.status === "ended");
               const displayContract = active || contracts[0];
               const companions = tenant.companions || [];
+              const activeCompanions = companions.filter((c) => c.status !== "ended");
               return (
                 <Fragment key={tenant.id}>
                 <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
@@ -71,16 +109,16 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                   </td>
                   <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      {tenant.name}
-                      {(tenant.companions?.length || 0) > 0 && (
-                        <Box component="span" sx={{ color: "#2563eb", fontSize: "0.6875rem", fontWeight: 700 }}>({1 + (tenant.companions.length)} người)</Box>
-                      )}
-                      {(tenant.companions?.length || 0) > 0 && (
+                      {companions.length > 0 && (
                         <IconButton size="small" onClick={() => toggleExpand(tenant.id)}
                           title={expandedId === tenant.id ? "Thu gọn người đi kèm" : "Xem người đi kèm"}
                           sx={{ color: "#2563eb", bgcolor: "#eff6ff", "&:hover": { bgcolor: "#dbeafe" }, p: 0.25 }}>
                           {expandedId === tenant.id ? <RemoveIcon sx={{ fontSize: 14 }} /> : <AddIcon sx={{ fontSize: 14 }} />}
                         </IconButton>
+                      )}
+                      <span style={{ fontWeight: 700, color: "#0f172a" }}>{tenant.name}</span>
+                      {(activeCompanions.length) > 0 && (
+                        <Box component="span" sx={{ color: "#2563eb", fontSize: "0.6875rem", fontWeight: 700 }}>({1 + (activeCompanions.length)} người)</Box>
                       )}
                     </span>
                   </td>
@@ -106,6 +144,9 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                     {displayContract ? `${formatDate(displayContract.startDate)} - ${formatDate(displayContract.endDate)}` : "-"}
                   </td>
                   <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f172a" }}>
+                    {formatDuration(displayContract)}
+                  </td>
+                  <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f172a" }}>
                     {displayContract ? `Ngày ${displayContract.paymentDay}` : "-"}
                   </td>
                   <td style={{ padding: "12px 16px" }}>
@@ -118,6 +159,7 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                   <td style={{ padding: "12px 16px" }}>
                     <StatusBadge active={!!active} ended={ended} />
                   </td>
+                  <td style={{ padding: "12px 16px", color: "#94a3b8" }}>-</td>
                   <td style={{ padding: "12px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
                     <IconButton size="small" onClick={() => onEdit(tenant)} title="Sửa" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" } }}>
                       <EditIcon sx={{ fontSize: 16 }} />
@@ -134,25 +176,45 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
                     )}
                   </td>
                 </tr>
-                {expandedId === tenant.id && companions.length > 0 && (
-                  <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                    <td style={{ padding: "0 16px" }} colSpan={HEADERS.length}>
-                      <Box sx={{ py: 1.5, display: "flex", flexDirection: "column", gap: 0.75 }}>
-                        <Box sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                          Người đi kèm ({companions.length})
-                        </Box>
-                        {companions.map((c, idx) => (
-                          <Box key={c.id || idx} sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap" }}>
-                            <Box component="span" sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.75rem" }}>{c.name}</Box>
-                            {c.relationship && <Box component="span" sx={{ fontSize: "0.6875rem", color: "#64748b" }}>· {c.relationship}</Box>}
-                            {c.phone && <Box component="span" sx={{ fontSize: "0.6875rem", color: "#64748b" }}>· {c.phone}</Box>}
-                            {c.cccd && <Box component="span" sx={{ fontSize: "0.6875rem", color: "#64748b" }}>· CCCD: {c.cccd}</Box>}
-                          </Box>
-                        ))}
-                      </Box>
-                    </td>
-                  </tr>
-                )}
+                {expandedId === tenant.id &&
+                  companions.map((c, idx) => (
+                    <tr key={c.id || idx} style={{ backgroundColor: "#f8fafc", borderBottom: idx === companions.length - 1 ? "1px solid #e2e8f0" : "1px solid #eef2f7" }}>
+                      <td style={{ padding: "6px 16px", verticalAlign: "middle" }}>
+                        <TreeCell isFirst={idx === 0} isLast={idx === companions.length - 1} />
+                      </td>
+                      <td style={{ padding: "6px 16px", fontWeight: 700, color: "#0f172a" }}>
+                        {c.name}
+                      </td>
+                      <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>{c.phone || "-"}</td>
+                      <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
+                      <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
+                      <td style={{ padding: "6px 16px", color: "#475569" }}>
+                        {displayContract ? `${formatDate(displayContract.startDate)} - ${formatDate(displayContract.endDate)}` : "-"}
+                      </td>
+                      <td style={{ padding: "6px 16px", color: "#0f172a", fontWeight: 600 }}>
+                        {formatCompanionDuration(c)}
+                      </td>
+                      <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
+                      <td style={{ padding: "6px 16px" }}>
+                        {c.fingerprintCode ? (
+                          <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
+                            {c.fingerprintCode}
+                          </span>
+                        ) : "-"}
+                      </td>
+                      <td style={{ padding: "6px 16px" }}>
+                        {c.status === "ended" ? (
+                          <span style={{ padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 600, borderRadius: "9999px", backgroundColor: "#f1f5f9", color: "#64748b", border: "1px solid #e2e8f0" }}>
+                            Hết Thuê
+                          </span>
+                        ) : (
+                          <StatusBadge active={!!active} ended={ended} />
+                        )}
+                      </td>
+                      <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>{c.relationship || "-"}</td>
+                      <td style={{ padding: "6px 16px" }}></td>
+                    </tr>
+                  ))}
                 </Fragment>
               );
             })}

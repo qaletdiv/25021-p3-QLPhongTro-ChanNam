@@ -135,7 +135,23 @@ exports.checkoutContract = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
 
-        await contract.update({ status: 'ended' });
+        const activeCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId, status: 'active' } });
+
+        if (activeCompanions.length > 0) {
+            const promoted = activeCompanions[0];
+            const newTenant = await Tenant.create({
+                name: promoted.name,
+                phone: promoted.phone || '',
+                cccd: promoted.cccd || null,
+                telegramChatId: promoted.telegramChatId || null,
+            });
+            await contract.update({ tenantId: newTenant.id });
+            await Companion.update({ status: 'ended', endedAt: new Date() }, { where: { id: promoted.id } });
+            res.json({ message: "Trả phòng thành công", promoted: true, newTenantId: newTenant.id });
+            return;
+        }
+
+        await contract.update({ status: 'ended', checkoutDate: new Date() });
         await contract.room.update({ status: 'empty', price: contract.price });
         await ContractFurniture.destroy({ where: { contractId: contract.id } });
 

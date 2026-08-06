@@ -59,7 +59,7 @@ export default function LoginRegister() {
     } finally { setLoading(false); }
   };
 
-  const addCompanion = () => setCompanions([...companions, { name: "", phone: "", cccd: "", relationship: "" }]);
+  const addCompanion = () => setCompanions([...companions, { name: "", phone: "", cccd: "", relationship: "", telegramChatId: "" }]);
   const removeCompanion = (i) => setCompanions(companions.filter((_, idx) => idx !== i));
   const updateCompanion = (i, field, value) => {
     const updated = [...companions];
@@ -121,6 +121,7 @@ export default function LoginRegister() {
                   <TextField size="small" label="SĐT" value={c.phone} onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ flex: 1.5 }} />
                   <TextField size="small" label="CCCD" value={c.cccd} onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={{ flex: 1.5 }} />
                   <TextField size="small" label="Quan hệ" value={c.relationship} onChange={(e) => updateCompanion(i, "relationship", e.target.value)} sx={{ flex: 1 }} />
+                  <TextField size="small" label="Telegram" value={c.telegramChatId || ""} onChange={(e) => updateCompanion(i, "telegramChatId", e.target.value)} sx={{ flex: 1.5 }} />
                   <IconButton size="small" onClick={() => removeCompanion(i)}><DeleteIcon fontSize="small" /></IconButton>
                 </Box>
               ))}

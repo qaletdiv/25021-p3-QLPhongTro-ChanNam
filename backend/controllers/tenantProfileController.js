@@ -2,13 +2,13 @@ const bcrypt = require("bcrypt");
 const { User, Companion } = require("../models");
 const { findTenantByUser } = require("../utils/tenantHelpers");
 
-const COMPANION_ATTRS = ["id", "name", "phone", "cccd", "relationship"];
+const COMPANION_ATTRS = ["id", "name", "phone", "cccd", "relationship", "telegramChatId", "fingerprintCode", "status", "endedAt", "createdAt", "updatedAt"];
 
 exports.getProfile = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
         const companions = tenant
-            ? await Companion.findAll({ where: { tenantId: tenant.id }, attributes: COMPANION_ATTRS, order: [["createdAt", "DESC"]] })
+            ? await Companion.findAll({ where: { tenantId: tenant.id, status: 'active' }, attributes: COMPANION_ATTRS, order: [["createdAt", "DESC"]] })
             : [];
         const profile = {
             name: req.user.name,
@@ -44,22 +44,22 @@ exports.updateProfile = async (req, res, next) => {
             }
             if (Array.isArray(companions)) {
                 const incoming = companions.filter((c) => (c.name || "").trim());
-                const existing = await Companion.findAll({ where: { tenantId: tenant.id } });
+                const existing = await Companion.findAll({ where: { tenantId: tenant.id, status: 'active' } });
                 const existingById = new Map(existing.map((c) => [c.id, c]));
                 const keptIds = [];
                 for (const c of incoming) {
                     if (c.id && existingById.has(c.id)) {
                         await existingById.get(c.id).update({
-                            name: c.name, phone: c.phone || null, cccd: c.cccd || null, relationship: c.relationship || null,
+                            name: c.name, phone: c.phone || null, cccd: c.cccd || null, relationship: c.relationship || null, telegramChatId: c.telegramChatId || null, status: 'active',
                         });
                         keptIds.push(c.id);
                     } else {
-                        const created = await Companion.create({ name: c.name, phone: c.phone || null, cccd: c.cccd || null, relationship: c.relationship || null, tenantId: tenant.id });
+                        const created = await Companion.create({ name: c.name, phone: c.phone || null, cccd: c.cccd || null, relationship: c.relationship || null, telegramChatId: c.telegramChatId || null, tenantId: tenant.id, status: 'active' });
                         keptIds.push(created.id);
                     }
                 }
                 const removeIds = existing.filter((c) => !keptIds.includes(c.id)).map((c) => c.id);
-                if (removeIds.length) await Companion.destroy({ where: { id: removeIds } });
+                if (removeIds.length) await Companion.update({ status: 'ended', endedAt: new Date() }, { where: { id: removeIds } });
             }
         }
 
