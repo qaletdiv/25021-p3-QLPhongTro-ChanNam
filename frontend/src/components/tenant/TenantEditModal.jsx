@@ -16,6 +16,12 @@ export default function TenantEditModal({
 }) {
   if (!editTenantId || openContract) return null;
 
+  const updateCompanion = (i, field, value) => {
+    const updated = [...companionFingerprints];
+    updated[i] = { ...updated[i], [field]: value };
+    setCompanionFingerprints(updated);
+  };
+
   return (
     <ModalShell open maxWidth={editContractId ? 640 : 420}
       header={
@@ -82,11 +88,26 @@ export default function TenantEditModal({
 
             {companionFingerprints.length > 0 && (
               <Box>
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>Mã số vân tay người đi kèm</Typography>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>
+                  Người đi kèm ({companionFingerprints.length})
+                </Typography>
                 {companionFingerprints.map((c, i) => (
-                  <TextField key={c.id} fullWidth size="small" label={`Vân tay: ${c.name}`} value={c.fingerprintCode}
-                    onChange={(e) => { const updated = [...companionFingerprints]; updated[i] = { ...updated[i], fingerprintCode: e.target.value }; setCompanionFingerprints(updated); }}
-                    sx={{ mb: 0.75, ...inputSx }} />
+                  <Box key={c.id} sx={{ mb: 1.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
+                    <TextField fullWidth size="small" label="Họ tên" value={c.name || ""} required
+                      onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={inputSx} />
+                    <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
+                      <TextField fullWidth size="small" label="Số điện thoại" value={c.phone || ""}
+                        onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={inputSx} />
+                      <TextField fullWidth size="small" label="CCCD" value={c.cccd || ""}
+                        onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={inputSx} />
+                    </Box>
+                    <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
+                      <TextField fullWidth size="small" label="Quan hệ" value={c.relationship || ""}
+                        onChange={(e) => updateCompanion(i, "relationship", e.target.value)} sx={inputSx} />
+                      <TextField fullWidth size="small" label="Vân tay" value={c.fingerprintCode || ""}
+                        onChange={(e) => updateCompanion(i, "fingerprintCode", e.target.value)} sx={inputSx} />
+                    </Box>
+                  </Box>
                 ))}
               </Box>
             )}

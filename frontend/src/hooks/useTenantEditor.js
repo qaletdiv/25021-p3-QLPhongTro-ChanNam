@@ -22,8 +22,7 @@ export default function useTenantEditor({ notify, fetchTenants, formState }) {
     setTenantForm({ name: tenant.name, phone: tenant.phone, cccd: tenant.cccd || "" });
 
     const activeContract = tenant.contracts?.find((c) => c.status === "active");
-    if (activeContract) {
-      try {
+    if (activeContract) {      try {
         const [furnRes, contractRes, roomsRes] = await Promise.all([
           furnitureApi.getAll(),
           contractApi.getById(activeContract.id),
@@ -50,7 +49,7 @@ export default function useTenantEditor({ notify, fetchTenants, formState }) {
         setFurnitureList(furnRes.data.furnitures);
         setSelectedFurnitures(buildDefaultFurns(furnRes.data.furnitures));
         setContractForm({ ...defaultContractForm, tenantId: tenant.id });
-        setCompanionFingerprints([]);
+        setCompanionFingerprints(buildCompanions(tenant.companions));
         paymentDayManuallyChanged.current = false;
       } catch {
         notify("Lỗi tải dữ liệu", "error");

@@ -14,7 +14,7 @@ exports.getTenants = async (req, res, next) => {
         const tenants = await Tenant.findAll({
             where,
             include: [
-                { model: Companion, as: "companions", attributes: ["name", "phone", "cccd", "relationship"] },
+                { model: Companion, as: "companions", attributes: ["id", "name", "phone", "cccd", "relationship"] },
                 { model: Contract, as: "contracts",
                   include: [{ model: Room, as: "room", attributes: ["room_number"], where: { landlordId: req.user.id }, include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
                 }

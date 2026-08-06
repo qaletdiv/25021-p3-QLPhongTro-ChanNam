@@ -58,7 +58,16 @@ exports.updateContract = async (req, res, next) => {
 
         if (companionFingerprints && companionFingerprints.length > 0) {
             await Promise.all(companionFingerprints.map(c =>
-                Companion.update({ fingerprintCode: c.fingerprintCode }, { where: { id: c.id } })
+                Companion.update(
+                    {
+                        name: c.name,
+                        phone: c.phone || null,
+                        cccd: c.cccd || null,
+                        relationship: c.relationship || null,
+                        fingerprintCode: c.fingerprintCode || null,
+                    },
+                    { where: { id: c.id } }
+                )
             ));
         }
 
@@ -86,7 +95,16 @@ exports.createContract = async (req, res, next) => {
 
         if (companionFingerprints && companionFingerprints.length > 0) {
             await Promise.all(companionFingerprints.map(c =>
-                Companion.update({ fingerprintCode: c.fingerprintCode }, { where: { id: c.id } })
+                Companion.update(
+                    {
+                        name: c.name,
+                        phone: c.phone || null,
+                        cccd: c.cccd || null,
+                        relationship: c.relationship || null,
+                        fingerprintCode: c.fingerprintCode || null,
+                    },
+                    { where: { id: c.id } }
+                )
             ));
         }
 
