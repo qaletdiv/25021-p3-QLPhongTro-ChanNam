@@ -9,5 +9,6 @@ router.get('/', authenticateToken, authorizeRole('landlord'), settingController.
 router.put('/', authenticateToken, authorizeRole('landlord'), settingController.saveSettings);
 router.post('/check-telegram', authenticateToken, authorizeRole('landlord'), settingController.checkTelegramConnection);
 router.get('/vietqr/banks', authenticateToken, authorizeRole('landlord'), vietqrController.getBanks);
+router.get('/rate-history', authenticateToken, authorizeRole('landlord'), settingController.getRateHistory);
 
 module.exports = router;

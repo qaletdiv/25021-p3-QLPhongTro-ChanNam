@@ -16,6 +16,9 @@ const dashboardApi = {
   getUtilityUsage(buildingId) {
     return axiosClient.get("/dashboard/utility-usage", { params: buildingId ? { buildingId } : {} });
   },
+  getRateHistory(buildingId) {
+    return axiosClient.get("/settings/rate-history", { params: buildingId ? { buildingId } : {} });
+  },
 };
 
 export default dashboardApi;

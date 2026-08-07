@@ -10,6 +10,7 @@ import KpiCards from "../components/dashboard/KpiCards";
 import RevenueChart from "../components/dashboard/RevenueChart";
 import ExpiringContracts from "../components/dashboard/ExpiringContracts";
 import UtilityUsageChart from "../components/dashboard/UtilityUsageChart";
+import PriceHistoryChart from "../components/dashboard/PriceHistoryChart";
 import dashboardApi from "../api/dashboardApi";
 import { useRouter } from "next/navigation";
 
@@ -128,6 +129,9 @@ export default function Dashboard() {
         </Grid>
         <Grid size={{ xs: 12 }}>
           <UtilityUsageChart />
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <PriceHistoryChart />
         </Grid>
       </Grid>
     </Box>

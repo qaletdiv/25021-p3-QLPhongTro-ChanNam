@@ -17,6 +17,7 @@ db.Companion = require('./companion')(sequelize, Sequelize);
 db.Invoice = require('./invoice')(sequelize, Sequelize);
 db.Notification = require('./notification')(sequelize, Sequelize);
 db.Setting = require('./setting')(sequelize, Sequelize);
+db.RateHistory = require('./rateHistory')(sequelize, Sequelize);
 db.Issue = require('./issue')(sequelize, Sequelize);
 db.TenantNotificationRead = require('./tenantNotificationRead')(sequelize, Sequelize);
 

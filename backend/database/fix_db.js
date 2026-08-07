@@ -1,6 +1,6 @@
 require('dotenv').config({ override: true });
 const { Sequelize } = require('sequelize');
-const c = require('./config/config');
+const c = require('../config/config');
 const cfg = c.development;
 const seq = new Sequelize(cfg.database, cfg.username, cfg.password,
   { host: cfg.host, port: cfg.port, dialect: cfg.dialect, logging: false });
@@ -60,6 +60,24 @@ async function run() {
       console.log('Added checkoutDate to contracts');
     }
   } catch(e) { console.log('contracts checkoutDate error:', e.message); }
+
+  // 3. Create rate_histories table if missing
+  try {
+    const [tables] = await seq.query("SHOW TABLES LIKE 'rate_histories'");
+    if (tables.length === 0) {
+      await seq.query(`CREATE TABLE rate_histories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        \`key\` VARCHAR(100) NOT NULL,
+        value DECIMAL(12,2) NULL,
+        landlordId INT NOT NULL,
+        buildingId INT NULL DEFAULT NULL,
+        createdAt DATETIME NOT NULL,
+        updatedAt DATETIME NOT NULL,
+        INDEX idx_rate_landlord (\`key\`, landlordId)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+      console.log('Created rate_histories table');
+    }
+  } catch(e) { console.log('rate_histories error:', e.message); }
 
   console.log('Done');
   process.exit(0);

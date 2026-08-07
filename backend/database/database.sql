@@ -182,3 +182,15 @@ CREATE TABLE contract_furnitures (
     createdAt DATETIME NOT NULL,
     updatedAt DATETIME NOT NULL
 );
+
+-- 7. Lịch sử thay đổi giá điện, nước, phí dịch vụ
+CREATE TABLE rate_histories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    `key` VARCHAR(100) NOT NULL,
+    value DECIMAL(12,2) NULL,
+    landlordId INT NOT NULL,
+    buildingId INT NULL DEFAULT NULL,
+    createdAt DATETIME NOT NULL,
+    updatedAt DATETIME NOT NULL,
+    INDEX idx_rate_landlord (`key`, landlordId)
+);
