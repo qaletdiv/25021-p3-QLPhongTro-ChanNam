@@ -8,7 +8,7 @@ exports.getProfile = async (req, res, next) => {
     try {
         const tenant = await findTenantByUser(req.user.id);
         const companions = tenant
-            ? await Companion.findAll({ where: { tenantId: tenant.id, status: 'active' }, attributes: COMPANION_ATTRS, order: [["createdAt", "DESC"]] })
+            ? await Companion.findAll({ where: { tenantId: tenant.id, status: 'active' }, attributes: COMPANION_ATTRS, order: [["createdAt", "ASC"]] })
             : [];
         const profile = {
             name: req.user.name,
