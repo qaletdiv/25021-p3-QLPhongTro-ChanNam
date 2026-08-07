@@ -17,7 +17,7 @@ const roleConfig = {
 
 export default function LoginRegister() {
   const { role } = useParams();
-  const { login, register } = useAuth();
+  const { login, register, logout } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const config = roleConfig[role] || roleConfig.tenant;
@@ -26,6 +26,7 @@ export default function LoginRegister() {
   const [regForm, setRegForm] = useState({ name: "", email: "", phone: "", cccd: "", password: "", confirmPassword: "" });
   const [companions, setCompanions] = useState([]);
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
@@ -45,13 +46,18 @@ export default function LoginRegister() {
   };
 
   const handleRegister = async (e) => {
-    e.preventDefault(); setError("");
+    e.preventDefault(); setError(""); setSuccessMsg("");
     if (regForm.password !== regForm.confirmPassword) { setError("Mật khẩu xác nhận không khớp"); return; }
     setLoading(true);
     try {
       const payload = { ...regForm, role, companions: companions.filter(c => c.name.trim()) };
-      const user = await register(payload);
-      router.push(user.role === "landlord" ? "/landlord/dashboard" : "/tenant/dashboard");
+      await register(payload);
+      await logout();
+      setRegForm({ name: "", email: "", phone: "", cccd: "", password: "", confirmPassword: "" });
+      setCompanions([]);
+      setLoginForm({ email: payload.email, password: "" });
+      setSuccessMsg("Đăng ký thành công! Bạn chưa có phòng, vui lòng liên hệ chủ trọ để đăng ký. Bây giờ bạn có thể đăng nhập bằng email trên.");
+      setTab(0);
     } catch (err) {
       const data = err.response?.data;
       if (data?.error) setError(data.error.map(e => e.msg).join("; "));
@@ -84,13 +90,14 @@ export default function LoginRegister() {
         </Box>
 
         {/* Tabs */}
-        <Tabs value={tab} onChange={(_, v) => { setTab(v); setError(""); }} variant="fullWidth" sx={{ mt: 0 }}>
+        <Tabs value={tab} onChange={(_, v) => { setTab(v); setError(""); setSuccessMsg(""); }} variant="fullWidth" sx={{ mt: 0 }}>
           <Tab label="Đăng nhập" />
           {role === "tenant" && <Tab label="Đăng ký" />}
         </Tabs>
 
         <Box sx={{ p: 3 }}>
           {error && <Alert severity="error" sx={{ mb: 2, borderRadius: "12px" }}>{error}</Alert>}
+          {successMsg && <Alert severity="success" sx={{ mb: 2, borderRadius: "12px" }}>{successMsg}</Alert>}
 
           {tab === 0 && (
             <Box component="form" onSubmit={handleLogin}>
