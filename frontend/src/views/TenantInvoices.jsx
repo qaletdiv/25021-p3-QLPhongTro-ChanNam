@@ -180,7 +180,7 @@ export default function TenantInvoices() {
           Bạn đã thanh toán chưa?
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center", color: "#475569", fontSize: "0.875rem", lineHeight: 1.6 }}>
-          Vui lòng quét mã QR bên trên và chuyển khoản đúng số tiền{" "}
+          Vui lòng quét mã QR và chuyển khoản đúng số tiền{" "}
           <Box component="span" sx={{ fontWeight: 700, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Box> trước khi
           gửi chỉ số. Sau khi gửi, hóa đơn sẽ được chốt.
         </DialogContent>
