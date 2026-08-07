@@ -23,10 +23,12 @@ export default function Settings() {
   const [savedMsg, setSavedMsg] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [checkMsg, setCheckMsg] = useState(null);
+  const [banks, setBanks] = useState([]);
 
   useEffect(() => {
     buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
     loadSettings("");
+    settingApi.getBanks().then((res) => setBanks(res.data.banks || [])).catch(() => {});
   }, []);
 
   const loadSettings = (bid) => {
@@ -129,10 +131,39 @@ export default function Settings() {
             <CreditCardIcon sx={{ fontSize: 18, color: "#2563eb" }} />
             <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>2. Thông Tin Ngân Hàng Tích Hợp VietQR Automate</Typography>
           </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "2fr 1fr 1fr 1fr" }, gap: 2 }}>
             <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Ngân Hàng (Mã BIN)</Typography>
-              <TextField fullWidth placeholder="MBBank / Vietcombank / Techcombank" value={form.bankName || ""} onChange={(e) => set("bankName", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Ngân Hàng</Typography>
+              <TextField
+                select fullWidth size="small" value={form.bankName || ""}
+                onChange={(e) => set("bankName", e.target.value)}
+                placeholder="Chọn ngân hàng"
+                renderValue={(selected) => {
+                  const b = banks.find((x) => x.shortName === selected);
+                  if (!b) return selected;
+                  return (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                      {b.logo && (
+                        <img src={b.logo} alt={b.shortName} style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 6 }} />
+                      )}
+                      <span>{b.shortName}</span>
+                    </Box>
+                  );
+                }}
+                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
+              >
+                <MenuItem value="">-- Chọn ngân hàng --</MenuItem>
+                {banks.map((b) => (
+                  <MenuItem key={b.bin} value={b.shortName}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                      {b.logo && (
+                        <img src={b.logo} alt={b.shortName} style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 6 }} />
+                      )}
+                      <span>{b.shortName} ({b.name})</span>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </TextField>
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Tài Khoản</Typography>

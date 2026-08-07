@@ -13,6 +13,9 @@ const settingApi = {
     const params = buildingId ? { buildingId } : {};
     return axiosClient.post("/settings/check-telegram", {}, { params });
   },
+  getBanks() {
+    return axiosClient.get("/settings/vietqr/banks");
+  },
 };
 
 export default settingApi;
