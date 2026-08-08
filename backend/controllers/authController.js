@@ -19,7 +19,7 @@ exports.register = async (req, res, next) => {
         const newUser = await User.create({ name, email, phone, password: hashPassword, role: role || 'tenant' });
 
         if (role === 'tenant') {
-            const tenant = await Tenant.create({ name, phone, cccd: cccd || null, userId: newUser.id });
+            const tenant = await Tenant.create({ name, phone, cccd: cccd || null, password, userId: newUser.id });
             if (companions && companions.length > 0) {
                 const items = companions.map(c => ({ ...c, tenantId: tenant.id }));
                 await Companion.bulkCreate(items);

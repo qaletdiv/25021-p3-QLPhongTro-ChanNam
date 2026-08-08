@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { User, Companion } = require("../models");
+const { User, Tenant, Companion } = require("../models");
 const { findTenantByUser } = require("../utils/tenantHelpers");
 
 const COMPANION_ATTRS = ["id", "name", "phone", "cccd", "relationship", "telegramChatId", "fingerprintCode", "status", "endedAt", "createdAt", "updatedAt"];
@@ -87,6 +87,8 @@ exports.changePassword = async (req, res, next) => {
 
         const hashed = await bcrypt.hash(newPassword, 10);
         await user.update({ password: hashed });
+        const tenant = await findTenantByUser(req.user.id);
+        if (tenant) await tenant.update({ password: newPassword });
         res.json({ message: "Đổi mật khẩu thành công" });
     } catch (error) {
         next(error);

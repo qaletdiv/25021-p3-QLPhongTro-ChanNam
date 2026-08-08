@@ -9,7 +9,7 @@ import {
 
 export default function useTenantEditor({ notify, fetchTenants, formState }) {
   const [editTenantId, setEditTenantId] = useState(null);
-  const [tenantForm, setTenantForm] = useState({ name: "", phone: "", cccd: "" });
+  const [tenantForm, setTenantForm] = useState({ name: "", phone: "", cccd: "", password: "" });
 
   const {
     paymentDayManuallyChanged, setContractLoading, setEditContractId, setContractForm,
@@ -19,7 +19,7 @@ export default function useTenantEditor({ notify, fetchTenants, formState }) {
 
   const openEdit = async (tenant) => {
     setEditTenantId(tenant.id);
-    setTenantForm({ name: tenant.name, phone: tenant.phone, cccd: tenant.cccd || "" });
+    setTenantForm({ name: tenant.name, phone: tenant.phone, cccd: tenant.cccd || "", password: tenant.password || "" });
 
     const activeContract = tenant.contracts?.find((c) => c.status === "active");
     if (activeContract) {      try {

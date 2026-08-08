@@ -63,6 +63,7 @@ CREATE TABLE tenants (
     name VARCHAR(100) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     cccd VARCHAR(20),
+    password VARCHAR(255),
     telegramChatId VARCHAR(64),
     userId INT,
     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE SET NULL,

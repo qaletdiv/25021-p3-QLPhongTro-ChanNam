@@ -61,6 +61,15 @@ async function run() {
     }
   } catch(e) { console.log('contracts checkoutDate error:', e.message); }
 
+  // 2c. Add password (plaintext for landlord view/edit) to tenants if missing
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM tenants LIKE 'password'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE tenants ADD COLUMN password VARCHAR(255) DEFAULT NULL AFTER cccd");
+      console.log('Added password to tenants');
+    }
+  } catch(e) { console.log('tenants password error:', e.message); }
+
   // 3. Create rate_histories table if missing
   try {
     const [tables] = await seq.query("SHOW TABLES LIKE 'rate_histories'");

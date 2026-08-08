@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
-const { Tenant, Contract, Room, Companion, Building } = require("../models");
+const bcrypt = require("bcrypt");
+const { Tenant, Contract, Room, Companion, Building, User } = require("../models");
 
 exports.getTenants = async (req, res, next) => {
     try {
@@ -45,8 +46,16 @@ exports.updateTenant = async (req, res, next) => {
     try {
         const tenant = await Tenant.findByPk(req.params.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy khách thuê" });
-        const { name, phone, cccd } = req.body;
-        await tenant.update({ name, phone, cccd });
+        const { name, phone, cccd, password } = req.body;
+        const updateData = { name, phone, cccd };
+        if (password && String(password).trim() !== '') {
+            updateData.password = String(password).trim();
+            if (tenant.userId) {
+                const hashed = await bcrypt.hash(String(password).trim(), 10);
+                await User.update({ password: hashed }, { where: { id: tenant.userId } });
+            }
+        }
+        await tenant.update(updateData);
         res.json({ message: "Cập nhật thông tin thành công", tenant });
     } catch (error) {
         next(error);

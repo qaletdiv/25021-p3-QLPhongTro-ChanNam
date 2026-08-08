@@ -1,11 +1,14 @@
 "use client";
 
-import { Box, Typography, TextField, CircularProgress, Grid, Autocomplete, Chip } from "@mui/material";
+import { Box, Typography, TextField, CircularProgress, Grid, Autocomplete, Chip, InputAdornment, IconButton } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ModalShell from "../ui/ModalShell";
 import DateField from "../ui/DateField";
 import MoneyField from "../ui/MoneyField";
 import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
+import { useState } from "react";
 
 export default function TenantEditModal({
   editTenantId, editContractId, tenantForm, setTenantForm,
@@ -14,6 +17,8 @@ export default function TenantEditModal({
   furnitureList, selectedFurnitures, setSelectedFurnitures,
   paymentDayManuallyChanged, contractLoading, openContract, onClose, onSave,
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   if (!editTenantId || openContract) return null;
 
   const updateCompanion = (i, field, value) => {
@@ -36,6 +41,20 @@ export default function TenantEditModal({
           <TextField fullWidth size="small" label="Số điện thoại" value={tenantForm.phone} onChange={(e) => setTenantForm({ ...tenantForm, phone: e.target.value })} required
             sx={inputSx} />
           <TextField fullWidth size="small" label="CCCD" value={tenantForm.cccd} onChange={(e) => setTenantForm({ ...tenantForm, cccd: e.target.value })}
+            sx={inputSx} />
+          <TextField fullWidth size="small" label="Mật khẩu đăng nhập" type={showPassword ? "text" : "password"} value={tenantForm.password}
+            onChange={(e) => setTenantForm({ ...tenantForm, password: e.target.value })}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setShowPassword((s) => !s)}>
+                      {showPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
             sx={inputSx} />
 
           <>
