@@ -31,9 +31,15 @@ exports.getFingerprintHistories = async (req, res, next) => {
 
 exports.getFingerprintGroups = async (req, res, next) => {
     try {
-        const { buildingId } = req.query;
+        const { buildingId, search } = req.query;
         const where = { landlordId: req.user.id };
         if (buildingId && buildingId !== 'all') where.buildingId = Number(buildingId);
+        if (search) {
+            where[Op.or] = [
+                { fingerprintCode: { [Op.like]: `%${search}%` } },
+                { ownerName: { [Op.like]: `%${search}%` } }
+            ];
+        }
 
         const all = await FingerprintHistory.findAll({ where, order: [["createdAt", "ASC"]] });
         const groups = {};
