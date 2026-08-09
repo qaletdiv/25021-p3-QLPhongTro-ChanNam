@@ -19,7 +19,9 @@ export function buildDefaultFurns(furnitures) {
 }
 
 export function buildCompanions(companions) {
-  return (companions || []).map(c => ({ id: c.id, name: c.name, phone: c.phone || "", cccd: c.cccd || "", relationship: c.relationship || "", fingerprintCode: c.fingerprintCode || "" }));
+  return (companions || [])
+    .filter((c) => c.status !== "ended")
+    .map(c => ({ id: c.id, name: c.name, phone: c.phone || "", cccd: c.cccd || "", relationship: c.relationship || "", fingerprintCode: c.fingerprintCode || "" }));
 }
 
 export function buildContractForm(contract, tenantId) {
