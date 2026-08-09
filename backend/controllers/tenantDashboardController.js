@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notification, Invoice } = require("../models");
+const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notification, Invoice, Companion } = require("../models");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const { monthStr } = require("../utils/dates");
 
@@ -39,6 +39,7 @@ exports.getDashboard = async (req, res, next) => {
         }
 
         let notifications = [];
+        let companions = [];
         if (contract) {
             notifications = await Notification.findAll({
                 where: {
@@ -52,9 +53,13 @@ exports.getDashboard = async (req, res, next) => {
                 order: [['createdAt', 'DESC']],
                 limit: 20
             });
+            companions = await Companion.findAll({
+                where: { tenantId: contract.tenantId, status: 'active' },
+                order: [["createdAt", "ASC"]]
+            });
         }
 
-        res.json({ tenant, contract, notifications });
+        res.json({ tenant, contract, notifications, companions });
     } catch (error) {
         next(error);
     }

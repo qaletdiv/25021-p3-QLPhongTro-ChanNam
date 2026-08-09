@@ -7,7 +7,7 @@ import { resolveNotificationTemplate } from "../../utils/notificationTemplate";
 import ModalShell from "../ui/ModalShell";
 import TenantUtilityUsageChart from "./TenantUtilityUsageChart";
 
-export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice, landlordAddress }) {
+export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice, landlordAddress, companions }) {
   const [furnitureOpen, setFurnitureOpen] = useState(false);
   const handoverItems = contract?.contractFurnitures || [];
 
@@ -94,6 +94,57 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
           </Typography>
         </Paper>
       </Box>
+
+      {/* Co-living people */}
+      <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <Typography variant="h6" fontWeight="bold" color="#0f172a">Người Ở Cùng</Typography>
+          <Chip label={String((companions || []).length + 1)} size="small"
+            sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, fontSize: "0.6875rem", borderRadius: "9999px", border: "1px solid #bfdbfe", ml: "auto" }} />
+        </Box>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+          <Paper sx={{ p: 2, bgcolor: "#eff6ff", borderRadius: "12px", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ width: 36, height: 36, borderRadius: "12px", bgcolor: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8125rem", flexShrink: 0 }}>
+              {(tenant?.name || "?").trim().charAt(0).toUpperCase()}
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {tenant?.name || "—"}
+                </Typography>
+                <Chip label="Chủ hợp đồng" size="small" sx={{ bgcolor: "#2563eb", color: "#fff", fontWeight: 700, fontSize: "0.625rem", borderRadius: "9999px", height: 20, ml: "auto", flexShrink: 0 }} />
+              </Box>
+              <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", mt: 0.25 }}>
+                SĐT: {tenant?.phone || "—"}{tenant?.cccd ? ` • CCCD: ${tenant.cccd}` : ""}
+              </Typography>
+            </Box>
+          </Paper>
+          {companions.length > 0 && companions.map((c) => (
+            <Paper key={c.id} sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={{ width: 36, height: 36, borderRadius: "12px", bgcolor: "#c7d2fe", color: "#4338ca", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8125rem", flexShrink: 0 }}>
+                {String(c.name || "?").trim().charAt(0).toUpperCase()}
+              </Box>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {c.name || "—"}
+                  </Typography>
+                  <Chip label={c.relationship || "Đi kèm"} size="small" sx={{ bgcolor: "#eef2f7", color: "#475569", fontWeight: 700, fontSize: "0.625rem", borderRadius: "9999px", height: 20, flexShrink: 0 }} />
+                </Box>
+                <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", mt: 0.25 }}>
+                  SĐT: {c.phone || "—"}{c.cccd ? ` · CCCD: ${c.cccd}` : ""}
+                </Typography>
+              </Box>
+            </Paper>
+          ))}
+          {companions.length === 0 && (
+            <Typography sx={{ fontSize: "0.75rem", color: "#64748b", textAlign: "center", py: 2 }}>
+              Hiện không có người đi kèm nào.
+            </Typography>
+          )}
+        </Box>
+      </Paper>
 
       {/* Utility usage chart */}
       <TenantUtilityUsageChart />

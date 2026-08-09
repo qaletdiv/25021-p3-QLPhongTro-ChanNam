@@ -128,6 +128,7 @@ export default function TenantDashboard() {
         latestInvoice={latestInvoice}
         landlordAddress={room?.building?.address || ""}
         roomPrice={roomPrice}
+        companions={data?.companions || []}
       />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
