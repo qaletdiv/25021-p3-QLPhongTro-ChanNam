@@ -21,21 +21,21 @@ const timeStr = (v) => {
 
 export default function FingerprintManagement() {
   const [loading, setLoading] = useState(true);
-  const [groups, setGroups] = useState([]);
+  const [history, setHistory] = useState([]);
   const [buildings, setBuildings] = useState([]);
   const [buildingFilter, setBuildingFilter] = useState("all");
   const [search, setSearch] = useState("");
 
-  const fetchGroups = useCallback(async () => {
+  const fetchHistory = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
       if (buildingFilter && buildingFilter !== "all") params.buildingId = buildingFilter;
       if (search) params.search = search;
-      const res = await fingerprintApi.getGroups(params);
-      setGroups(res.data.groups || []);
+      const res = await fingerprintApi.getHistory(params);
+      setHistory(res.data.history || []);
     } catch (e) {
-      setGroups([]);
+      setHistory([]);
     } finally {
       setLoading(false);
     }
@@ -46,9 +46,9 @@ export default function FingerprintManagement() {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(fetchGroups, 250);
+    const t = setTimeout(fetchHistory, 250);
     return () => clearTimeout(t);
-  }, [fetchGroups]);
+  }, [fetchHistory]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -57,7 +57,7 @@ export default function FingerprintManagement() {
         <Box>
           <Typography variant="h5" fontWeight="bold">Quản Lý Vân Tay</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
-            Theo dõi lịch sử gán / thay đổi / thu hồi vân tay theo từng mã.
+            Theo dõi lịch sử gán / thay đổi / thu hồi vân tay.
           </Typography>
         </Box>
       </Box>
@@ -92,7 +92,7 @@ export default function FingerprintManagement() {
 
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box>
-      ) : groups.length === 0 ? (
+      ) : history.length === 0 ? (
         <Paper sx={{ p: 6, borderRadius: "16px", border: "1px solid #e2e8f0", textAlign: "center" }}>
           <FingerprintIcon sx={{ fontSize: 40, color: "#cbd5e1" }} />
           <Typography sx={{ mt: 1, fontSize: "0.8125rem", color: "#64748b" }}>
@@ -100,55 +100,47 @@ export default function FingerprintManagement() {
           </Typography>
         </Paper>
       ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {groups.map((g) => (
-            <Paper key={g.fingerprintCode} sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
-              <Box sx={{ px: 2, py: 1.5, bgcolor: "#f8fafc", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 1.5 }}>
-                <FingerprintIcon sx={{ color: "#2563eb", fontSize: 20 }} />
-                <Typography sx={{ fontWeight: 700, fontSize: "0.8125rem", color: "#0f172a" }}>Mã Vân Tay: {g.fingerprintCode}</Typography>
-                <Chip
-                  size="small"
-                  label="Đang gán"
-                  sx={{ ml: 1, fontSize: "0.625rem", fontWeight: 700, bgcolor: "#dcfce7", color: "#15803d" }}
-                />
-              </Box>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow sx={{ bgcolor: "#f1f5f9" }}>
-                      <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Hành Động</TableCell>
-                      <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Được Gán Cho</TableCell>
-                      <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Loại</TableCell>
-                      <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Phòng</TableCell>
-                      <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Thời Điểm</TableCell>
-                    </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {g.history.map((h) => (
-                        <TableRow key={h.id} hover>
-                          <TableCell>
-                            {h.action === "assigned" ? (
-                              <Chip size="small" icon={<CheckCircleIcon />} label="Gán" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#dcfce7", color: "#15803d" }} />
-                            ) : (
-                              <Chip size="small" icon={<CancelIcon />} label="Thu hồi" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#ffe4e6", color: "#e11d48" }} />
-                            )}
-                          </TableCell>
-                          <TableCell sx={{ fontSize: "0.75rem" }}>{h.ownerName || "-"}</TableCell>
-                          <TableCell sx={{ fontSize: "0.75rem" }}>
-                            {h.ownerType === "tenant" ? "Khách chính" : "Người đi kèm"}
-                          </TableCell>
-                          <TableCell sx={{ fontSize: "0.75rem" }}>
-                            {h.room ? `${h.room.room_number}${h.room.building ? ` • ${h.room.building.name}` : ""}` : "-"}
-                          </TableCell>
-                          <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{timeStr(h.createdAt)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-            </Paper>
-          ))}
-        </Box>
+        <TableContainer component={Paper} sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}>
+          <Table size="small">
+            <TableHead>
+              <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Mã Vân Tay</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Hành Động</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Được Gán Cho</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Loại</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Phòng</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Thời Điểm</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {history.map((h) => (
+                <TableRow key={h.id} hover>
+                  <TableCell>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                      <FingerprintIcon sx={{ color: "#2563eb", fontSize: 16 }} />
+                      <Typography sx={{ fontWeight: 600, fontSize: "0.75rem", color: "#0f172a" }}>{h.fingerprintCode}</Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    {h.action === "assigned" ? (
+                      <Chip size="small" icon={<CheckCircleIcon />} label="Gán" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#dcfce7", color: "#15803d" }} />
+                    ) : (
+                      <Chip size="small" icon={<CancelIcon />} label="Thu hồi" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#ffe4e6", color: "#e11d48" }} />
+                    )}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: "0.75rem" }}>{h.ownerName || "-"}</TableCell>
+                  <TableCell sx={{ fontSize: "0.75rem" }}>
+                    {h.ownerType === "tenant" ? "Khách chính" : "Người đi kèm"}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: "0.75rem" }}>
+                    {h.room ? `${h.room.room_number}${h.room.building ? ` • ${h.room.building.name}` : ""}` : "-"}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{timeStr(h.createdAt)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
     </Box>
   );
