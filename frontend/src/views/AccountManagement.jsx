@@ -14,13 +14,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import KeyIcon from "@mui/icons-material/Key";
 import adminUserApi from "../api/adminUserApi";
 import { useAuth } from "../contexts/AuthContext";
-
-const timeStr = (v) => {
-  if (!v) return "-";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-};
+import { formatDate } from "../utils/format";
 
 export default function AccountManagement() {
   const { user: me } = useAuth();
@@ -172,7 +166,7 @@ export default function AccountManagement() {
                         <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Đang ngoại tuyến</Typography>
                       )}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{timeStr(u.createdAt)}</TableCell>
+                    <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{formatDate(u.createdAt)}</TableCell>
                     <TableCell align="right">
                       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.75 }}>
                         <Tooltip title={isSelf ? "Không thể thao tác trên chính mình" : "Thu hồi phiên đăng nhập từ xa"}>

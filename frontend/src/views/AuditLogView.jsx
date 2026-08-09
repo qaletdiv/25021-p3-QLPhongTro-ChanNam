@@ -9,13 +9,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import HistoryIcon from "@mui/icons-material/History";
 import auditApi from "../api/auditApi";
-
-const timeStr = (v) => {
-  if (!v) return "-";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
-};
+import { formatDateTime } from "../utils/format";
 
 const ACTION_LABELS = {
   "auth.login": "Đăng nhập",
@@ -121,7 +115,7 @@ export default function AuditLogView() {
                 {logs.map((l, idx) => (
                   <TableRow key={l.id} hover>
                     <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{idx + 1 + (page - 1) * 50}</TableCell>
-                    <TableCell sx={{ fontSize: "0.75rem" }}>{timeStr(l.createdAt)}</TableCell>
+                    <TableCell sx={{ fontSize: "0.75rem" }}>{formatDateTime(l.createdAt, true)}</TableCell>
                     <TableCell>
                       <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a" }}>{l.actor?.name || "Hệ thống"}</Typography>
                       {l.actor?.email && <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>{l.actor.email}</Typography>}

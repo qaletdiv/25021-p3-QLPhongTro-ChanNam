@@ -11,13 +11,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import fingerprintApi from "../api/fingerprintApi";
 import buildingApi from "../api/buildingApi";
-
-const timeStr = (v) => {
-  if (!v) return "-";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
-};
+import { formatDateTime } from "../utils/format";
 
 export default function FingerprintManagement() {
   const [loading, setLoading] = useState(true);
@@ -182,7 +176,7 @@ export default function FingerprintManagement() {
                   <TableCell sx={{ fontSize: "0.75rem" }}>
                     {h.room ? `${h.room.room_number}${h.room.building ? ` • ${h.room.building.name}` : ""}` : "-"}
                   </TableCell>
-                  <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{timeStr(h.createdAt)}</TableCell>
+                  <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{formatDateTime(h.createdAt)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

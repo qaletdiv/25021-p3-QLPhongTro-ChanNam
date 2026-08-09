@@ -5,8 +5,6 @@ const { writeAuditLog } = require("../utils/auditLog");
 
 const AUTH_ATTRS = ["id", "name", "email", "phone", "role", "isActive", "currentSessionToken", "avatar", "cccd", "createdAt", "updatedAt"];
 
-const USER_ROLE_FILTER = { [Op.or]: [{ role: "tenant" }] };
-
 exports.getUsers = async (req, res, next) => {
     try {
         const { search, role, active } = req.query;
