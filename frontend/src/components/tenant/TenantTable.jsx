@@ -71,7 +71,7 @@ const StatusBadge = ({ active, ended }) => {
   );
 };
 
-export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
+export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, companionStatus = "all" }) {
   const [expandedId, setExpandedId] = useState(null);
 
   const toggleExpand = (tenantId) => setExpandedId((cur) => (cur === tenantId ? null : tenantId));
@@ -93,8 +93,12 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
               const active = contracts.find((c) => c.status === "active");
               const ended = !active && contracts.some((c) => c.status === "ended");
               const displayContract = active || contracts[0];
-              const companions = (tenant.companions || []).filter((c) => c.status !== "ended");
-              const activeCompanions = companions;
+              const companions = (tenant.companions || []).filter((c) => {
+                if (companionStatus === "active") return c.status !== "ended";
+                if (companionStatus === "ended") return c.status === "ended";
+                return true;
+              });
+              const activeCompanions = (tenant.companions || []).filter((c) => c.status !== "ended");
               return (
                 <Fragment key={tenant.id}>
                 <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}

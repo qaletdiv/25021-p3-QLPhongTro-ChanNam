@@ -36,10 +36,10 @@ export default function useTenantList({ notify }) {
 
   const filteredTenants = tenants.filter((tenant) => {
     const active = tenant.contracts?.find((c) => c.status === "active");
-    if (statusFilter === "renting" && !active) return false;
-    if (statusFilter === "ended" && active) return false;
     const activeCompanions = (tenant.companions || []).filter((c) => c.status !== "ended");
     const endedCompanions = (tenant.companions || []).filter((c) => c.status === "ended");
+    if (statusFilter === "renting" && !active) return false;
+    if (statusFilter === "ended" && active) return false;
     if (companionStatus === "active" && activeCompanions.length === 0) return false;
     if (companionStatus === "ended" && endedCompanions.length === 0) return false;
     if (buildingFilter !== "all") {

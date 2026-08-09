@@ -54,6 +54,7 @@ export default function TenantManagement() {
       {list.loading ? <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box> : (
         <TenantTable
           tenants={list.filteredTenants}
+          companionStatus={list.companionStatus}
           onEdit={tenantEditor.openEdit}
           onCheckout={checkout.openCheckoutConfirm}
           onPrint={(id) => window.open(contractTemplateApi.getPdfUrl(id), "_blank")}
