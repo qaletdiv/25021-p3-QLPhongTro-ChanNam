@@ -138,8 +138,31 @@ exports.checkoutContract = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
 
-        const { promoteCompanionId } = req.body || {};
+        const { promoteCompanionId, removedCompanionIds } = req.body || {};
         const activeCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId, status: 'active' } });
+
+        // Main tenant stays; only the listed companions leave the room.
+        if (Array.isArray(removedCompanionIds) && removedCompanionIds.length > 0) {
+            const toRemove = activeCompanions.filter((c) => removedCompanionIds.map(String).includes(String(c.id)));
+            if (toRemove.length > 0) {
+                await Companion.update(
+                    { status: 'ended', endedAt: new Date() },
+                    { where: { id: toRemove.map((c) => c.id) } }
+                );
+                for (const c of toRemove) {
+                    if (c.fingerprintCode) {
+                        await logFingerprintRow({
+                            fingerprintCode: c.fingerprintCode, ownerType: 'companion', ownerId: c.id,
+                            ownerName: c.name, tenantId: contract.tenantId,
+                            roomId: contract.roomId, buildingId: contract.room.buildingId,
+                            landlordId: req.user.id, action: 'removed'
+                        });
+                    }
+                }
+            }
+            res.json({ message: "Người đi kèm đã rời phòng" });
+            return;
+        }
 
         // Promote a chosen companion to be the new main tenant; any other staying companions follow them.
         const promoted = activeCompanions.find((c) => String(c.id) === String(promoteCompanionId));

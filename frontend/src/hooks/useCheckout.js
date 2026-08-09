@@ -17,12 +17,33 @@ export default function useCheckout({ notify, fetchTenants }) {
   };
 
   const handleSelectionConfirm = (leavingIds) => {
+    const mainLeaves = leavingIds.includes("main");
     const staying = (checkoutSelect.activeCompanions || []).filter(c => !leavingIds.includes(c.id));
-    if (staying.length > 0) {
-      setCheckoutConfirm({ ...checkoutSelect, promoteCompanionId: staying[0].id, promoteName: staying[0].name, stayingCount: staying.length });
-      setCheckoutSelect(null);
+    const removedIds = (checkoutSelect.activeCompanions || []).filter(c => leavingIds.includes(c.id)).map(c => c.id);
+    if (mainLeaves) {
+      if (staying.length > 0) {
+        setCheckoutConfirm({ ...checkoutSelect, promoteCompanionId: staying[0].id, promoteName: staying[0].name, stayingCount: staying.length });
+        setCheckoutSelect(null);
+      } else {
+        handleCheckout(checkoutSelect.id);
+      }
     } else {
-      handleCheckout(checkoutSelect.id);
+      if (removedIds.length === 0) return;
+      handleExistingRemove(removedIds);
+    }
+  };
+
+  const handleExistingRemove = async (removedIds) => {
+    try {
+      await contractApi.checkout(checkoutSelect.id, { removedCompanionIds: removedIds });
+      setCheckoutConfirm(null);
+      setCheckoutSelect(null);
+      fetchTenants();
+      setTimeout(() => notify("Người đi kèm đã rời phòng", "success"), 300);
+    } catch (err) {
+      notify(err.response?.data?.message || "Lỗi", "error");
+      setCheckoutConfirm(null);
+      setCheckoutSelect(null);
     }
   };
 
