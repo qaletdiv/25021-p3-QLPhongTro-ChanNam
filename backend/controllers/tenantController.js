@@ -7,10 +7,16 @@ exports.getTenants = async (req, res, next) => {
         const { search } = req.query;
         const where = {};
         if (search) {
-            where[Op.or] = [
-                { name: { [Op.like]: `%${search}%` } },
-                { phone: { [Op.like]: `%${search}%` } }
-            ];
+            const like = { [Op.like]: `%${search}%` };
+            const matchedCompanionTenantIds = await Companion.findAll({
+                where: { [Op.or]: [{ name: like }, { phone: like }] },
+                attributes: ['tenantId']
+            }).then((rows) => rows.map((r) => r.tenantId));
+            const orConditions = [{ name: like }, { phone: like }];
+            if (matchedCompanionTenantIds.length > 0) {
+                orConditions.push({ id: { [Op.in]: matchedCompanionTenantIds } });
+            }
+            where[Op.or] = orConditions;
         }
         const tenants = await Tenant.findAll({
             where,
