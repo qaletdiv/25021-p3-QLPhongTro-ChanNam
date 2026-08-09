@@ -34,11 +34,13 @@ export default function TenantManagement() {
       {/* Filter Panel */}
       <TenantManagementFilter
         statusFilter={list.statusFilter} search={list.search} dateFrom={list.dateFrom} dateTo={list.dateTo}
+        buildings={list.buildings} buildingFilter={list.buildingFilter}
         onChange={(key, value) => {
           if (key === "statusFilter") list.setStatusFilter(value);
           else if (key === "search") list.setSearch(value);
           else if (key === "dateFrom") list.setDateFrom(value);
           else if (key === "dateTo") list.setDateTo(value);
+          else if (key === "buildingFilter") list.setBuildingFilter(value);
           else if (key === "clearDates") list.clearDates();
         }}
       />

@@ -2,7 +2,7 @@ import { Box, Paper, Typography, TextField, Select, MenuItem, InputAdornment } f
 import SearchIcon from "@mui/icons-material/Search";
 import DateField from "../ui/DateField";
 
-export default function TenantManagementFilter({ statusFilter, search, dateFrom, dateTo, onChange }) {
+export default function TenantManagementFilter({ statusFilter, search, dateFrom, dateTo, buildings, buildingFilter, onChange }) {
   return (
     <Paper sx={{ p: 2.5, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
@@ -29,6 +29,21 @@ export default function TenantManagementFilter({ statusFilter, search, dateFrom,
             slotProps={{ input: { startAdornment: (<InputAdornment position="start"><SearchIcon sx={{ color: "#94a3b8", fontSize: 16 }} /></InputAdornment>) } }}
             sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontSize: "0.75rem", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
           />
+        </Box>
+
+        {/* Row 2: Building */}
+        <Box>
+          <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Tòa Nhà</Typography>
+          <Select
+            fullWidth size="small" value={buildingFilter}
+            onChange={(e) => onChange("buildingFilter", e.target.value)}
+            sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .MuiSelect-select": { fontSize: "0.75rem", py: 1.1 } }}
+          >
+            <MenuItem value="all">Tất cả tòa nhà</MenuItem>
+            {(buildings || []).map((b) => (
+              <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+            ))}
+          </Select>
         </Box>
 
         {/* Row 2: Time range */}
