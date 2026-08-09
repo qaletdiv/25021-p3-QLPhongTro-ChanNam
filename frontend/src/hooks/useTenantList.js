@@ -7,7 +7,7 @@ export default function useTenantList({ notify }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("renting");
-  const [companionStatus, setCompanionStatus] = useState("active");
+  const [companionStatus, setCompanionStatus] = useState("all");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [ttFrom, setTtFrom] = useState("");
