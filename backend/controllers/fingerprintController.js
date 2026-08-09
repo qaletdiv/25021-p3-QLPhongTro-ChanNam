@@ -41,7 +41,13 @@ exports.getFingerprintGroups = async (req, res, next) => {
             ];
         }
 
-        const all = await FingerprintHistory.findAll({ where, order: [["createdAt", "ASC"]] });
+        const all = await FingerprintHistory.findAll({
+            where,
+            include: [
+                { model: Room, as: "room", attributes: ["room_number", "buildingId"], include: [{ model: Building, as: "building", attributes: ["name"] }] }
+            ],
+            order: [["createdAt", "ASC"]]
+        });
         const groups = {};
         for (const h of all) {
             if (!groups[h.fingerprintCode]) groups[h.fingerprintCode] = { fingerprintCode: h.fingerprintCode, roomId: h.roomId, buildingId: h.buildingId, history: [] };
