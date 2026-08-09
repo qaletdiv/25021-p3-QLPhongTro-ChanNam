@@ -39,8 +39,9 @@ export default function useTenantList({ notify }) {
     if (statusFilter === "renting" && !active) return false;
     if (statusFilter === "ended" && active) return false;
     const activeCompanions = (tenant.companions || []).filter((c) => c.status !== "ended");
+    const endedCompanions = (tenant.companions || []).filter((c) => c.status === "ended");
     if (companionStatus === "active" && activeCompanions.length === 0) return false;
-    if (companionStatus === "ended" && activeCompanions.length > 0) return false;
+    if (companionStatus === "ended" && endedCompanions.length === 0) return false;
     if (buildingFilter !== "all") {
       const bId = active?.room?.building?.id ?? [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0]?.room?.building?.id;
       if (bId !== Number(buildingFilter)) return false;
