@@ -66,12 +66,12 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
 
       {/* Quick Info Grid */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
-        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
+        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1, textAlign: "center" }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Giá Thuê Phòng Hàng Tháng</Typography>
           <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#2563eb" }}>{formatCurrency(room?.price || roomPrice)}</Typography>
           <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>Ngày thu tiền: Ngày {contract?.paymentDay || 5} hàng tháng</Typography>
         </Paper>
-        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
+        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1, textAlign: "center" }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Trạng Thái Hóa Đơn Tháng {monthStr}</Typography>
           <Box>
             <Chip label={statusInfo.label} size="small"
