@@ -7,6 +7,7 @@ export default function useTenantList({ notify }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("renting");
+  const [companionStatus, setCompanionStatus] = useState("all");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [ttFrom, setTtFrom] = useState("");
@@ -37,6 +38,9 @@ export default function useTenantList({ notify }) {
     const active = tenant.contracts?.find((c) => c.status === "active");
     if (statusFilter === "renting" && !active) return false;
     if (statusFilter === "ended" && active) return false;
+    const activeCompanions = (tenant.companions || []).filter((c) => c.status !== "ended");
+    if (companionStatus === "active" && activeCompanions.length === 0) return false;
+    if (companionStatus === "ended" && activeCompanions.length > 0) return false;
     if (buildingFilter !== "all") {
       const bId = active?.room?.building?.id ?? [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate))[0]?.room?.building?.id;
       if (bId !== Number(buildingFilter)) return false;
@@ -64,8 +68,8 @@ export default function useTenantList({ notify }) {
   const clearTtDates = () => { setTtFrom(""); setTtTo(""); };
 
   return {
-    tenants, loading, search, statusFilter, dateFrom, dateTo, ttFrom, ttTo, buildings, buildingFilter,
-    filteredTenants, setSearch, setStatusFilter, setDateFrom, setDateTo, clearDates, fetchTenants, setBuildingFilter,
+    tenants, loading, search, statusFilter, companionStatus, dateFrom, dateTo, ttFrom, ttTo, buildings, buildingFilter,
+    filteredTenants, setSearch, setStatusFilter, setCompanionStatus, setDateFrom, setDateTo, clearDates, fetchTenants, setBuildingFilter,
     setTtFrom, setTtTo, clearTtDates,
   };
 }
