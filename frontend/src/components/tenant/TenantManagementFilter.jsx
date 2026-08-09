@@ -29,8 +29,8 @@ export default function TenantManagementFilter({ statusFilter, companionStatus, 
             sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .MuiSelect-select": { fontSize: "0.75rem", py: 1.1 } }}
           >
             <MenuItem value="all">Tất cả</MenuItem>
-            <MenuItem value="active">Đang Ở</MenuItem>
-            <MenuItem value="ended">Đã Rời</MenuItem>
+            <MenuItem value="active">Đang Thuê</MenuItem>
+            <MenuItem value="ended">Hết Thuê</MenuItem>
           </Select>
         </Box>
 
