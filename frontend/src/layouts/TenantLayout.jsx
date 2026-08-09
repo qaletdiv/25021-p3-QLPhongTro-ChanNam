@@ -15,6 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../contexts/AuthContext";
 import { usePushSubscription } from "../hooks/usePushSubscription";
+import { tokens as t } from "../design/tokens";
 
 const drawerWidth = 260;
 
@@ -38,22 +39,26 @@ export default function TenantLayout({ children }) {
   const handleLogout = () => { logout(); router.push("/login/tenant"); };
 
   const sidebar = (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", bgcolor: "#fff" }}>
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", bgcolor: t.colors.surface }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 2.5, py: 2.5 }}>
-        <Avatar sx={{ bgcolor: "#059669", width: 38, height: 38, borderRadius: "10px" }}>
+        <Avatar sx={{ bgcolor: t.colors.accent, width: 38, height: 38, borderRadius: "10px" }}>
           <ApartmentIcon />
         </Avatar>
         <Box>
-          <Typography sx={{ fontWeight: 700, fontSize: "1rem", lineHeight: 1.2, color: "#0f172a" }}>Phòng Trọ</Typography>
-          <Typography sx={{ fontSize: "0.6rem", color: "#64748b", fontWeight: 500 }}>Cổng thông tin người thuê</Typography>
+          <Typography className="font-display" sx={{ fontWeight: 700, fontSize: "1.0625rem", lineHeight: 1.2, color: t.colors.ink }}>
+            Phòng Trọ
+          </Typography>
+          <Typography sx={{ fontSize: "0.6rem", color: t.colors.muted, fontWeight: 500, letterSpacing: "0.02em" }}>
+            Cổng thông tin người thuê
+          </Typography>
         </Box>
       </Box>
-      <Divider sx={{ mx: 2 }} />
-      <Box sx={{ mx: 2, my: 1.5, p: 1.5, textAlign: "center", bgcolor: "#f0fdf4", borderRadius: "10px", border: "1px solid #bbf7d0" }}>
-        <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#065f46" }}>{user?.name}</Typography>
-        <Typography sx={{ fontSize: "0.65rem", color: "#047857" }}>{user?.email}</Typography>
+      <Divider sx={{ mx: 2, borderColor: t.colors.hairSoft }} />
+      <Box sx={{ mx: 2, my: 1.5, p: 1.5, textAlign: "center", bgcolor: t.colors.accentSoft, borderRadius: t.radius.md, border: `1px solid ${t.colors.accentHair}` }}>
+        <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: t.colors.accent }}>{user?.name}</Typography>
+        <Typography sx={{ fontSize: "0.65rem", color: t.colors.accentStrong }}>{user?.email}</Typography>
         <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}
-          sx={{ mt: 1.25, borderRadius: "8px", fontSize: "0.75rem", color: "#047857", borderColor: "#a7f3d0", "&:hover": { borderColor: "#dc2626", color: "#dc2626", bgcolor: "#fef2f2" } }}
+          sx={{ mt: 1.25, borderRadius: t.radius.sm, fontSize: "0.75rem", color: t.colors.accentStrong, borderColor: t.colors.accentHair, "&:hover": { borderColor: t.colors.danger, color: t.colors.danger, bgcolor: t.colors.dangerSoft } }}
         >Đăng xuất</Button>
       </Box>
       <List sx={{ px: 1, py: 0.5, flex: 1 }}>
@@ -64,13 +69,13 @@ export default function TenantLayout({ children }) {
               key={item.path} selected={selected}
               onClick={() => { router.push(item.path); if (isMobile) setMobileOpen(false); }}
               sx={{
-                borderRadius: "8px", mb: 0.25, px: 1.5, py: 0.8,
-                "&.Mui-selected": { bgcolor: "#f0fdf4", "& .MuiListItemIcon-root": { color: "#059669" }, "& .MuiListItemText-primary": { color: "#059669", fontWeight: 700 } },
-                "&:hover": { bgcolor: "#f8fafc" },
+                borderRadius: t.radius.md, mb: 0.25, px: 1.5, py: 0.8,
+                "&.Mui-selected": { bgcolor: t.colors.accentSoft, "& .MuiListItemIcon-root": { color: t.colors.accent }, "& .MuiListItemText-primary": { color: t.colors.accent, fontWeight: 700 }, borderLeft: `3px solid ${t.colors.accent}` },
+                "&:hover": { bgcolor: t.colors.surface2 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 34, color: selected ? "#059669" : "#64748b" }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} slotProps={{ primary: { fontSize: "0.8125rem", fontWeight: selected ? 700 : 500, color: selected ? "#059669" : "#334155" } }} />
+              <ListItemIcon sx={{ minWidth: 34, color: selected ? t.colors.accent : t.colors.muted }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.label} slotProps={{ primary: { fontSize: "0.8125rem", fontWeight: selected ? 700 : 500, color: selected ? t.colors.accent : t.colors.ink } }} />
             </ListItemButton>
           );
         })}
@@ -79,9 +84,9 @@ export default function TenantLayout({ children }) {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f1f5f9" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f4f6f8" }}>
       {isMobile && (
-        <IconButton onClick={() => setMobileOpen(!mobileOpen)} sx={{ position: "fixed", top: 12, left: 12, zIndex: 1200, bgcolor: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+        <IconButton onClick={() => setMobileOpen(!mobileOpen)} sx={{ position: "fixed", top: 12, left: 12, zIndex: 1200, bgcolor: t.colors.surface, boxShadow: t.shadow.md }}>
           <MenuIcon />
         </IconButton>
       )}
@@ -90,7 +95,7 @@ export default function TenantLayout({ children }) {
           variant={isMobile ? "temporary" : "permanent"}
           open={isMobile ? mobileOpen : true}
           onClose={() => setMobileOpen(false)}
-          sx={{ "& .MuiDrawer-paper": { width: drawerWidth, borderRight: "1px solid #e2e8f0", bgcolor: "#fff" } }}
+          sx={{ "& .MuiDrawer-paper": { width: drawerWidth, borderRight: `1px solid ${t.colors.hair}`, bgcolor: t.colors.surface } }}
         >
           {sidebar}
         </Drawer>

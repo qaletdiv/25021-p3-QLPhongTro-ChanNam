@@ -6,16 +6,10 @@ import GaugeIcon from "@mui/icons-material/Speed";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { resizeImage } from "../../utils/image";
+import { tokens as t } from "../../design/tokens";
 
-const cardSx = {
-  bgcolor: "#fff",
-  borderRadius: "16px",
-  border: "1px solid #e2e8f0",
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-  mb: 3,
-};
-
-export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec, setElec] = useState("");
+export default function InitialMeterForm({ roomNumber, onSaved }) {
+  const [elec, setElec] = useState("");
   const [water, setWater] = useState("");
   const [elecPreview, setElecPreview] = useState("");
   const [waterPreview, setWaterPreview] = useState("");
@@ -57,17 +51,17 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
   };
 
   const photoBox = (preview, label, onPick) => (
-    <Box sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-      <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1.5 }}>{label}</Typography>
+    <Box sx={{ p: 2, bgcolor: t.colors.surface2, borderRadius: t.radius.md, border: `1px solid ${t.colors.hair}` }}>
+      <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: t.colors.ink, mb: 1.5 }}>{label}</Typography>
       {preview ? (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
           <Box component="img" src={preview} alt={label}
-            sx={{ width: 88, height: 88, objectFit: "cover", borderRadius: "12px", border: "1px solid #e2e8f0" }} />
-          <CheckCircleIcon sx={{ color: "#059669", fontSize: 20 }} />
+            sx={{ width: 88, height: 88, objectFit: "cover", borderRadius: t.radius.md, border: `1px solid ${t.colors.hair}` }} />
+          <CheckCircleIcon sx={{ color: t.colors.accentStrong, fontSize: 20 }} />
         </Box>
       ) : (
         <Button component="label" variant="outlined" startIcon={<CameraAltIcon />} fullWidth
-          sx={{ borderRadius: "12px", textTransform: "none", fontSize: "0.75rem", py: 1 }}>
+          sx={{ borderRadius: t.radius.md, textTransform: "none", fontSize: "0.75rem", py: 1 }}>
           Chụp / Upload ảnh
           <input type="file" accept="image/*" hidden onChange={onPick} />
         </Button>
@@ -76,15 +70,15 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
   );
 
   return (
-    <Paper sx={cardSx}>
+    <Paper className="reveal" sx={{ borderRadius: t.radius.lg, border: `1px solid ${t.colors.hair}`, boxShadow: t.shadow.sm }}>
       <Box sx={{ p: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
-          <GaugeIcon sx={{ color: "#059669", fontSize: 20 }} />
-          <Typography variant="h6" fontWeight="bold" color="#0f172a">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: `1px solid ${t.colors.hairSoft}` }}>
+          <GaugeIcon sx={{ color: t.colors.accent, fontSize: 20 }} />
+          <Typography className="font-display" sx={{ fontSize: "1.0625rem", fontWeight: 600, color: t.colors.ink }}>
             Nhập chỉ số ban đầu{roomNumber ? ` - Phòng ${roomNumber}` : ""}
           </Typography>
         </Box>
-        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 2, lineHeight: 1.6 }}>
+        <Typography sx={{ fontSize: "0.75rem", color: t.colors.muted, mb: 2, lineHeight: 1.6 }}>
           Bạn đang là khách thuê mới. Vui lòng nhập chỉ số điện, nước ban đầu khi nhận phòng và upload ảnh chụp đồng hồ
           làm bằng chứng. Các chỉ số này sẽ được dùng làm <b>chỉ số cũ</b> cho các kỳ hóa đơn tiếp theo.
         </Typography>
@@ -104,12 +98,12 @@ export default function InitialMeterForm({ roomNumber, onSaved }) {  const [elec
         </Box>
 
         {error && (
-          <Typography sx={{ fontSize: "0.75rem", color: "#dc2626", fontWeight: 600, mb: 1.5 }}>⚠ {error}</Typography>
+          <Typography role="alert" sx={{ fontSize: "0.75rem", color: t.colors.danger, fontWeight: 600, mb: 1.5 }}>⚠ {error}</Typography>
         )}
 
         <Box sx={{ textAlign: "center" }}>
           <Button variant="contained" onClick={handleSubmit} disabled={saving}
-            sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none", px: 4 }}>
+            sx={{ bgcolor: t.colors.accent, "&:hover": { bgcolor: t.colors.accentStrong }, borderRadius: t.radius.md, textTransform: "none", px: 4 }}>
             {saving ? "Đang lưu..." : "Lưu chỉ số ban đầu"}
           </Button>
         </Box>

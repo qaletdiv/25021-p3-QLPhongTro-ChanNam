@@ -12,17 +12,26 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import MessageDialog from "../components/MessageDialog";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import TenantPageHeader from "../components/tenant/TenantPageHeader";
 import tenantProfileApi from "../api/tenantProfileApi";
 import { requestPushPermission } from "../hooks/usePushSubscription";
+import { tokens as t } from "../design/tokens";
 
 const cardSx = {
-  bgcolor: "#fff",
-  borderRadius: "16px",
-  border: "1px solid #e2e8f0",
-  boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+  bgcolor: t.colors.surface,
+  borderRadius: t.radius.lg,
+  border: `1px solid ${t.colors.hair}`,
+  boxShadow: t.shadow.sm,
   p: 3,
   mb: 3,
 };
+
+const sectionTitleSx = {
+  className: "font-display",
+  fontSize: "1.0625rem",
+  fontWeight: 600,
+  color: t.colors.ink,
+}
 
 // MUI v9 outlines a short input (height 1.4375em ~ 23px, padding 4px 0) which
 // pushes the floating label/placeholder to the bottom of an empty field.
@@ -102,15 +111,16 @@ export default function TenantProfile() {
 
   return (
     <Box>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight="bold" color="#0f172a" sx={{ lineHeight: 1.4 }}>Hồ sơ cá nhân</Typography>
-        <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý thông tin cá nhân và thay đổi mật khẩu</Typography>
-      </Box>
+      <TenantPageHeader
+        eyebrow="Thông Tin Cá Nhân"
+        title="Hồ sơ cá nhân"
+        subtitle="Quản lý thông tin cá nhân và thay đổi mật khẩu"
+      />
 
-      <Paper sx={cardSx}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
-          <PersonIcon sx={{ color: "#059669", fontSize: 20 }} />
-          <Typography variant="h6" fontWeight="bold" color="#0f172a">Thông tin cá nhân</Typography>
+      <Paper sx={cardSx} className="reveal">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: `1px solid ${t.colors.hairSoft}` }}>
+          <PersonIcon sx={{ color: t.colors.accent, fontSize: 20 }} />
+          <Typography {...sectionTitleSx}>Thông tin cá nhân</Typography>
         </Box>
         <Grid container spacing={2}>
           <Grid size={6}>
@@ -139,17 +149,17 @@ export default function TenantProfile() {
           </Grid>
         </Grid>
         <Box sx={{ mt: 2, textAlign: "center" }}>
-          <Button variant="contained" onClick={handleUpdateProfile} disabled={saving}
-            sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
+          <Button variant="contained" color="success" onClick={handleUpdateProfile} disabled={saving}
+            sx={{ borderRadius: t.radius.md, textTransform: "none" }}>
             Lưu thay đổi
           </Button>
         </Box>
       </Paper>
 
-      <Paper sx={cardSx}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
-          <PersonIcon sx={{ color: "#059669", fontSize: 20 }} />
-          <Typography variant="h6" fontWeight="bold" color="#0f172a">Người đi kèm</Typography>
+      <Paper sx={cardSx} className="reveal">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: `1px solid ${t.colors.hairSoft}` }}>
+          <PersonIcon sx={{ color: t.colors.accent, fontSize: 20 }} />
+          <Typography {...sectionTitleSx}>Người đi kèm</Typography>
         </Box>
         <TableContainer>
           <Table size="small" sx={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
@@ -189,8 +199,8 @@ export default function TenantProfile() {
                     <TextField size="small" fullWidth value={c.telegramChatId || ""} placeholder="Chat ID"
                       onChange={(e) => updateCompanion(i, "telegramChatId", e.target.value)} sx={inputFieldSx} />
                   </TableCell>
-                  <TableCell sx={{ borderBottom: "1px solid #f1f5f9", p: 1, color: c.fingerprintCode ? "#475569" : "#cbd5e1", fontSize: "0.8125rem" }}>
-                    {c.fingerprintCode || "—"}
+                  <TableCell sx={{ borderBottom: `1px solid ${t.colors.hairSoft}`, p: 1, color: c.fingerprintCode ? "#475569" : "#cbd5e1", fontSize: "0.8125rem" }}>
+                    <Box className="font-mono" component="span">{c.fingerprintCode || "—"}</Box>
                   </TableCell>
                   <TableCell align="right" sx={{ borderBottom: "1px solid #f1f5f9", p: 1 }}>
                     <IconButton size="small" color="error" onClick={() => setConfirmDeleteIndex(i)} aria-label="Xoá người đi kèm">
@@ -211,30 +221,30 @@ export default function TenantProfile() {
         </TableContainer>
         <Box sx={{ mt: 1 }}>
           <Button startIcon={<AddIcon />} size="small" onClick={addCompanion}
-            sx={{ textTransform: "none", color: "#059669" }}>
+            sx={{ textTransform: "none", color: t.colors.accentStrong }}>
             Thêm người đi kèm
           </Button>
         </Box>
         <Box sx={{ mt: 2, textAlign: "center" }}>
-          <Button variant="contained" onClick={handleUpdateProfile} disabled={saving}
-            sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
+          <Button variant="contained" color="success" onClick={handleUpdateProfile} disabled={saving}
+            sx={{ borderRadius: t.radius.md, textTransform: "none" }}>
             Lưu thay đổi
           </Button>
         </Box>
       </Paper>
 
-      <Paper sx={cardSx}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
-          <NotificationImportantIcon sx={{ color: "#059669", fontSize: 20 }} />
-          <Typography variant="h6" fontWeight="bold" color="#0f172a">Thông báo đẩy</Typography>
+      <Paper sx={cardSx} className="reveal">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: `1px solid ${t.colors.hairSoft}` }}>
+          <NotificationImportantIcon sx={{ color: t.colors.accent, fontSize: 20 }} />
+          <Typography {...sectionTitleSx}>Thông báo đẩy</Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
           <Button variant="outlined" onClick={handleEnablePush}
-            sx={{ color: "#059669", borderColor: "#a7f3d0", borderRadius: "12px", textTransform: "none", "&:hover": { borderColor: "#059669", bgcolor: "#f0fdf4" } }}>
+            sx={{ color: t.colors.accent, borderColor: t.colors.accentHair, borderRadius: t.radius.md, textTransform: "none", "&:hover": { borderColor: t.colors.accentStrong, bgcolor: t.colors.accentSoft } }}>
             Bật thông báo đẩy (Push)
           </Button>
           {pushMsg && (
-            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#065f46" }}>{pushMsg}</Typography>
+            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: t.colors.accent }}>{pushMsg}</Typography>
           )}
         </Box>
         <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 1 }}>
@@ -242,10 +252,10 @@ export default function TenantProfile() {
         </Typography>
       </Paper>
 
-      <Paper sx={cardSx}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
-          <LockIcon sx={{ color: "#059669", fontSize: 20 }} />
-          <Typography variant="h6" fontWeight="bold" color="#0f172a">Đổi mật khẩu</Typography>
+      <Paper sx={cardSx} className="reveal">
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: `1px solid ${t.colors.hairSoft}` }}>
+          <LockIcon sx={{ color: t.colors.accent, fontSize: 20 }} />
+          <Typography {...sectionTitleSx}>Đổi mật khẩu</Typography>
         </Box>
         <Grid container spacing={2}>
           <Grid size={4}>
@@ -261,9 +271,9 @@ export default function TenantProfile() {
               sx={inputFieldSx} />
           </Grid>
         </Grid>
-        <Box sx={{ mt: 2, textAlign: "center" }}>
-          <Button variant="contained" onClick={handleChangePassword} disabled={saving}
-            sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
+<Box sx={{ mt: 2, textAlign: "center" }}>
+          <Button variant="contained" color="success" onClick={handleChangePassword} disabled={saving}
+            sx={{ borderRadius: t.radius.md, textTransform: "none" }}>
             Đổi mật khẩu
           </Button>
         </Box>

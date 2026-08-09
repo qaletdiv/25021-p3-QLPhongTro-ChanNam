@@ -6,9 +6,11 @@ import MessageDialog from "../components/MessageDialog";
 import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
 import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
 import NewTenantTab from "../components/tenant/NewTenantTab";
+import TenantPageHeader from "../components/tenant/TenantPageHeader";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
 import { nextMonthLabel, nextMonthOf, formatCurrency } from "../utils/format";
+import { tokens as t } from "../design/tokens";
 
 export default function TenantInvoices() {
   const [invoices, setInvoices] = useState([]);
@@ -141,10 +143,11 @@ export default function TenantInvoices() {
 
   return (
     <Box>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" fontWeight="bold" color="#0f172a">Hóa đơn của tôi</Typography>
-        <Typography variant="body2" color="#64748b" mt={0.5}>Quản lý chỉ số điện nước và theo dõi hóa đơn hàng tháng</Typography>
-      </Box>
+      <TenantPageHeader
+        eyebrow="Hóa Đơn & Chỉ Số"
+        title="Hóa đơn của tôi"
+        subtitle="Quản lý chỉ số điện nước và theo dõi hóa đơn hàng tháng"
+      />
 
       {isNewTenant ? (
         <NewTenantTab
@@ -181,11 +184,11 @@ export default function TenantInvoices() {
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center", color: "#475569", fontSize: "0.875rem", lineHeight: 1.6 }}>
           Vui lòng quét mã QR và chuyển khoản đúng số tiền{" "}
-          <Box component="span" sx={{ fontWeight: 700, color: "#2563eb" }}>{formatCurrency(calcTotal)}</Box> trước khi
+          <Box component="span" sx={{ fontWeight: 700, color: t.colors.accent }}>{formatCurrency(calcTotal)}</Box> trước khi
           gửi chỉ số. Sau khi gửi, hóa đơn sẽ được chốt.
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2.5 }}>
-          <Button variant="outlined" color="warning" sx={{ borderRadius: "10px", fontWeight: 700 }} onClick={() => confirmPaidSubmit(false)}>
+          <Button color="inherit" sx={{ borderRadius: "10px", fontWeight: 700, color: "#64748b" }} onClick={() => confirmPaidSubmit(false)}>
             Chưa thanh toán
           </Button>
           <Button variant="contained" color="success" sx={{ borderRadius: "10px", fontWeight: 700 }} onClick={() => confirmPaidSubmit(true)}>

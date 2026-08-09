@@ -10,8 +10,10 @@ import AddIcon from "@mui/icons-material/Add";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import MessageDialog from "../components/MessageDialog";
+import TenantPageHeader from "../components/tenant/TenantPageHeader";
 import tenantIssueApi from "../api/tenantIssueApi";
 import { resizeImage } from "../utils/image";
+import { tokens as t } from "../design/tokens";
 
 const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
 
@@ -65,27 +67,28 @@ export default function TenantIssues() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
-        <Box>
-          <Typography variant="h5" fontWeight="bold" color="#0f172a">Báo hỏng</Typography>
-          <Typography variant="body2" color="#64748b" mt={0.5}>Theo dõi và gửi báo cáo các vấn đề hỏng hóc</Typography>
-        </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setForm({ title: "", description: "" }); setImages([]); setOpenCreate(true); }}
-          sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>
-          Gửi báo cáo mới
-        </Button>
-      </Box>
+      <TenantPageHeader
+        eyebrow="Bảo Trì & Sửa Chữa"
+        title="Báo hỏng"
+        subtitle="Theo dõi và gửi báo cáo các vấn đề hỏng hóc"
+        action={
+          <Button variant="contained" color="success" startIcon={<AddIcon />} onClick={() => { setForm({ title: "", description: "" }); setImages([]); setOpenCreate(true); }}
+            sx={{ borderRadius: t.radius.md, textTransform: "none" }}>
+            Gửi báo cáo mới
+          </Button>
+        }
+      />
 
-      <TableContainer component={Paper} sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}>
+      <TableContainer component={Paper} className="reveal" sx={{ borderRadius: "16px", border: `1px solid ${t.colors.hair}`, boxShadow: t.shadow.sm }}>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: "#f1f5f9" }}>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Tiêu đề</TableCell>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Mô tả</TableCell>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Phòng</TableCell>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Hình ảnh</TableCell>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Ngày gửi</TableCell>
-              <TableCell sx={{ fontWeight: 600, color: "#0f172a" }}>Trạng thái</TableCell>
+            <TableRow>
+              <TableCell>Tiêu đề</TableCell>
+              <TableCell>Mô tả</TableCell>
+              <TableCell>Phòng</TableCell>
+              <TableCell>Hình ảnh</TableCell>
+              <TableCell>Ngày gửi</TableCell>
+              <TableCell>Trạng thái</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -116,9 +119,9 @@ export default function TenantIssues() {
                   <Chip label={statusLabel[issue.status]}
                     size="small"
                     sx={{
-                      borderRadius: "12px", fontWeight: 600,
+                      borderRadius: t.radius.pill, fontWeight: 700,
                       bgcolor: issue.status === "resolved" ? "#d1fae5" : "#fef3c7",
-                      color: issue.status === "resolved" ? "#065f46" : "#d97706",
+                      color: issue.status === "resolved" ? t.colors.accent : t.colors.amber,
                     }}
                   />
                 </TableCell>
@@ -136,9 +139,9 @@ export default function TenantIssues() {
 
       <Dialog open={openCreate} onClose={() => setOpenCreate(false)} maxWidth="sm" fullWidth
         PaperProps={{ sx: { borderRadius: "16px" } }}>
-        <DialogTitle sx={{ fontWeight: "bold", color: "#0f172a", borderBottom: "1px solid #e2e8f0" }}>
+        <DialogTitle sx={{ fontWeight: "bold", color: "#0f172a", borderBottom: `1px solid ${t.colors.hair}` }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <BugReportIcon sx={{ color: "#059669", fontSize: 20 }} />
+            <BugReportIcon sx={{ color: t.colors.accent, fontSize: 20 }} />
             Gửi báo cáo hỏng hóc
           </Box>
         </DialogTitle>
@@ -170,10 +173,10 @@ export default function TenantIssues() {
             </Box>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2, borderTop: "1px solid #e2e8f0" }}>
-          <Button onClick={() => setOpenCreate(false)} sx={{ borderRadius: "12px", textTransform: "none", color: "#64748b" }}>Hủy</Button>
-          <Button variant="contained" onClick={handleCreate}
-            sx={{ bgcolor: "#059669", "&:hover": { bgcolor: "#065f46" }, borderRadius: "12px", textTransform: "none" }}>Gửi</Button>
+        <DialogActions sx={{ p: 2, borderTop: `1px solid ${t.colors.hair}` }}>
+          <Button onClick={() => setOpenCreate(false)} sx={{ borderRadius: t.radius.md, textTransform: "none", color: t.colors.muted }}>Hủy</Button>
+          <Button variant="contained" color="success" onClick={handleCreate}
+            sx={{ borderRadius: t.radius.md, textTransform: "none" }}>Gửi</Button>
         </DialogActions>
       </Dialog>
 
