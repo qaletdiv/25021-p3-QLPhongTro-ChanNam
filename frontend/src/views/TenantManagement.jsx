@@ -7,6 +7,7 @@ import TenantTable from "../components/tenant/TenantTable";
 import ContractModal from "../components/tenant/ContractModal";
 import TenantEditModal from "../components/tenant/TenantEditModal";
 import CheckoutConfirmModal from "../components/tenant/CheckoutConfirmModal";
+import CheckoutSelectionModal from "../components/tenant/CheckoutSelectionModal";
 import TenantManagementHeader from "../components/tenant/TenantManagementHeader";
 import TenantManagementFilter from "../components/tenant/TenantManagementFilter";
 import contractTemplateApi from "../api/contractTemplateApi";
@@ -83,6 +84,12 @@ export default function TenantManagement() {
         openContract={formState.openContract}
         onClose={() => tenantEditor.setEditTenantId(null)}
         onSave={tenantEditor.handleSaveAll}
+      />
+
+      <CheckoutSelectionModal
+        data={checkout.checkoutSelect}
+        onClose={() => checkout.setCheckoutSelect(null)}
+        onConfirm={checkout.handleSelectionConfirm}
       />
 
       <CheckoutConfirmModal

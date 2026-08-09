@@ -138,10 +138,12 @@ exports.checkoutContract = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
 
+        const { promoteCompanionId } = req.body || {};
         const activeCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId, status: 'active' } });
 
-        if (activeCompanions.length > 0) {
-            const promoted = activeCompanions[0];
+        // Promote a chosen companion to be the new main tenant; any other staying companions follow them.
+        const promoted = activeCompanions.find((c) => String(c.id) === String(promoteCompanionId));
+        if (promoted) {
             const newTenant = await Tenant.create({
                 name: promoted.name,
                 phone: promoted.phone || '',
@@ -150,6 +152,10 @@ exports.checkoutContract = async (req, res, next) => {
             });
             await contract.update({ tenantId: newTenant.id });
             await Companion.update({ status: 'ended', endedAt: new Date() }, { where: { id: promoted.id } });
+            const stayingIds = activeCompanions.filter((c) => c.id !== promoted.id).map((c) => c.id);
+            if (stayingIds.length > 0) {
+                await Companion.update({ tenantId: newTenant.id }, { where: { id: stayingIds } });
+            }
             res.json({ message: "Trả phòng thành công", promoted: true, newTenantId: newTenant.id });
             return;
         }
@@ -157,6 +163,9 @@ exports.checkoutContract = async (req, res, next) => {
         await contract.update({ status: 'ended', checkoutDate: new Date() });
         await contract.room.update({ status: 'empty', price: contract.price });
         await ContractFurniture.destroy({ where: { contractId: contract.id } });
+        if (activeCompanions.length > 0) {
+            await Companion.update({ status: 'ended', endedAt: new Date() }, { where: { tenantId: contract.tenantId, status: 'active' } });
+        }
 
         const tenant = await Tenant.findByPk(contract.tenantId);
         if (contract.fingerprintCode) {

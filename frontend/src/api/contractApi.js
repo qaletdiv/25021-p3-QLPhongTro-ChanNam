@@ -10,8 +10,8 @@ const contractApi = {
   update(id, data) {
     return axiosClient.put(`/contracts/${id}`, data);
   },
-  checkout(id) {
-    return axiosClient.put(`/contracts/${id}/checkout`);
+  checkout(id, data = {}) {
+    return axiosClient.put(`/contracts/${id}/checkout`, data);
   },
 };
 

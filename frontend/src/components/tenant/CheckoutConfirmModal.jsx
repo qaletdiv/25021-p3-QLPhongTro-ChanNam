@@ -22,9 +22,9 @@ export default function CheckoutConfirmModal({ checkoutConfirm, onClose, onConfi
           <Typography sx={{ fontSize: "0.75rem", color: "#334155", lineHeight: 1.6 }}>
             Bạn có chắc chắn muốn làm thủ tục <strong>Trả phòng {checkoutConfirm.roomNumber}</strong> cho khách hàng <strong>{checkoutConfirm.tenantName}</strong>?
           </Typography>
-          {checkoutConfirm.activeCompanions?.length > 0 ? (
+          {checkoutConfirm.promoteCompanionId ? (
             <Box sx={{ p: 2, bgcolor: "#eff6ff", borderRadius: "16px", border: "1px solid #bfdbfe", fontSize: "0.75rem", color: "#1e40af", display: "flex", flexDirection: "column", gap: 1 }}>
-              <div><strong>• Người đi kèm {checkoutConfirm.activeCompanions[0].name} sẽ trở thành khách thuê chính</strong></div>
+              <div><strong>• Người ở lại {checkoutConfirm.promoteName} sẽ trở thành khách thuê chính</strong></div>
               <div>• Hợp đồng {checkoutConfirm.roomNumber} sẽ được chuyển sang cho khách thuê mới</div>
               <div>• Phòng vẫn giữ trạng thái <strong>Đang Cho Thuê</strong>, cọc được chuyển tiếp</div>
             </Box>
