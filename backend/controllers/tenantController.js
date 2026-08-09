@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
-const bcrypt = require("bcrypt");
 const { Tenant, Contract, Room, Companion, Building, User } = require("../models");
+const { hashPassword } = require("../utils/password");
 
 exports.getTenants = async (req, res, next) => {
     try {
@@ -51,7 +51,7 @@ exports.updateTenant = async (req, res, next) => {
         if (password && String(password).trim() !== '') {
             updateData.password = String(password).trim();
             if (tenant.userId) {
-                const hashed = await bcrypt.hash(String(password).trim(), 10);
+                const hashed = await hashPassword(String(password).trim());
                 await User.update({ password: hashed }, { where: { id: tenant.userId } });
             }
         }

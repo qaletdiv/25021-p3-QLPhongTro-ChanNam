@@ -1,0 +1,1 @@
+exports.formatMoney = (n) => new Intl.NumberFormat("vi-VN").format(Number(n)) + " VND";

@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Notification, Contract, Room, Tenant } = require("../models");
 const { getResolvedSettings } = require("../utils/settings");
 const { monthStr } = require("../utils/dates");
+const { formatMoney } = require("../utils/money");
 const telegram = require("../utils/telegram");
 
 const CHECK_INTERVAL_MS = 30 * 60 * 1000;
@@ -49,7 +50,7 @@ exports.runAutoReminders = async () => {
 
         if (tenant.telegramChatId) {
             try {
-                const totalStr = new Intl.NumberFormat("vi-VN").format(Number(contract.price)) + " VND";
+                const totalStr = formatMoney(contract.price);
                 const text = telegram.formatMessage(content, {
                     tenantName: tenant.name,
                     roomNumber: room.room_number,

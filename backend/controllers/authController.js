@@ -1,8 +1,8 @@
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User, Tenant, Companion } = require("../models");
 const { generateSessionToken, setAuthCookie } = require("../utils/cookies");
 const { writeAuditLog } = require("../utils/auditLog");
+const { hashPassword, comparePassword } = require("../utils/password");
 
 const signToken = (user, sessionId) => jwt.sign(
     { userId: user.id, role: user.role, sessionId },
@@ -16,8 +16,8 @@ exports.register = async (req, res, next) => {
         if ((role || 'tenant') === 'landlord') {
             return res.status(403).json({ message: "Không được phép tự đăng ký tài khoản chủ trọ" });
         }
-        const hashPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({ name, email, phone, password: hashPassword, role: role || 'tenant' });
+        const hashed = await hashPassword(password);
+        const newUser = await User.create({ name, email, phone, password: hashed, role: role || 'tenant' });
 
         if (role === 'tenant') {
             const tenant = await Tenant.create({ name, phone, cccd: cccd || null, password, userId: newUser.id });
@@ -46,7 +46,7 @@ exports.login = async (req, res, next) => {
         const { email, password } = req.body;
         const user = await User.scope("withPassword").findOne({ where: { email } });
         if (!user) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await comparePassword(password, user.password);
         if (!isMatch) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
         if (user.isActive === false) return res.status(403).json({ message: "Tài khoản đã bị vô hiệu hóa, vui lòng liên hệ chủ trọ." });
 

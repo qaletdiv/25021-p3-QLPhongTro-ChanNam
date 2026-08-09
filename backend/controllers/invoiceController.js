@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Invoice, Contract, Room, Tenant, Building } = require("../models");
 const telegram = require("../utils/telegram");
 const push = require("../utils/push");
+const { formatMoney } = require("../utils/money");
 
 exports.getInvoices = async (req, res, next) => {
     try {
@@ -52,7 +53,7 @@ exports.markAsPaid = async (req, res, next) => {
         const tenant = invoice.contract.tenant;
         if (tenant && tenant.userId) {
             try {
-                const totalStr = new Intl.NumberFormat("vi-VN").format(Number(invoice.total)) + " VND";
+                const totalStr = formatMoney(invoice.total);
                 await push.sendToUser(tenant.userId, {
                     title: "Hóa đơn đã được xác nhận",
                     body: `Hóa đơn tháng ${invoice.month}: ${totalStr} đã được xác nhận thanh toán.`,
@@ -83,7 +84,7 @@ exports.sendReminder = async (req, res, next) => {
         }
 
         const total = Number(invoice.total);
-        const totalStr = new Intl.NumberFormat("vi-VN").format(total) + " VND";
+        const totalStr = formatMoney(total);
         const text = telegram.formatMessage(
             `Nhắc nợ tiền phòng ${invoice.month}\n\n` +
             `Kính gửi anh/chị ${invoice.contract.tenant.name}\n` +

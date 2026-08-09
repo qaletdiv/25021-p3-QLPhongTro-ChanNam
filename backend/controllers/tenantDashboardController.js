@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notification, Invoice } = require("../models");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
+const { monthStr } = require("../utils/dates");
 
 exports.getDashboard = async (req, res, next) => {
     try {
@@ -76,7 +77,7 @@ exports.getUtilityUsage = async (req, res, next) => {
             attributes: ["month", "electricityNew", "electricityOld", "waterNew", "waterOld"]
         });
 
-        const moveInKey = `${String(start.getMonth() + 1).padStart(2, "0")}/${startYear}`;
+        const moveInKey = monthStr(start);
 
         const byMonth = {};
         invoices.forEach((inv) => {
@@ -93,7 +94,7 @@ exports.getUtilityUsage = async (req, res, next) => {
         const chartData = [];
         for (let i = 0; i < 12; i++) {
             const d = new Date(startYear, startMonth + i, 1);
-            const key = `${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+            const key = monthStr(d);
             const entry = byMonth[key] || { electricity: 0, water: 0 };
             chartData.push({
                 month: key,

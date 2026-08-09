@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
-const bcrypt = require("bcrypt");
 const { User, Tenant } = require("../models");
 const { writeAuditLog } = require("../utils/auditLog");
+const { hashPassword } = require("../utils/password");
 
 const AUTH_ATTRS = ["id", "name", "email", "phone", "role", "isActive", "currentSessionToken", "avatar", "cccd", "createdAt", "updatedAt"];
 
@@ -111,7 +111,7 @@ exports.changePassword = async (req, res, next) => {
         const user = await User.findByPk(id, { include: [{ model: Tenant, as: "tenants", attributes: ["id"] }] });
         if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
 
-        const hashed = await bcrypt.hash(String(newPassword), 10);
+        const hashed = await hashPassword(String(newPassword));
         await user.update({ password: hashed, currentSessionToken: null });
 
         const tenant = user.tenants && user.tenants[0];

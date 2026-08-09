@@ -1,5 +1,5 @@
 const { Contract, ContractFurniture, Tenant, Room, Furniture, Companion } = require("../models");
-const { logFingerprintRow, logFingerprintReassign } = require("../utils/fingerprintLog");
+const { logFingerprintRow, logFingerprintReassign, updateCompanionDetails, logCompanionAssignments, logCompanionReassignments } = require("../utils/fingerprintLog");
 
 exports.getContracts = async (req, res, next) => {
     try {
@@ -64,37 +64,16 @@ exports.updateContract = async (req, res, next) => {
 
         await contract.update(updateData);
 
-        if (companionFingerprints && companionFingerprints.length > 0) {
-            await Promise.all(companionFingerprints.map(c =>
-                Companion.update(
-                    {
-                        name: c.name,
-                        phone: c.phone || null,
-                        cccd: c.cccd || null,
-                        relationship: c.relationship || null,
-                        fingerprintCode: c.fingerprintCode || null,
-                    },
-                    { where: { id: c.id } }
-                )
-            ));
-        }
+        await updateCompanionDetails(companionFingerprints);
 
         await logFingerprintReassign({
             oldFp: oldFingerprint, newFp: fingerprintCode, ownerType: 'tenant', ownerId: contract.tenantId,
             ownerName: tenant ? tenant.name : null, tenantId: contract.tenantId,
             roomId: logRoom.id, buildingId: logRoom.buildingId, landlordId: req.user.id
         });
-        if (companionFingerprints && companionFingerprints.length > 0) {
-            for (const c of companionFingerprints) {
-                if (c.id && oldCompanionFps[c.id] !== c.fingerprintCode) {
-                    await logFingerprintReassign({
-                        oldFp: oldCompanionFps[c.id], newFp: c.fingerprintCode, ownerType: 'companion', ownerId: c.id,
-                        ownerName: c.name, tenantId: contract.tenantId,
-                        roomId: logRoom.id, buildingId: logRoom.buildingId, landlordId: req.user.id
-                    });
-                }
-            }
-        }
+        await logCompanionReassignments(companionFingerprints, oldCompanionFps, {
+            tenantId: contract.tenantId, roomId: logRoom.id, buildingId: logRoom.buildingId, landlordId: req.user.id
+        });
 
         if (furnitures) {
             await ContractFurniture.destroy({ where: { contractId: contract.id } });
@@ -118,20 +97,7 @@ exports.createContract = async (req, res, next) => {
 
         const contract = await Contract.create({ tenantId, roomId, deposit, price: price ?? room.price, startDate, endDate, paymentDay, fingerprintCode, status: 'active' });
 
-        if (companionFingerprints && companionFingerprints.length > 0) {
-            await Promise.all(companionFingerprints.map(c =>
-                Companion.update(
-                    {
-                        name: c.name,
-                        phone: c.phone || null,
-                        cccd: c.cccd || null,
-                        relationship: c.relationship || null,
-                        fingerprintCode: c.fingerprintCode || null,
-                    },
-                    { where: { id: c.id } }
-                )
-            ));
-        }
+        await updateCompanionDetails(companionFingerprints);
 
         if (furnitures && furnitures.length > 0) {
             const items = furnitures.map(f => ({ contractId: contract.id, furnitureId: f.furnitureId, quantity: f.quantity || 1 }));
@@ -148,17 +114,9 @@ exports.createContract = async (req, res, next) => {
                 roomId: room.id, buildingId: room.buildingId, landlordId: req.user.id, action: 'assigned'
             });
         }
-        if (companionFingerprints && companionFingerprints.length > 0) {
-            for (const c of companionFingerprints) {
-                if (c.fingerprintCode) {
-                    await logFingerprintRow({
-                        fingerprintCode: c.fingerprintCode, ownerType: 'companion', ownerId: c.id,
-                        ownerName: c.name, tenantId: contract.tenantId,
-                        roomId: room.id, buildingId: room.buildingId, landlordId: req.user.id, action: 'assigned'
-                    });
-                }
-            }
-        }
+        await logCompanionAssignments(companionFingerprints, {
+            tenantId: contract.tenantId, roomId: room.id, buildingId: room.buildingId, landlordId: req.user.id
+        });
 
         const result = await Contract.findByPk(contract.id, {
             include: [
