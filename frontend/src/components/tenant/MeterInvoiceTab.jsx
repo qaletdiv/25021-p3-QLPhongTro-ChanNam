@@ -50,7 +50,7 @@ export default function MeterInvoiceTab({
   elecVal, setElecVal, waterVal, setWaterVal,
   warningMsg, submitSuccess,
   calcElecUsage, calcWaterUsage, calcElecAmount, calcWaterAmount, calcTotal,
-  electricityRate, waterRate, roomPrice,
+  electricityRate, waterRate, roomPrice, serviceFee,
   handlePhotoUpload, handleMeterSubmit,
   getVietQRContent,
   submitting, elecPhoto, waterPhoto,
@@ -153,6 +153,10 @@ export default function MeterInvoiceTab({
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                 <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Tiền nước ({Math.round(calcWaterUsage)} m³ x {formatCurrency(waterRate)}):</Typography>
                 <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(Math.round(calcWaterAmount))}</Typography>
+              </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                <Typography sx={{ color: "#64748b", fontWeight: 500 }}>Tiền dịch vụ:</Typography>
+                <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>{formatCurrency(serviceFee)}</Typography>
               </Box>
               <Box sx={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid #e2e8f0", pt: 1.5, color: "#2563eb" }}>
                 <Typography sx={{ fontWeight: 700, fontSize: "0.875rem" }}>Số tiền chuyển:</Typography>

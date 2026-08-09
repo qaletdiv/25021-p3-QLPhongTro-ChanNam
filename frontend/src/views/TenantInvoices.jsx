@@ -160,7 +160,7 @@ export default function TenantInvoices() {
           warningMsg={warningMsg} submitSuccess={submitSuccess}
           calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
           calcElecAmount={calcElecAmount} calcWaterAmount={calcWaterAmount} calcTotal={calcTotal}
-          electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice}
+          electricityRate={electricityRate} waterRate={waterRate} roomPrice={roomPrice} serviceFee={serviceFee}
           handlePhotoUpload={handlePhotoUpload} handleMeterSubmit={handleMeterSubmit}
           getVietQRContent={getVietQRContent}
           submitting={submitting} elecPhoto={elecPhoto} waterPhoto={waterPhoto}
