@@ -1,4 +1,3 @@
-const path = require("path");
 const storage = require("../services/storage/storage.service");
 
 exports.getImage = (req, res, next) => {

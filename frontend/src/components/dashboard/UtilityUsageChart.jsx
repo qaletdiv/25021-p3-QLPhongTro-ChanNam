@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Card, Typography, Select, MenuItem, InputLabel, FormControl, CircularProgress, Alert } from "@mui/material";
+import { Box, Card, Typography, Select, MenuItem, FormControl, CircularProgress, Alert } from "@mui/material";
 import BoltIcon from "@mui/icons-material/Bolt";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import {

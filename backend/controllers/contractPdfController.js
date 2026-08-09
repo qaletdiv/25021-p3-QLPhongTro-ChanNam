@@ -34,18 +34,6 @@ const parseSegmentsForHtml = (html) => {
     return segments;
 };
 
-// Render the (already-decoded) segments of one line at (x,y). Returns the next y.
-const drawSegmentsLine = (doc, segments, x, y, fontSize = FONT_SIZE) => {
-    let cx = x;
-    segments.forEach((seg, i) => {
-        const text = seg.text || "\u00a0";
-        doc.font(seg.bold ? FONT_BOLD : FONT_REGULAR).fontSize(fontSize);
-        doc.text(text, cx, y, { continued: i < segments.length - 1 });
-        cx += doc.widthOfString(text, { fontSize, font: seg.bold ? FONT_BOLD : FONT_REGULAR });
-    });
-    return y + LINE_HEIGHT;
-};
-
 // Parse a single cell's inner HTML (which may contain <br>) into array of lines, each {segments, align}.
 const parseTableCellLines = (cellHtml) => {
     let raw = String(cellHtml || "").replace(/<br\s*\/?>/gi, "\n");

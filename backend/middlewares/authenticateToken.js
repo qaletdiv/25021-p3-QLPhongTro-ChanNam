@@ -2,8 +2,6 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { COOKIE_NAME } = require('../utils/cookies');
 
-const EXEMPT_ROLES_LOGIN = true; // login/logout always reachable
-
 const extractToken = (req) => {
     // Prefer Authorization Bearer header, fall back to HttpOnly cookie (JWT + cookies)
     const authHeader = req.headers['authorization'];

@@ -1,4 +1,4 @@
-const { Issue, Room, Tenant } = require("../models");
+const { Issue, Room } = require("../models");
 const storage = require("../services/storage/storage.service");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const telegram = require("../utils/telegram");

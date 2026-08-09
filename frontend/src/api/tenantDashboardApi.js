@@ -7,9 +7,6 @@ const tenantDashboardApi = {
   getUtilityUsage() {
     return axiosClient.get("/tenant/dashboard/utility-usage");
   },
-  logout() {
-    return axiosClient.post("/tenant/logout");
-  },
 };
 
 export default tenantDashboardApi;

@@ -7,9 +7,6 @@ const pushApi = {
   subscribe(subscription) {
     return axiosClient.post("/push/subscribe", subscription);
   },
-  unsubscribe(endpoint) {
-    return axiosClient.post("/push/unsubscribe", { endpoint });
-  },
 };
 
 export default pushApi;
