@@ -93,8 +93,8 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint }) {
               const active = contracts.find((c) => c.status === "active");
               const ended = !active && contracts.some((c) => c.status === "ended");
               const displayContract = active || contracts[0];
-              const companions = tenant.companions || [];
-              const activeCompanions = companions.filter((c) => c.status !== "ended");
+              const companions = (tenant.companions || []).filter((c) => c.status !== "ended");
+              const activeCompanions = companions;
               return (
                 <Fragment key={tenant.id}>
                 <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
