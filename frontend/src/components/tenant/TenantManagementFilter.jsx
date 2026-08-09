@@ -5,7 +5,7 @@ import DateField from "../ui/DateField";
 export default function TenantManagementFilter({ statusFilter, search, dateFrom, dateTo, ttFrom, ttTo, buildings, buildingFilter, onChange }) {
   return (
     <Paper sx={{ p: 2.5, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2, mb: 2 }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2, mb: 2 }}>
         {/* Row 1: Status */}
         <Box>
           <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Trạng Thái</Typography>
@@ -30,16 +30,14 @@ export default function TenantManagementFilter({ statusFilter, search, dateFrom,
             sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontSize: "0.75rem", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
           />
         </Box>
-      </Box>
 
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
-        {/* Row 2: Building */}
+        {/* Row 1: Building */}
         <Box>
           <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Theo Tòa Nhà</Typography>
           <Select
             fullWidth size="small" value={buildingFilter}
             onChange={(e) => onChange("buildingFilter", e.target.value)}
-            sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .Mui-select": { fontSize: "0.75rem", py: 1.1 } }}
+            sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .MuiSelect-select": { fontSize: "0.75rem", py: 1.1 } }}
           >
             <MenuItem value="all">Tất cả tòa nhà</MenuItem>
             {(buildings || []).map((b) => (
@@ -47,7 +45,9 @@ export default function TenantManagementFilter({ statusFilter, search, dateFrom,
             ))}
           </Select>
         </Box>
+      </Box>
 
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
         {/* Row 2: Contract + Actual rental time */}
         <Box>
           <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Hợp Đồng</Typography>
