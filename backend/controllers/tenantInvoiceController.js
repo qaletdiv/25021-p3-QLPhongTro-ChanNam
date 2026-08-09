@@ -1,5 +1,5 @@
 const { Invoice, Contract, Room, Building } = require("../models");
-const cloudinary = require("../config/cloudinary");
+const storage = require("../services/storage/storage.service");
 const { getResolvedSettings } = require("../utils/settings");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const { monthStr, nextMonthOf } = require("../utils/dates");
@@ -64,23 +64,23 @@ exports.saveInitialReadings = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
         const [elecRes, waterRes] = await Promise.all([
-            cloudinary.uploader.upload(electricityPhoto, {
-                folder: `phongtro/${contract.room.room_number}/meters`,
-                public_id: `elec_initial_${contract.id}`,
-                overwrite: true
+            storage.upload({
+                base64: electricityPhoto,
+                folderId: `phongtro/${contract.room.room_number}/meters`,
+                publicId: `elec_initial_${contract.id}`
             }),
-            cloudinary.uploader.upload(waterPhoto, {
-                folder: `phongtro/${contract.room.room_number}/meters`,
-                public_id: `water_initial_${contract.id}`,
-                overwrite: true
+            storage.upload({
+                base64: waterPhoto,
+                folderId: `phongtro/${contract.room.room_number}/meters`,
+                publicId: `water_initial_${contract.id}`
             })
         ]);
 
         await contract.update({
             initialElectricity: Number(electricity),
             initialWater: Number(water),
-            initialElectricityPhoto: elecRes.secure_url,
-            initialWaterPhoto: waterRes.secure_url
+            initialElectricityPhoto: elecRes.url,
+            initialWaterPhoto: waterRes.url
         });
 
         const roomPrice = Number(contract.room.price) || 0;
@@ -166,20 +166,20 @@ exports.submitMeter = async (req, res, next) => {
         let elecPhotoUrl = null;
         let waterPhotoUrl = null;
         if (electricityPhoto) {
-            const r = await cloudinary.uploader.upload(electricityPhoto, {
-                folder: `phongtro/${contract.room.room_number}/invoices/${month}`,
-                public_id: `elec_${contract.id}`,
-                overwrite: true
+            const r = await storage.upload({
+                base64: electricityPhoto,
+                folderId: `phongtro/${contract.room.room_number}/invoices/${month}`,
+                publicId: `elec_${contract.id}`
             });
-            elecPhotoUrl = r.secure_url;
+            elecPhotoUrl = r.url;
         }
         if (waterPhoto) {
-            const r = await cloudinary.uploader.upload(waterPhoto, {
-                folder: `phongtro/${contract.room.room_number}/invoices/${month}`,
-                public_id: `water_${contract.id}`,
-                overwrite: true
+            const r = await storage.upload({
+                base64: waterPhoto,
+                folderId: `phongtro/${contract.room.room_number}/invoices/${month}`,
+                publicId: `water_${contract.id}`
             });
-            waterPhotoUrl = r.secure_url;
+            waterPhotoUrl = r.url;
         }
 
         const elecCost = (elecNew - elecOld) * elecRate;

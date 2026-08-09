@@ -19,6 +19,7 @@ const tenantApiRoutes = require("./routes/tenantApiRoutes");
 const issueRoutes = require("./routes/issueRoutes");
 const contractPdfRoutes = require("./routes/contractPdfRoutes");
 const fingerprintRoutes = require("./routes/fingerprintRoutes");
+const imageRoutes = require("./routes/imageRoutes");
 
 const requestLoggerMiddleware = require("./middlewares/requestLogger");
 const errorHandlerMiddleware = require("./middlewares/errorHandler");
@@ -51,6 +52,7 @@ app.use("/api/settings", settingRoutes);
 app.use("/api/tenant", tenantApiRoutes);
 app.use("/api/issues", issueRoutes);
 app.use("/api/fingerprints", fingerprintRoutes);
+app.use("/api/images", imageRoutes);
 
 app.use(errorHandlerMiddleware);
 
