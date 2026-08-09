@@ -41,6 +41,9 @@ export default function FingerprintManagement() {
     }
   }, [buildingFilter, search]);
 
+  const currentStatusByCode = {};
+  for (const h of history) currentStatusByCode[h.fingerprintCode] = h.action;
+
   useEffect(() => {
     buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
   }, []);
@@ -104,7 +107,9 @@ export default function FingerprintManagement() {
           <Table size="small">
             <TableHead>
               <TableRow sx={{ bgcolor: "#f1f5f9" }}>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>STT</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Mã Vân Tay</TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Trạng Thái Hiện Tại</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Hành Động</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Được Gán Cho</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Loại</TableCell>
@@ -113,13 +118,21 @@ export default function FingerprintManagement() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {history.map((h) => (
+              {history.map((h, idx) => (
                 <TableRow key={h.id} hover>
+                  <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{idx + 1}</TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                       <FingerprintIcon sx={{ color: "#2563eb", fontSize: 16 }} />
                       <Typography sx={{ fontWeight: 600, fontSize: "0.75rem", color: "#0f172a" }}>{h.fingerprintCode}</Typography>
                     </Box>
+                  </TableCell>
+                  <TableCell>
+                    {currentStatusByCode[h.fingerprintCode] === "assigned" ? (
+                      <Chip size="small" label="Đang gán" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#dcfce7", color: "#15803d" }} />
+                    ) : (
+                      <Chip size="small" label="Đã thu hồi" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#e2e8f0", color: "#475569" }} />
+                    )}
                   </TableCell>
                   <TableCell>
                     {h.action === "assigned" ? (
