@@ -40,7 +40,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             <Chip label="Cư Dân SmartRent" size="small"
               sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "#fff", fontWeight: 700, fontSize: "0.6875rem", borderRadius: "9999px", mb: 1.5 }} />
             <Typography variant="h5" fontWeight="bold" color="#fff">
-              Phòng Trọ {room?.room_number || "—"} - {tenant?.name || ""}
+              Phòng Trọ {room?.room_number || "—"}
             </Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "#bfdbfe", mt: 0.5, fontWeight: 500 }}>
               Địa chỉ: {landlordAddress || "—"}
