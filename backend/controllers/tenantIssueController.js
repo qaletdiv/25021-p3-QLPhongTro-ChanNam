@@ -1,4 +1,5 @@
 const { Issue, Room } = require("../models");
+const storage = require("../services/storage/storage.service");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const telegram = require("../utils/telegram");
 
@@ -29,12 +30,36 @@ exports.createIssue = async (req, res, next) => {
         if (!contract) return res.status(400).json({ message: "Bạn không có hợp đồng hoạt động" });
 
         const { title, description, images } = req.body;
+
+        const storedImages = [];
+        if (Array.isArray(images) && images.length > 0) {
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+                if (!img) continue;
+                const isDataUrl = /^data:[a-zA-Z0-9.+/-]+;base64,/.test(img);
+                if (!isDataUrl) {
+                    storedImages.push(img);
+                    continue;
+                }
+                try {
+                    const r = await storage.upload({
+                        base64: img,
+                        folderId: `issues/${tenant.id}`,
+                        publicId: `issue_${Date.now()}_${i + 1}`
+                    });
+                    storedImages.push(r.url);
+                } catch (e) {
+                    console.error(`Issue image ${i} upload failed:`, e.message);
+                }
+            }
+        }
+
         const issue = await Issue.create({
             tenantId: tenant.id,
             roomId: contract.roomId,
             title,
             description,
-            images: images ? JSON.stringify(images) : null
+            images: storedImages.length > 0 ? JSON.stringify(storedImages) : null
         });
 
         const room = await Room.findByPk(contract.roomId);
