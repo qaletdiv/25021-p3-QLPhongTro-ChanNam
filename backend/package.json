@@ -10,6 +10,7 @@
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.22.5",
     "pdfkit": "^0.19.1",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "web-push": "^3.6.7"
   }
 }

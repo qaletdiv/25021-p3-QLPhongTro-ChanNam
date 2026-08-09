@@ -20,9 +20,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import HistoryIcon from "@mui/icons-material/History";
 import { useAuth } from "../contexts/AuthContext";
 import issueApi from "../api/issueApi";
 import invoiceApi from "../api/invoiceApi";
+import { usePushSubscription } from "../hooks/usePushSubscription";
 
 const drawerWidth = 260;
 
@@ -36,6 +39,8 @@ const menuItems = [
   { label: "Hóa Đơn", icon: <ReceiptIcon />, path: "/landlord/invoices", badgeKey: "invoices" },
   { label: "Báo Hỏng", icon: <BugReportIcon />, path: "/landlord/issues", badgeKey: "issues" },
   { label: "Thông Báo", icon: <NotificationsIcon />, path: "/landlord/notifications" },
+  { label: "Tài Khoản", icon: <AdminPanelSettingsIcon />, path: "/landlord/accounts" },
+  { label: "Nhật Ký", icon: <HistoryIcon />, path: "/landlord/audit" },
   { label: "Cài Đặt", icon: <SettingsIcon />, path: "/landlord/settings" },
   { label: "Mẫu Hợp Đồng", icon: <DescriptionIcon />, path: "/landlord/contract-template" },
 ];
@@ -49,6 +54,8 @@ export default function MainLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingIssues, setPendingIssues] = useState(0);
   const [pendingInvoices, setPendingInvoices] = useState(0);
+
+  usePushSubscription();
 
   useEffect(() => {
     let active = true;

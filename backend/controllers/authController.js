@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User, Tenant, Companion } = require("../models");
 const { generateSessionToken, setAuthCookie } = require("../utils/cookies");
+const { writeAuditLog } = require("../utils/auditLog");
 
 const signToken = (user, sessionId) => jwt.sign(
     { userId: user.id, role: user.role, sessionId },
@@ -47,6 +48,7 @@ exports.login = async (req, res, next) => {
         if (!user) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
+        if (user.isActive === false) return res.status(403).json({ message: "Tài khoản đã bị vô hiệu hóa, vui lòng liên hệ chủ trọ." });
 
         // Single active session: a new login invalidates any previous session for this account.
         const sessionId = generateSessionToken();
@@ -55,6 +57,7 @@ exports.login = async (req, res, next) => {
         setAuthCookie(res, token);
 
         res.json({ message: "Đăng nhập thành công", user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
+        writeAuditLog({ actorId: user.id, action: "auth.login", targetType: "user", targetId: user.id, req, metadata: { email: user.email } });
     } catch (error) {
         next(error);
     }
@@ -63,6 +66,7 @@ exports.login = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
     try {
         if (req.user) {
+            writeAuditLog({ actorId: req.user.id, action: "auth.logout", targetType: "user", targetId: req.user.id, req, metadata: { email: req.user.email } });
             await req.user.update({ currentSessionToken: null });
         }
         const { clearAuthCookie } = require("../utils/cookies");

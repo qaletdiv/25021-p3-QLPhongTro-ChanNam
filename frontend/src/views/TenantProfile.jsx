@@ -7,11 +7,13 @@ import {
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
+import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import MessageDialog from "../components/MessageDialog";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import tenantProfileApi from "../api/tenantProfileApi";
+import { requestPushPermission } from "../hooks/usePushSubscription";
 
 const cardSx = {
   bgcolor: "#fff",
@@ -39,6 +41,12 @@ export default function TenantProfile() {
   const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null);
+  const [pushMsg, setPushMsg] = useState("");
+
+  const handleEnablePush = async () => {
+    const ok = await requestPushPermission();
+    setPushMsg(ok ? "Đã bật thông báo đẩy thành công!" : "Bạn chưa cấp quyền nhận thông báo đẩy.");
+  };
 
   useEffect(() => {
     tenantProfileApi.getProfile()
@@ -213,6 +221,25 @@ export default function TenantProfile() {
             Lưu thay đổi
           </Button>
         </Box>
+      </Paper>
+
+      <Paper sx={cardSx}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 2, borderBottom: "1px solid #e2e8f0" }}>
+          <NotificationImportantIcon sx={{ color: "#059669", fontSize: 20 }} />
+          <Typography variant="h6" fontWeight="bold" color="#0f172a">Thông báo đẩy</Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+          <Button variant="outlined" onClick={handleEnablePush}
+            sx={{ color: "#059669", borderColor: "#a7f3d0", borderRadius: "12px", textTransform: "none", "&:hover": { borderColor: "#059669", bgcolor: "#f0fdf4" } }}>
+            Bật thông báo đẩy (Push)
+          </Button>
+          {pushMsg && (
+            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#065f46" }}>{pushMsg}</Typography>
+          )}
+        </Box>
+        <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 1 }}>
+          Nhận thông báo ngay trong trình duyệt khi chủ trọ xác nhận hóa đơn hoặc xử lý báo hỏng của bạn.
+        </Typography>
       </Paper>
 
       <Paper sx={cardSx}>

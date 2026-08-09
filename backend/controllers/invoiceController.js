@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { Invoice, Contract, Room, Tenant, Building } = require("../models");
 const telegram = require("../utils/telegram");
+const push = require("../utils/push");
 
 exports.getInvoices = async (req, res, next) => {
     try {
@@ -41,13 +42,27 @@ exports.getPendingCount = async (req, res, next) => {
 exports.markAsPaid = async (req, res, next) => {
     try {
         const invoice = await Invoice.findByPk(req.params.id, {
-            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room" }] }]
+            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room" }, { model: Tenant, as: "tenant", attributes: ["id", "name", "userId"] }] }]
         });
         if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
         if (invoice.contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
         if (invoice.status === 'paid') return res.status(400).json({ message: "Hóa đơn đã được thanh toán" });
 
         await invoice.update({ status: 'paid', paidAt: new Date() });
+        const tenant = invoice.contract.tenant;
+        if (tenant && tenant.userId) {
+            try {
+                const totalStr = new Intl.NumberFormat("vi-VN").format(Number(invoice.total)) + " VND";
+                await push.sendToUser(tenant.userId, {
+                    title: "Hóa đơn đã được xác nhận",
+                    body: `Hóa đơn tháng ${invoice.month}: ${totalStr} đã được xác nhận thanh toán.`,
+                    url: "/tenant/invoices",
+                    invoiceId: invoice.id
+                });
+            } catch (e) {
+                console.error("Tenant push failed:", e.message);
+            }
+        }
         res.json({ message: "Xác nhận thanh toán thành công", invoice });
     } catch (error) {
         next(error);

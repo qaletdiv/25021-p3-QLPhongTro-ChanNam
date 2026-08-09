@@ -14,6 +14,7 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../contexts/AuthContext";
+import { usePushSubscription } from "../hooks/usePushSubscription";
 
 const drawerWidth = 260;
 
@@ -31,6 +32,8 @@ export default function TenantLayout({ children }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  usePushSubscription();
 
   const handleLogout = () => { logout(); router.push("/login/tenant"); };
 

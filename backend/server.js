@@ -20,12 +20,17 @@ const issueRoutes = require("./routes/issueRoutes");
 const contractPdfRoutes = require("./routes/contractPdfRoutes");
 const fingerprintRoutes = require("./routes/fingerprintRoutes");
 const imageRoutes = require("./routes/imageRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const auditRoutes = require("./routes/auditRoutes");
+const pushRoutes = require("./routes/pushRoutes");
 
 const requestLoggerMiddleware = require("./middlewares/requestLogger");
 const errorHandlerMiddleware = require("./middlewares/errorHandler");
 
 const db = require("./models");
 const { startAutoReminderJob } = require("./jobs/autoReminderJob");
+const push = require("./utils/push");
+push.init();
 
 const PORT = process.env.PORT || 3000;
 
@@ -53,6 +58,9 @@ app.use("/api/tenant", tenantApiRoutes);
 app.use("/api/issues", issueRoutes);
 app.use("/api/fingerprints", fingerprintRoutes);
 app.use("/api/images", imageRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/audit", auditRoutes);
+app.use("/api/push", pushRoutes);
 
 app.use(errorHandlerMiddleware);
 

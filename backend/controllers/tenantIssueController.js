@@ -1,7 +1,8 @@
-const { Issue, Room } = require("../models");
+const { Issue, Room, Tenant } = require("../models");
 const storage = require("../services/storage/storage.service");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const telegram = require("../utils/telegram");
+const push = require("../utils/push");
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
@@ -73,6 +74,16 @@ exports.createIssue = async (req, res, next) => {
                 });
             } catch (e) {
                 console.error("Landlord Telegram failed:", e.message);
+            }
+            try {
+                await push.sendToUser(room.landlordId, {
+                    title: "Báo hỏng mới",
+                    body: `${tenant.name} (Phòng ${room.room_number}): ${title}`,
+                    url: "/landlord/issues",
+                    issueId: issue.id
+                });
+            } catch (e) {
+                console.error("Landlord push failed:", e.message);
             }
         }
 

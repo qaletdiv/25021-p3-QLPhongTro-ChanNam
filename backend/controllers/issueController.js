@@ -1,4 +1,5 @@
 const { Issue, Room, Tenant, Building } = require("../models");
+const push = require("../utils/push");
 
 exports.getIssues = async (req, res, next) => {
     try {
@@ -45,6 +46,24 @@ exports.updateIssueStatus = async (req, res, next) => {
         if (!issue) return res.status(404).json({ message: "Không tìm thấy báo hỏng" });
         issue.status = status;
         await issue.save();
+
+        // Notify the tenant via web push when their issue is resolved.
+        if (status === 'resolved' && issue.tenantId) {
+            try {
+                const tenant = await Tenant.findByPk(issue.tenantId);
+                if (tenant && tenant.userId) {
+                    await push.sendToUser(tenant.userId, {
+                        title: "Báo hỏng đã được xử lý",
+                        body: `Báo hỏng "${issue.title}" đã được xử lý xong.`,
+                        url: "/tenant/issues",
+                        issueId: issue.id
+                    });
+                }
+            } catch (e) {
+                console.error("Tenant push (issue resolved) failed:", e.message);
+            }
+        }
+
         res.json({ message: "Cập nhật trạng thái thành công", issue });
     } catch (error) {
         next(error);

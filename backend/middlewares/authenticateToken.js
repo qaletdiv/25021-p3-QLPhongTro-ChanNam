@@ -41,9 +41,15 @@ const authenticateToken = (req, res, next) => {
                 return res.status(401).json({ message: 'User not found.' });
             }
 
-            // Single active session per account: if a newer login issued a different
-            // session id, the previous session is invalidated -> force logout.
-            if (decodedPayload.sessionId && user.currentSessionToken && decodedPayload.sessionId !== user.currentSessionToken) {
+            // Disabled accounts cannot authenticate even with a valid token.
+            if (user.isActive === false) {
+                return res.status(403).json({ message: 'Tài khoản đã bị vô hiệu hóa.' });
+            }
+
+            // Single active session per account: a token is only valid if it matches
+            // the user's current session id. A null currentSessionToken means the
+            // session was revoked/logged out, so the token must be rejected too.
+            if (decodedPayload.sessionId && (!user.currentSessionToken || decodedPayload.sessionId !== user.currentSessionToken)) {
                 return res.status(401).json({ message: 'Phiên đăng nhập đã hết, vui lòng đăng nhập lại.' });
             }
 

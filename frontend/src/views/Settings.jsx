@@ -11,10 +11,12 @@ import MessageIcon from "@mui/icons-material/Message";
 import PersonIcon from "@mui/icons-material/Person";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
 import MessageDialog from "../components/MessageDialog";
 import MoneyField from "../components/ui/MoneyField";
 import settingApi from "../api/settingApi";
 import buildingApi from "../api/buildingApi";
+import { requestPushPermission } from "../hooks/usePushSubscription";
 
 export default function Settings() {
   const [form, setForm] = useState({});
@@ -24,6 +26,12 @@ export default function Settings() {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [checkMsg, setCheckMsg] = useState(null);
   const [banks, setBanks] = useState([]);
+  const [pushMsg, setPushMsg] = useState("");
+
+  const handleEnablePush = async () => {
+    const ok = await requestPushPermission();
+    setPushMsg(ok ? "Đã bật thông báo đẩy thành công!" : "Bạn chưa cấp quyền nhận thông báo đẩy.");
+  };
 
   useEffect(() => {
     buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
@@ -242,6 +250,29 @@ export default function Settings() {
               </Typography>
             </Box>
           </Box>
+        </Box>
+
+        {/* 5. Thông báo đẩy (Web Push) */}
+        <Box sx={sectionSx}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
+            <NotificationImportantIcon sx={{ fontSize: 18, color: "#2563eb" }} />
+            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>5. Thông Báo Đẩy (Push)</Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+            <Button variant="outlined" size="small" onClick={handleEnablePush}
+              sx={{ textTransform: "none", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", borderColor: "#cbd5e1", color: "#334155", "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" } }}>
+              Bật Thông Báo Đẩy
+            </Button>
+            {pushMsg && (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, borderRadius: "10px", fontSize: "0.75rem", fontWeight: 700, bgcolor: "#d1fae5", color: "#065f46", border: "1px solid #a7f3d0" }}>
+                <CheckCircleIcon sx={{ fontSize: 16 }} />
+                <span>{pushMsg}</span>
+              </Box>
+            )}
+          </Box>
+          <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 1.5 }}>
+            Nhận thông báo ngay trong trình duyệt khi có báo hỏng mới, hóa đơn đã thanh toán hoặc thông báo từ chủ trọ.
+          </Typography>
         </Box>
 
         {/* Save */}

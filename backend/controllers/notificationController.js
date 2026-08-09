@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { Notification, Room, Contract, Tenant } = require("../models");
 const telegram = require("../utils/telegram");
+const push = require("../utils/push");
 
 exports.getNotifications = async (req, res, next) => {
     try {
@@ -51,25 +52,43 @@ exports.createNotification = async (req, res, next) => {
         });
 
         let delivered = 0;
+        let pushDelivered = 0;
+        const pushedUserIds = new Set();
         for (const contract of activeContracts) {
             const chatId = contract.tenant ? contract.tenant.telegramChatId : null;
-            if (!chatId) continue;
-            const buildingId = contract.room ? contract.room.buildingId : null;
-            const text = telegram.formatMessage(content, {
-                tenantName: contract.tenant.name,
-                roomNumber: contract.room ? contract.room.room_number : "",
-                totalAmount: contract.price != null ? contract.price : "",
-                dueDate: contract.paymentDay ? `ngay ${contract.paymentDay}` : ""
-            });
-            try {
-                await telegram.sendMessage({ landlordId: req.user.id, buildingId, chatId, text });
-                delivered += 1;
-            } catch (e) {
-                console.error("Telegram send failed:", e.message);
+            if (chatId) {
+                const buildingId = contract.room ? contract.room.buildingId : null;
+                const text = telegram.formatMessage(content, {
+                    tenantName: contract.tenant.name,
+                    roomNumber: contract.room ? contract.room.room_number : "",
+                    totalAmount: contract.price != null ? contract.price : "",
+                    dueDate: contract.paymentDay ? `ngay ${contract.paymentDay}` : ""
+                });
+                try {
+                    await telegram.sendMessage({ landlordId: req.user.id, buildingId, chatId, text });
+                    delivered += 1;
+                } catch (e) {
+                    console.error("Telegram send failed:", e.message);
+                }
+            }
+            // Web Push to the tenant's app subscription (one push per user across rooms).
+            if (contract.tenant && contract.tenant.userId && !pushedUserIds.has(contract.tenant.userId)) {
+                pushedUserIds.add(contract.tenant.userId);
+                try {
+                    const res2 = await push.sendToUser(contract.tenant.userId, {
+                        title: `Thông báo: ${title}`,
+                        body: content.slice(0, 140),
+                        url: "/tenant/dashboard",
+                        roomNumber: contract.room ? contract.room.room_number : ""
+                    });
+                    pushDelivered += res2.delivered;
+                } catch (e) {
+                    console.error("Push send failed:", e.message);
+                }
             }
         }
 
-        res.status(201).json({ message: "Tạo thông báo thành công", notification, delivered });
+        res.status(201).json({ message: "Tạo thông báo thành công", notification, delivered, pushDelivered });
     } catch (error) {
         next(error);
     }

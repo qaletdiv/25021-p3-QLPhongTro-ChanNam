@@ -88,6 +88,15 @@ async function run() {
     }
   } catch(e) { console.log('rate_histories error:', e.message); }
 
+  // 3b. Add isActive to users if missing
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM users LIKE 'isActive'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE users ADD COLUMN isActive TINYINT(1) NOT NULL DEFAULT 1 AFTER currentSessionToken");
+      console.log('Added isActive to users');
+    }
+  } catch(e) { console.log('users isActive error:', e.message); }
+
   // 4. Create fingerprint_histories table if missing
   try {
     const [tables] = await seq.query("SHOW TABLES LIKE 'fingerprint_histories'");
@@ -110,6 +119,48 @@ async function run() {
       console.log('Created fingerprint_histories table');
     }
   } catch(e) { console.log('fingerprint_histories error:', e.message); }
+
+  // 5. Create audit_logs table if missing
+  try {
+    const [tables] = await seq.query("SHOW TABLES LIKE 'audit_logs'");
+    if (tables.length === 0) {
+      await seq.query(`CREATE TABLE audit_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        actorId INT NULL DEFAULT NULL,
+        actorType VARCHAR(20) NULL DEFAULT 'user',
+        \`action\` VARCHAR(100) NOT NULL,
+        entityType VARCHAR(50) NULL DEFAULT NULL,
+        entityId INT NULL DEFAULT NULL,
+        ipAddress VARCHAR(64) NULL DEFAULT NULL,
+        userAgent VARCHAR(255) NULL DEFAULT NULL,
+        metadata JSON NULL DEFAULT NULL,
+        createdAt DATETIME NOT NULL,
+        INDEX idx_audit_actor (actorId),
+        INDEX idx_audit_action (\`action\`, createdAt)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+      console.log('Created audit_logs table');
+    }
+  } catch(e) { console.log('audit_logs error:', e.message); }
+
+  // 6. Create push_subscriptions table if missing
+  try {
+    const [tables] = await seq.query("SHOW TABLES LIKE 'push_subscriptions'");
+    if (tables.length === 0) {
+      await seq.query(`CREATE TABLE push_subscriptions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT NOT NULL,
+        endpoint VARCHAR(500) NOT NULL,
+        p256dh VARCHAR(255) NOT NULL,
+        \`auth\` VARCHAR(255) NOT NULL,
+        userAgent VARCHAR(255) NULL DEFAULT NULL,
+        createdAt DATETIME NOT NULL,
+        updatedAt DATETIME NOT NULL,
+        UNIQUE INDEX uk_push_endpoint (endpoint),
+        INDEX idx_push_user (userId)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+      console.log('Created push_subscriptions table');
+    }
+  } catch(e) { console.log('push_subscriptions error:', e.message); }
 
   console.log('Done');
   process.exit(0);

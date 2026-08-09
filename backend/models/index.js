@@ -7,6 +7,7 @@ const db = {};
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
 db.User = require('./user')(sequelize, Sequelize);
+db.AuditLog = require('./auditLog')(sequelize, Sequelize);
 db.Room = require('./room')(sequelize, Sequelize);
 db.Building = require('./building')(sequelize, Sequelize);
 db.Furniture = require('./furniture')(sequelize, Sequelize);
@@ -21,6 +22,7 @@ db.RateHistory = require('./rateHistory')(sequelize, Sequelize);
 db.Issue = require('./issue')(sequelize, Sequelize);
 db.TenantNotificationRead = require('./tenantNotificationRead')(sequelize, Sequelize);
 db.FingerprintHistory = require('./fingerprintHistory')(sequelize, Sequelize);
+db.PushSubscription = require('./pushSubscription')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
     if (db[modelName].associate) db[modelName].associate(db);
