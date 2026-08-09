@@ -95,19 +95,24 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
         </Paper>
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Người Ở Cùng</Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
-            {[
-              { name: tenant?.name, fingerprintCode: contract?.fingerprintCode },
-              ...(companions || []).map((c) => ({ name: c.name, fingerprintCode: c.fingerprintCode })),
-            ].filter((p) => p.name).map((p) => (
-              <Box key={p.name} sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", textAlign: "center" }}>
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{p.name}</Typography>
-                <Typography sx={{ fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, color: "#2563eb", mt: 0.25 }}>
-                  {p.fingerprintCode || "—"}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
+          {(companions || []).length === 0 ? (
+            <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", textAlign: "center", mt: 2 }}>
+              Không có
+            </Typography>
+          ) : (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
+              {(companions || []).map((c) => (
+                <Box key={c.id} sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {c.name}
+                  </Typography>
+                  <Typography sx={{ fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, color: "#2563eb", flexShrink: 0 }}>
+                    {c.fingerprintCode || "—"}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
         </Paper>
       </Box>
 
