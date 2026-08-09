@@ -82,7 +82,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
           </Typography>
         </Paper>
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Khóa Cửa & Bàn Giao</Typography>
+          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Mã Vân Tay & Bàn Giao</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
             {[
               { name: tenant?.name, fingerprintCode: contract?.fingerprintCode, key: "main" },
