@@ -65,7 +65,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
       </Box>
 
       {/* Quick Info Grid */}
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Giá Thuê Phòng Hàng Tháng</Typography>
           <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#2563eb" }}>{formatCurrency(room?.price || roomPrice)}</Typography>
@@ -81,38 +81,29 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             Tổng cộng: {formatCurrency(calcTotal)}
           </Typography>
         </Paper>
-        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
+        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Khóa Cửa & Bàn Giao</Typography>
-          <Box sx={{ fontSize: "0.8125rem", fontFamily: "monospace", fontWeight: 700, color: "#2563eb", bgcolor: "#f8fafc", p: 1.5, borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-            Mã Vân Tay: {contract?.fingerprintCode || "FP-101-88"}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
+            {[
+              { name: tenant?.name, fingerprintCode: contract?.fingerprintCode, key: "main" },
+              ...(companions || []).map((c) => ({ name: c.name, fingerprintCode: c.fingerprintCode, key: c.id })),
+            ].filter((p) => p.name).map((p) => (
+              <Box key={p.key} sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {p.name}
+                </Typography>
+                <Typography sx={{ fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, color: "#2563eb", flexShrink: 0 }}>
+                  {p.fingerprintCode || "—"}
+                </Typography>
+              </Box>
+            ))}
           </Box>
-          <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500 }}>
+          <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", fontWeight: 500, mt: 1.5 }}>
             Vật dụng bàn giao:{" "}
             <Box component="span" onClick={() => setFurnitureOpen(true)} sx={{ color: "#2563eb", fontWeight: 700, textDecoration: "underline", cursor: "pointer" }}>
               {handoverItems.length} món
             </Box>
           </Typography>
-        </Paper>
-        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Người Ở Cùng</Typography>
-          {(companions || []).length === 0 ? (
-            <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", textAlign: "center", mt: 2 }}>
-              Không có
-            </Typography>
-          ) : (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
-              {(companions || []).map((c) => (
-                <Box key={c.id} sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
-                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {c.name}
-                  </Typography>
-                  <Typography sx={{ fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, color: "#2563eb", flexShrink: 0 }}>
-                    {c.fingerprintCode || "—"}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          )}
         </Paper>
       </Box>
 
