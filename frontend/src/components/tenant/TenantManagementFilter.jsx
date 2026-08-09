@@ -47,7 +47,7 @@ export default function TenantManagementFilter({ statusFilter, search, dateFrom,
         </Box>
       </Box>
 
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
+      <Box sx={{ display: "flex", gap: 3, alignItems: "flex-start", flexWrap: "wrap" }}>
         {/* Row 2: Contract + Actual rental time */}
         <Box>
           <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Hợp Đồng</Typography>
