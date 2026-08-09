@@ -65,7 +65,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
       </Box>
 
       {/* Quick Info Grid */}
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2 }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr 1fr" }, gap: 2 }}>
         <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Giá Thuê Phòng Hàng Tháng</Typography>
           <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#2563eb" }}>{formatCurrency(room?.price || roomPrice)}</Typography>
@@ -93,58 +93,23 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             </Box>
           </Typography>
         </Paper>
+        <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Người Ở Cùng</Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
+            {[
+              { name: tenant?.name, fingerprintCode: contract?.fingerprintCode },
+              ...(companions || []).map((c) => ({ name: c.name, fingerprintCode: c.fingerprintCode })),
+            ].filter((p) => p.name).map((p) => (
+              <Box key={p.name} sx={{ p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", textAlign: "center" }}>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{p.name}</Typography>
+                <Typography sx={{ fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, color: "#2563eb", mt: 0.25 }}>
+                  {p.fingerprintCode || "—"}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Paper>
       </Box>
-
-      {/* Co-living people */}
-      <Paper sx={{ p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <Typography variant="h6" fontWeight="bold" color="#0f172a">Người Ở Cùng</Typography>
-          <Chip label={String((companions || []).length + 1)} size="small"
-            sx={{ bgcolor: "#eff6ff", color: "#1d4ed8", fontWeight: 700, fontSize: "0.6875rem", borderRadius: "9999px", border: "1px solid #bfdbfe", ml: "auto" }} />
-        </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Paper sx={{ p: 2, bgcolor: "#eff6ff", borderRadius: "12px", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", gap: 2 }}>
-            <Box sx={{ width: 36, height: 36, borderRadius: "12px", bgcolor: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8125rem", flexShrink: 0 }}>
-              {(tenant?.name || "?").trim().charAt(0).toUpperCase()}
-            </Box>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {tenant?.name || "—"}
-                </Typography>
-                <Chip label="Chủ hợp đồng" size="small" sx={{ bgcolor: "#2563eb", color: "#fff", fontWeight: 700, fontSize: "0.625rem", borderRadius: "9999px", height: 20, ml: "auto", flexShrink: 0 }} />
-              </Box>
-              <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", mt: 0.25 }}>
-                SĐT: {tenant?.phone || "—"}{tenant?.cccd ? ` • CCCD: ${tenant.cccd}` : ""}
-              </Typography>
-            </Box>
-          </Paper>
-          {companions.length > 0 && companions.map((c) => (
-            <Paper key={c.id} sx={{ p: 2, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 2 }}>
-              <Box sx={{ width: 36, height: 36, borderRadius: "12px", bgcolor: "#c7d2fe", color: "#4338ca", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8125rem", flexShrink: 0 }}>
-                {String(c.name || "?").trim().charAt(0).toUpperCase()}
-              </Box>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {c.name || "—"}
-                  </Typography>
-                  <Chip label={c.relationship || "Đi kèm"} size="small" sx={{ bgcolor: "#eef2f7", color: "#475569", fontWeight: 700, fontSize: "0.625rem", borderRadius: "9999px", height: 20, flexShrink: 0 }} />
-                </Box>
-                <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", mt: 0.25 }}>
-                  SĐT: {c.phone || "—"}{c.cccd ? ` · CCCD: ${c.cccd}` : ""}
-                </Typography>
-              </Box>
-            </Paper>
-          ))}
-          {companions.length === 0 && (
-            <Typography sx={{ fontSize: "0.75rem", color: "#64748b", textAlign: "center", py: 2 }}>
-              Hiện không có người đi kèm nào.
-            </Typography>
-          )}
-        </Box>
-      </Paper>
 
       {/* Utility usage chart */}
       <TenantUtilityUsageChart />
