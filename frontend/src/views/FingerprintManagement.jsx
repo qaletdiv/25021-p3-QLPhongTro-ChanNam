@@ -25,6 +25,8 @@ export default function FingerprintManagement() {
   const [buildings, setBuildings] = useState([]);
   const [buildingFilter, setBuildingFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [actionFilter, setActionFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const fetchHistory = useCallback(async () => {
     setLoading(true);
@@ -45,6 +47,12 @@ export default function FingerprintManagement() {
   for (const h of history) currentStatusByCode[h.fingerprintCode] = h.action;
 
   const sortedHistory = [...history].sort((a, b) => a.fingerprintCode.localeCompare(b.fingerprintCode));
+
+  const filteredHistory = sortedHistory.filter((h) => {
+    if (actionFilter !== "all" && h.action !== actionFilter) return false;
+    if (statusFilter !== "all" && currentStatusByCode[h.fingerprintCode] !== statusFilter) return false;
+    return true;
+  });
 
   useEffect(() => {
     buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
@@ -92,12 +100,36 @@ export default function FingerprintManagement() {
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontSize: "0.75rem", bgcolor: "#f8fafc", "& fieldset": { borderColor: "#e2e8f0" } } }}
             />
           </Box>
+          <Box sx={{ minWidth: 200, flex: 1, maxWidth: 240 }}>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Hành Động</Typography>
+            <Select
+              fullWidth size="small" value={actionFilter}
+              onChange={(e) => setActionFilter(e.target.value)}
+              sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .MuiSelect-select": { fontSize: "0.75rem", py: 1.1 } }}
+            >
+              <MenuItem value="all">Tất cả</MenuItem>
+              <MenuItem value="assigned">Gán</MenuItem>
+              <MenuItem value="removed">Thu hồi</MenuItem>
+            </Select>
+          </Box>
+          <Box sx={{ minWidth: 200, flex: 1, maxWidth: 240 }}>
+            <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#64748b", mb: 0.75 }}>Trạng Thái Hiện Tại</Typography>
+            <Select
+              fullWidth size="small" value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem" }, "& .MuiSelect-select": { fontSize: "0.75rem", py: 1.1 } }}
+            >
+              <MenuItem value="all">Tất cả</MenuItem>
+              <MenuItem value="assigned">Đang gán</MenuItem>
+              <MenuItem value="removed">Đã thu hồi</MenuItem>
+            </Select>
+          </Box>
         </Box>
       </Paper>
 
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box>
-      ) : history.length === 0 ? (
+      ) : filteredHistory.length === 0 ? (
         <Paper sx={{ p: 6, borderRadius: "16px", border: "1px solid #e2e8f0", textAlign: "center" }}>
           <FingerprintIcon sx={{ fontSize: 40, color: "#cbd5e1" }} />
           <Typography sx={{ mt: 1, fontSize: "0.8125rem", color: "#64748b" }}>
@@ -120,7 +152,7 @@ export default function FingerprintManagement() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedHistory.map((h, idx) => (
+              {filteredHistory.map((h, idx) => (
                 <TableRow key={h.id} hover>
                   <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{idx + 1}</TableCell>
                   <TableCell>
