@@ -130,7 +130,18 @@ export default function AuditLogView() {
                       <Chip size="small" label={actionLabel(l.action)} sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#eff6ff", color: "#2563eb" }} />
                     </TableCell>
                     <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-                      {l.entityType} #{l.entityId}
+                      {l.entityType === "user" && l.target
+                        ? (
+                          <Box>
+                            <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "#0f172a" }}>{l.target.name}</Typography>
+                            {l.target.email && <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>{l.target.email}</Typography>}
+                          </Box>
+                        )
+                        : (
+                          <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
+                            {l.entityType} #{l.entityId}
+                          </Typography>
+                        )}
                     </TableCell>
                     <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{l.ipAddress || "-"}</TableCell>
                   </TableRow>

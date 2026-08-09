@@ -29,7 +29,23 @@ exports.getAuditLogs = async (req, res, next) => {
             offset,
         });
 
-        res.json({ logs: rows, total: count });
+        // Resolve target entity labels, e.g. map entityId -> user name for entityType='user'.
+        const targetUsers = await User.findAll({
+            where: { id: { [Op.in]: [...new Set(rows.filter((r) => r.entityType === "user" && r.entityId).map((r) => r.entityId))] } },
+            attributes: ["id", "name", "email"],
+        });
+        const targetUserById = new Map(targetUsers.map((u) => [String(u.id), u]));
+
+        const logs = rows.map((r) => {
+            const row = r.toJSON();
+            if (row.entityType === "user" && row.entityId) {
+                const tu = targetUserById.get(String(row.entityId));
+                row.target = tu ? { id: tu.id, name: tu.name, email: tu.email } : null;
+            }
+            return row;
+        });
+
+        res.json({ logs, total: count });
     } catch (error) {
         next(error);
     }
