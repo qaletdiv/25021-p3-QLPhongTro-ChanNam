@@ -1,4 +1,5 @@
 const { Contract, ContractFurniture, Tenant, Room, Furniture, Companion } = require("../models");
+const { logFingerprintRow, logFingerprintReassign } = require("../utils/fingerprintLog");
 
 exports.getContracts = async (req, res, next) => {
     try {
@@ -43,6 +44,12 @@ exports.updateContract = async (req, res, next) => {
         if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
         if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
 
+        const oldFingerprint = contract.fingerprintCode;
+        const oldCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId } });
+        const oldCompanionFps = Object.fromEntries(oldCompanions.map(c => [c.id, c.fingerprintCode]));
+        const tenant = await Tenant.findByPk(contract.tenantId);
+        let logRoom = contract.room;
+
         const updateData = { deposit, price, startDate, endDate, paymentDay, fingerprintCode };
 
         if (roomId && Number(roomId) !== contract.roomId) {
@@ -52,6 +59,7 @@ exports.updateContract = async (req, res, next) => {
             await contract.room.update({ status: 'empty' });
             await newRoom.update({ status: 'rented' });
             updateData.roomId = roomId;
+            logRoom = newRoom;
         }
 
         await contract.update(updateData);
@@ -69,6 +77,23 @@ exports.updateContract = async (req, res, next) => {
                     { where: { id: c.id } }
                 )
             ));
+        }
+
+        await logFingerprintReassign({
+            oldFp: oldFingerprint, newFp: fingerprintCode, ownerType: 'tenant', ownerId: contract.tenantId,
+            ownerName: tenant ? tenant.name : null, tenantId: contract.tenantId,
+            roomId: logRoom.id, buildingId: logRoom.buildingId, landlordId: req.user.id
+        });
+        if (companionFingerprints && companionFingerprints.length > 0) {
+            for (const c of companionFingerprints) {
+                if (c.id && oldCompanionFps[c.id] !== c.fingerprintCode) {
+                    await logFingerprintReassign({
+                        oldFp: oldCompanionFps[c.id], newFp: c.fingerprintCode, ownerType: 'companion', ownerId: c.id,
+                        ownerName: c.name, tenantId: contract.tenantId,
+                        roomId: logRoom.id, buildingId: logRoom.buildingId, landlordId: req.user.id
+                    });
+                }
+            }
         }
 
         if (furnitures) {
@@ -115,6 +140,26 @@ exports.createContract = async (req, res, next) => {
 
         await room.update({ status: 'rented' });
 
+        const tenant = await Tenant.findByPk(contract.tenantId);
+        if (contract.fingerprintCode) {
+            await logFingerprintRow({
+                fingerprintCode: contract.fingerprintCode, ownerType: 'tenant', ownerId: contract.tenantId,
+                ownerName: tenant ? tenant.name : null, tenantId: contract.tenantId,
+                roomId: room.id, buildingId: room.buildingId, landlordId: req.user.id, action: 'assigned'
+            });
+        }
+        if (companionFingerprints && companionFingerprints.length > 0) {
+            for (const c of companionFingerprints) {
+                if (c.fingerprintCode) {
+                    await logFingerprintRow({
+                        fingerprintCode: c.fingerprintCode, ownerType: 'companion', ownerId: c.id,
+                        ownerName: c.name, tenantId: contract.tenantId,
+                        roomId: room.id, buildingId: room.buildingId, landlordId: req.user.id, action: 'assigned'
+                    });
+                }
+            }
+        }
+
         const result = await Contract.findByPk(contract.id, {
             include: [
                 { model: Tenant, as: "tenant", attributes: ["name", "phone", "cccd"] },
@@ -154,6 +199,25 @@ exports.checkoutContract = async (req, res, next) => {
         await contract.update({ status: 'ended', checkoutDate: new Date() });
         await contract.room.update({ status: 'empty', price: contract.price });
         await ContractFurniture.destroy({ where: { contractId: contract.id } });
+
+        const tenant = await Tenant.findByPk(contract.tenantId);
+        if (contract.fingerprintCode) {
+            await logFingerprintRow({
+                fingerprintCode: contract.fingerprintCode, ownerType: 'tenant', ownerId: contract.tenantId,
+                ownerName: tenant ? tenant.name : null, tenantId: contract.tenantId,
+                roomId: contract.roomId, buildingId: contract.room.buildingId, landlordId: req.user.id, action: 'removed'
+            });
+        }
+        const allCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId } });
+        for (const c of allCompanions) {
+            if (c.fingerprintCode) {
+                await logFingerprintRow({
+                    fingerprintCode: c.fingerprintCode, ownerType: 'companion', ownerId: c.id,
+                    ownerName: c.name, tenantId: contract.tenantId,
+                    roomId: contract.roomId, buildingId: contract.room.buildingId, landlordId: req.user.id, action: 'removed'
+                });
+            }
+        }
 
         res.json({ message: "Trả phòng thành công" });
     } catch (error) {

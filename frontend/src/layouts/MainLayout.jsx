@@ -19,6 +19,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import BugReportIcon from "@mui/icons-material/BugReport";
+import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import { useAuth } from "../contexts/AuthContext";
 import issueApi from "../api/issueApi";
 import invoiceApi from "../api/invoiceApi";
@@ -31,6 +32,7 @@ const menuItems = [
   { label: "Phòng", icon: <MeetingRoomIcon />, path: "/landlord/rooms" },
   { label: "Vật Dụng", icon: <ChairIcon />, path: "/landlord/furnitures" },
   { label: "Hợp Đồng", icon: <PeopleIcon />, path: "/landlord/tenants" },
+  { label: "Vân Tay", icon: <FingerprintIcon />, path: "/landlord/fingerprints" },
   { label: "Hóa Đơn", icon: <ReceiptIcon />, path: "/landlord/invoices", badgeKey: "invoices" },
   { label: "Báo Hỏng", icon: <BugReportIcon />, path: "/landlord/issues", badgeKey: "issues" },
   { label: "Thông Báo", icon: <NotificationsIcon />, path: "/landlord/notifications" },

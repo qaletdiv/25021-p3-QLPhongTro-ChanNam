@@ -88,6 +88,29 @@ async function run() {
     }
   } catch(e) { console.log('rate_histories error:', e.message); }
 
+  // 4. Create fingerprint_histories table if missing
+  try {
+    const [tables] = await seq.query("SHOW TABLES LIKE 'fingerprint_histories'");
+    if (tables.length === 0) {
+      await seq.query(`CREATE TABLE fingerprint_histories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        fingerprintCode VARCHAR(255) NOT NULL,
+        ownerType ENUM('tenant','companion') NOT NULL DEFAULT 'tenant',
+        ownerId INT NULL DEFAULT NULL,
+        ownerName VARCHAR(255) NULL DEFAULT NULL,
+        tenantId INT NULL DEFAULT NULL,
+        roomId INT NULL DEFAULT NULL,
+        buildingId INT NULL DEFAULT NULL,
+        landlordId INT NOT NULL,
+        \`action\` ENUM('assigned','removed') NOT NULL DEFAULT 'assigned',
+        createdAt DATETIME NOT NULL,
+        updatedAt DATETIME NOT NULL,
+        INDEX idx_fp_landlord (landlordId, fingerprintCode)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+      console.log('Created fingerprint_histories table');
+    }
+  } catch(e) { console.log('fingerprint_histories error:', e.message); }
+
   console.log('Done');
   process.exit(0);
 }

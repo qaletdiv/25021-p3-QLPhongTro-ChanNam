@@ -20,6 +20,7 @@ db.Setting = require('./setting')(sequelize, Sequelize);
 db.RateHistory = require('./rateHistory')(sequelize, Sequelize);
 db.Issue = require('./issue')(sequelize, Sequelize);
 db.TenantNotificationRead = require('./tenantNotificationRead')(sequelize, Sequelize);
+db.FingerprintHistory = require('./fingerprintHistory')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
     if (db[modelName].associate) db[modelName].associate(db);
