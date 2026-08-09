@@ -44,6 +44,8 @@ export default function FingerprintManagement() {
   const currentStatusByCode = {};
   for (const h of history) currentStatusByCode[h.fingerprintCode] = h.action;
 
+  const sortedHistory = [...history].sort((a, b) => a.fingerprintCode.localeCompare(b.fingerprintCode));
+
   useEffect(() => {
     buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
   }, []);
@@ -118,7 +120,7 @@ export default function FingerprintManagement() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {history.map((h, idx) => (
+              {sortedHistory.map((h, idx) => (
                 <TableRow key={h.id} hover>
                   <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{idx + 1}</TableCell>
                   <TableCell>
