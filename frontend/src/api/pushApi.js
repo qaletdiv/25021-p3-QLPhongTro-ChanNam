@@ -1,12 +1,8 @@
-import axiosClient from "./axiosClient";
+import { getVapidKey, subscribePush } from "../actions/pushActions";
 
 const pushApi = {
-  getVapid() {
-    return axiosClient.get("/push/vapid");
-  },
-  subscribe(subscription) {
-    return axiosClient.post("/push/subscribe", subscription);
-  },
+  getVapid: getVapidKey,
+  subscribe: subscribePush,
 };
 
 export default pushApi;

@@ -1,9 +1,7 @@
-import axiosClient from "./axiosClient";
+import { getFingerprintHistory } from "../actions/fingerprintActions";
 
 const fingerprintApi = {
-  getHistory(params) {
-    return axiosClient.get("/fingerprints", { params });
-  },
+  getHistory: getFingerprintHistory,
 };
 
 export default fingerprintApi;

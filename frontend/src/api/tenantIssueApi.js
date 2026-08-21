@@ -1,12 +1,8 @@
-import axiosClient from "./axiosClient";
+import { getTenantIssues, createTenantIssue } from "../actions/tenantIssueActions";
 
 const tenantIssueApi = {
-  getAll() {
-    return axiosClient.get("/tenant/issues");
-  },
-  create(data) {
-    return axiosClient.post("/tenant/issues", data);
-  },
+  getAll: getTenantIssues,
+  create: createTenantIssue,
 };
 
 export default tenantIssueApi;

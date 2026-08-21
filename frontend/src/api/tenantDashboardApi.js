@@ -1,12 +1,8 @@
-import axiosClient from "./axiosClient";
+import { getTenantDashboard, getTenantUtilityUsage } from "../actions/tenantDashboardActions";
 
 const tenantDashboardApi = {
-  getDashboard() {
-    return axiosClient.get("/tenant/dashboard");
-  },
-  getUtilityUsage() {
-    return axiosClient.get("/tenant/dashboard/utility-usage");
-  },
+  getDashboard: getTenantDashboard,
+  getUtilityUsage: getTenantUtilityUsage,
 };
 
 export default tenantDashboardApi;

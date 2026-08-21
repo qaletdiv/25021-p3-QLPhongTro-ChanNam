@@ -1,21 +1,11 @@
-import axiosClient from "./axiosClient";
+import { getUsers, revokeSession, disableAccount, enableAccount, changeUserPassword } from "../actions/adminUserActions";
 
 const adminUserApi = {
-  getUsers(params) {
-    return axiosClient.get("/admin/users", { params });
-  },
-  revokeSession(id) {
-    return axiosClient.post(`/admin/users/${id}/revoke`);
-  },
-  disableAccount(id) {
-    return axiosClient.post(`/admin/users/${id}/disable`);
-  },
-  enableAccount(id) {
-    return axiosClient.post(`/admin/users/${id}/enable`);
-  },
-  changePassword(id, newPassword) {
-    return axiosClient.post(`/admin/users/${id}/change-password`, { newPassword });
-  },
+  getUsers,
+  revokeSession,
+  disableAccount,
+  enableAccount,
+  changePassword: changeUserPassword,
 };
 
 export default adminUserApi;

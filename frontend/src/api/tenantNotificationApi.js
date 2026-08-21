@@ -1,12 +1,8 @@
-import axiosClient from "./axiosClient";
+import { getTenantNotifications, markTenantNotificationsRead } from "../actions/tenantNotificationActions";
 
 const tenantNotificationApi = {
-  getNotifications() {
-    return axiosClient.get("/tenant/notifications");
-  },
-  markRead(items) {
-    return axiosClient.post("/tenant/notifications/read", { items });
-  },
+  getNotifications: getTenantNotifications,
+  markRead: markTenantNotificationsRead,
 };
 
 export default tenantNotificationApi;

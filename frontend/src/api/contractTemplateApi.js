@@ -1,16 +1,9 @@
-import axiosClient from "./axiosClient";
+import { getTemplate, saveTemplate, getPdfUrl } from "../actions/contractTemplateActions";
 
 const contractTemplateApi = {
-  getTemplate() {
-    return axiosClient.get("/contracts/template");
-  },
-  saveTemplate(data) {
-    return axiosClient.put("/contracts/template", data);
-  },
-  getPdfUrl(id) {
-    const token = localStorage.getItem("token");
-    return `/api/contracts/${id}/pdf?token=${token}`;
-  },
+  getTemplate,
+  saveTemplate,
+  getPdfUrl,
 };
 
 export default contractTemplateApi;

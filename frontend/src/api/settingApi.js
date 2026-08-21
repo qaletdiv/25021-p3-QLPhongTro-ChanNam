@@ -1,21 +1,10 @@
-import axiosClient from "./axiosClient";
+import { getSettings, saveSettings, checkTelegram, getBanks } from "../actions/settingActions";
 
 const settingApi = {
-  getAll(buildingId) {
-    const params = buildingId ? { buildingId } : {};
-    return axiosClient.get("/settings", { params });
-  },
-  save(data, buildingId) {
-    const params = buildingId ? { buildingId } : {};
-    return axiosClient.put("/settings", data, { params });
-  },
-  checkTelegram(buildingId) {
-    const params = buildingId ? { buildingId } : {};
-    return axiosClient.post("/settings/check-telegram", {}, { params });
-  },
-  getBanks() {
-    return axiosClient.get("/settings/vietqr/banks");
-  },
+  getAll: getSettings,
+  save: saveSettings,
+  checkTelegram,
+  getBanks,
 };
 
 export default settingApi;

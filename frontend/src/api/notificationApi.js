@@ -1,12 +1,8 @@
-import axiosClient from "./axiosClient";
+import { getNotifications, createNotification } from "../actions/notificationActions";
 
 const notificationApi = {
-  getAll() {
-    return axiosClient.get("/notifications");
-  },
-  create(data) {
-    return axiosClient.post("/notifications", data);
-  },
+  getAll: getNotifications,
+  create: createNotification,
 };
 
 export default notificationApi;

@@ -1,15 +1,9 @@
-import axiosClient from "./axiosClient";
+import { getTenantProfile, updateTenantProfile, changeTenantPassword } from "../actions/tenantProfileActions";
 
 const tenantProfileApi = {
-  getProfile() {
-    return axiosClient.get("/tenant/profile");
-  },
-  updateProfile(data) {
-    return axiosClient.put("/tenant/profile", data);
-  },
-  changePassword(data) {
-    return axiosClient.put("/tenant/password", data);
-  },
+  getProfile: getTenantProfile,
+  updateProfile: updateTenantProfile,
+  changePassword: changeTenantPassword,
 };
 
 export default tenantProfileApi;

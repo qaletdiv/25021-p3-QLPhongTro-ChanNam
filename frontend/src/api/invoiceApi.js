@@ -1,18 +1,10 @@
-import axiosClient from "./axiosClient";
+import { getInvoices, getPendingInvoicesCount, markInvoiceAsPaid, sendInvoiceReminder } from "../actions/invoiceActions";
 
 const invoiceApi = {
-  getAll(params) {
-    return axiosClient.get("/invoices", { params });
-  },
-  getPendingCount() {
-    return axiosClient.get("/invoices/pending-count");
-  },
-  markAsPaid(id) {
-    return axiosClient.put(`/invoices/${id}/paid`);
-  },
-  sendReminder(id) {
-    return axiosClient.post(`/invoices/${id}/remind`);
-  },
+  getAll: getInvoices,
+  getPendingCount: getPendingInvoicesCount,
+  markAsPaid: markInvoiceAsPaid,
+  sendReminder: sendInvoiceReminder,
 };
 
 export default invoiceApi;

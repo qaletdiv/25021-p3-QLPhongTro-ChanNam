@@ -1,24 +1,12 @@
-import axiosClient from "./axiosClient";
+import { getStats, getMonthlyRevenue, getExpiringContracts, getNotifications, getUtilityUsage, getRateHistory } from "../actions/dashboardActions";
 
 const dashboardApi = {
-  getStats() {
-    return axiosClient.get("/dashboard/stats");
-  },
-  getMonthlyRevenue() {
-    return axiosClient.get("/dashboard/monthly-revenue");
-  },
-  getExpiringContracts() {
-    return axiosClient.get("/dashboard/expiring-contracts");
-  },
-  getNotifications() {
-    return axiosClient.get("/dashboard/notifications");
-  },
-  getUtilityUsage(buildingId) {
-    return axiosClient.get("/dashboard/utility-usage", { params: buildingId ? { buildingId } : {} });
-  },
-  getRateHistory(buildingId) {
-    return axiosClient.get("/settings/rate-history", { params: buildingId ? { buildingId } : {} });
-  },
+  getStats,
+  getMonthlyRevenue,
+  getExpiringContracts,
+  getNotifications,
+  getUtilityUsage,
+  getRateHistory,
 };
 
 export default dashboardApi;

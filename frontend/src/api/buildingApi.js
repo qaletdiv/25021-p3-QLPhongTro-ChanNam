@@ -1,18 +1,10 @@
-import axiosClient from "./axiosClient";
+import { getBuildings, createBuilding, updateBuilding, deleteBuilding } from "../actions/buildingActions";
 
 const buildingApi = {
-  getAll() {
-    return axiosClient.get("/buildings");
-  },
-  create(data) {
-    return axiosClient.post("/buildings", data);
-  },
-  update(id, data) {
-    return axiosClient.put(`/buildings/${id}`, data);
-  },
-  delete(id) {
-    return axiosClient.delete(`/buildings/${id}`);
-  },
+  getAll: getBuildings,
+  create: createBuilding,
+  update: updateBuilding,
+  delete: deleteBuilding,
 };
 
 export default buildingApi;

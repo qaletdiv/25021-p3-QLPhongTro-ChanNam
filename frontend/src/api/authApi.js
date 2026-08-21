@@ -1,18 +1,10 @@
-import axiosClient from "./axiosClient";
+import { register, login, logout, getMe } from "../actions/authActions";
 
 const authApi = {
-  register(data) {
-    return axiosClient.post("/auth/register", data);
-  },
-  login(data) {
-    return axiosClient.post("/auth/login", data);
-  },
-  logout() {
-    return axiosClient.post("/auth/logout");
-  },
-  getMe() {
-    return axiosClient.get("/auth/me");
-  },
+  register,
+  login,
+  logout,
+  getMe,
 };
 
 export default authApi;

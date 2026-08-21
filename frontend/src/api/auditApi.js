@@ -1,9 +1,7 @@
-import axiosClient from "./axiosClient";
+import { getAuditLogs } from "../actions/auditActions";
 
 const auditApi = {
-  getLogs(params) {
-    return axiosClient.get("/audit", { params });
-  },
+  getLogs: getAuditLogs,
 };
 
 export default auditApi;

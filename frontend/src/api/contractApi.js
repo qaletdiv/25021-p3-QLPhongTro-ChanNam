@@ -1,18 +1,10 @@
-import axiosClient from "./axiosClient";
+import { createContract, getContractById, updateContract, checkoutContract } from "../actions/contractActions";
 
 const contractApi = {
-  create(data) {
-    return axiosClient.post("/contracts", data);
-  },
-  getById(id) {
-    return axiosClient.get(`/contracts/${id}`);
-  },
-  update(id, data) {
-    return axiosClient.put(`/contracts/${id}`, data);
-  },
-  checkout(id, data = {}) {
-    return axiosClient.put(`/contracts/${id}/checkout`, data);
-  },
+  create: createContract,
+  getById: getContractById,
+  update: updateContract,
+  checkout: checkoutContract,
 };
 
 export default contractApi;

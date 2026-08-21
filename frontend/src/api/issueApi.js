@@ -1,15 +1,9 @@
-import axiosClient from "./axiosClient";
+import { getIssues, getPendingIssuesCount, updateIssueStatus } from "../actions/issueActions";
 
 const issueApi = {
-  getAll() {
-    return axiosClient.get("/issues");
-  },
-  getPendingCount() {
-    return axiosClient.get("/issues/pending-count");
-  },
-  updateStatus(id, status) {
-    return axiosClient.patch(`/issues/${id}/status`, { status });
-  },
+  getAll: getIssues,
+  getPendingCount: getPendingIssuesCount,
+  updateStatus: updateIssueStatus,
 };
 
 export default issueApi;
