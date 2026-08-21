@@ -4,7 +4,7 @@ const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers
 const telegram = require("../utils/telegram");
 const push = require("../utils/push");
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 exports.getIssues = async (req, res, next) => {
     try {

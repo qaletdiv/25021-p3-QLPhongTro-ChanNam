@@ -5,7 +5,7 @@ const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers
 const { monthStr, nextMonthOf } = require("../utils/dates");
 const telegram = require("../utils/telegram");
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 exports.getInvoices = async (req, res, next) => {
     try {
