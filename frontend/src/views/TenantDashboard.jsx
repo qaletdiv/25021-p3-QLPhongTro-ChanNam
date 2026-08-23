@@ -109,9 +109,9 @@ export default function TenantDashboard() {
           {notifItems.map((item, idx) => (
             <Box key={`${item.kind}-${item.targetId}`}>
               {idx > 0 && <Divider />}
-              <MenuItem onClick={() => handleNotifClick(item)} sx={{ py: 1.25, alignItems: "flex-start", gap: 1.25, bgcolor: item.read ? "inherit" : "#eff6ff" }}>
+              <MenuItem onClick={() => handleNotifClick(item)} sx={{ py: 1.25, alignItems: "flex-start", gap: 1.25, whiteSpace: "normal", bgcolor: item.read ? "inherit" : "#eff6ff" }}>
                 <Box sx={{ mt: 0.25 }}>{kindIcon(item.kind)}</Box>
-                <Box>
+                <Box sx={{ minWidth: 0 }}>
                   <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.75rem" }}>{item.title}</Typography>
                   <Typography sx={{ color: "#64748b", fontSize: "0.6875rem" }}>{item.message}</Typography>
                 </Box>
