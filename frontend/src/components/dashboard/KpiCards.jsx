@@ -29,19 +29,19 @@ export default function KpiCards({ totalRooms, rentedRooms, vacantRooms, current
               transition: "all 0.2s", "&:hover": { borderColor: "#cbd5e1" },
             }}
           >
-            <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 }, textAlign: "center" }}>
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0.75, mb: 1.5 }}>
-                <Box sx={{ p: 1, bgcolor: card.bg, color: card.color, borderRadius: "12px", display: "flex" }}>
-                  {card.icon}
-                </Box>
+            <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 } }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                 <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   {card.label}
                 </Typography>
+                <Box sx={{ p: 1, bgcolor: card.bg, color: card.color, borderRadius: "12px", display: "flex" }}>
+                  {card.icon}
+                </Box>
               </Box>
-              <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: card.valueColor, lineHeight: 1.1, textAlign: "center" }}>
+              <Typography sx={{ fontSize: "2rem", fontWeight: 700, color: card.valueColor, lineHeight: 1.1, textAlign: "center" }}>
                 {card.value}
               </Typography>
-              <Typography sx={{ fontSize: "0.6875rem", color: card.subColor || "#64748b", fontWeight: card.subIcon ? 700 : 500, mt: 0.5, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Typography sx={{ fontSize: "0.6875rem", color: card.subColor || "#64748b", fontWeight: card.subIcon ? 700 : 500, mt: 0.5, display: "flex", alignItems: "center" }}>
                 {card.subIcon}
                 {card.sub}
               </Typography>
