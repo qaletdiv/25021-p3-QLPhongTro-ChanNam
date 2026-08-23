@@ -41,7 +41,7 @@ export default function KpiCards({ totalRooms, rentedRooms, vacantRooms, current
               <Typography sx={{ fontSize: "2rem", fontWeight: 700, color: card.valueColor, lineHeight: 1.1, textAlign: "center" }}>
                 {card.value}
               </Typography>
-              <Typography sx={{ fontSize: "0.6875rem", color: card.subColor || "#64748b", fontWeight: card.subIcon ? 700 : 500, mt: 0.5, display: "flex", alignItems: "center" }}>
+              <Typography sx={{ fontSize: "0.6875rem", color: card.subColor || "#64748b", fontWeight: card.subIcon ? 700 : 500, mt: 0.5, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {card.subIcon}
                 {card.sub}
               </Typography>
