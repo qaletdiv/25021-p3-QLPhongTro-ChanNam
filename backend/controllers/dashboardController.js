@@ -19,13 +19,13 @@ exports.getStats = async (req, res, next) => {
         const cMonth = monthStr(new Date());
         const paidInvoices = await Invoice.findAll({
             where: { status: 'paid', month: cMonth },
-            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: [] }] }]
         });
         const monthlyRevenue = paidInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
 
         const unpaidInvoices = await Invoice.findAll({
             where: { status: { [Op.in]: ['pending', 'submitted'] } },
-            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: [] }] }]
         });
         const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
 
@@ -47,7 +47,7 @@ exports.getMonthlyRevenue = async (req, res, next) => {
         const paidInvoices = await Invoice.findAll({
             where: { status: 'paid', month: { [Op.in]: months } },
             attributes: ['month', 'total'],
-            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: [] }] }]
         });
 
         const revenueByMonth = {};
@@ -70,7 +70,7 @@ exports.getNotifications = async (req, res, next) => {
         const unpaidInvoices = await Invoice.findAll({
             where: { status: { [Op.in]: ['pending', 'submitted'] } },
             attributes: ['id', 'month'],
-            include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room", where: { landlordId }, attributes: ['room_number'] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: ['room_number'] }] }]
         });
         const pendingIssues = await Issue.count({
             where: { status: 'pending' },
