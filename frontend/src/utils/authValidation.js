@@ -14,5 +14,5 @@ export const registerSchema = z.object({
   password: z.string().min(6, { message: "Mật khẩu tối thiểu 6 ký tự" }),
   confirmPassword: z.string(),
   role: z.enum(["landlord", "tenant"], { message: "Vai trò không hợp lệ" }),
-  cccd: z.string().optional().trim(),
+  cccd: z.string().trim().optional(),
 });

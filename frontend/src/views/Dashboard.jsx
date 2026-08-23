@@ -78,24 +78,13 @@ export default function Dashboard() {
     ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />
     : <BugReportIcon sx={{ fontSize: 18, color: "#d97706" }} />;
 
-  // Skeleton components for loading states
-  const KpiSkeleton = () => (
-    <Box sx={{ p: 2, borderRadius: "8px", bgcolor: "#f1f5f9", width: "100%" }}
-  );
-
-  const ChartSkeleton = (size) => (
-    <Box sx={{ p: 2, borderRadius: "8px", bgcolor: "#f1f5f9", width: "100%", height: size || "200px" }}
-  );
-
-  if (statsLoading || expiringLoading || chartLoading) {
+if (statsLoading || expiringLoading || chartLoading) {
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 4 }}>
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
-          <CircularProgress />
-        </Box>
-        <Skeleton component="div" sx={{ mt: 2, width: "100%", height: "16px" }} />
-        <Skeleton component="div" sx={{ mt: 1, width: "100%", height: "16px" }} />
-        <Skeleton component="div" sx={{ mt: 1, width: "70%", height: "16px" }} />
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 4, textAlign: "center" }}>
+        <CircularProgress />
+        <Skeleton animation="wave" variant="rectangular" />
+        <Skeleton animation="wave" variant="rectangular" />
+        <Skeleton animation="wave" variant="rectangular" width="70%" />
       </Box>
     );
   }
@@ -152,16 +141,16 @@ export default function Dashboard() {
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 8 }}>
-          {chartLoading ? <ChartSkeleton "300px" /> : <RevenueChart data={chartData} monthlyRevenue={stats?.monthlyRevenue} />}
+          {chartLoading ? <Skeleton animation="wave" variant="rectangular" /> : <RevenueChart data={chartData} monthlyRevenue={stats?.monthlyRevenue} />}
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
-          {expiringLoading ? <ChartSkeleton "200px" /> : <ExpiringContracts expiring={expiring} onManage={navigate} />}
+          {expiringLoading ? <Skeleton animation="wave" variant="rectangular" /> : <ExpiringContracts expiring={expiring} onManage={navigate} />}
         </Grid>
         <Grid size={{ xs: 12 }}>
-          {chartLoading ? <ChartSkeleton "250px" /> : <UtilityUsageChart />}
+          {chartLoading ? <Skeleton animation="wave" variant="rectangular" /> : <UtilityUsageChart />}
         </Grid>
         <Grid size={{ xs: 12 }}>
-          {chartLoading ? <ChartSkeleton "250px" /> : <PriceHistoryChart />}
+          {chartLoading ? <Skeleton animation="wave" variant="rectangular" /> : <PriceHistoryChart />}
         </Grid>
       </Grid>
     </Box>
