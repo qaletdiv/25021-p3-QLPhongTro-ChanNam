@@ -48,7 +48,10 @@ export default function TenantInvoices() {
   const lastInv = invoices.length > 0 ? invoices[0] : null;
   const formMonth = lastInv ? nextMonthOf(lastInv.month) : nextMonthLabel();
   const baseContract = settings?.contract;
-  const isNewTenant = invoices.length === 0 && !baseContract?.initialElectricityPhoto;
+  // Improved logic: new tenant if no invoices exist AND there's an active contract
+  // This helps distinguish "new tenant starting fresh" vs "existing tenant with no recent invoices"
+  const hasActiveContract = baseContract && baseContract.status === "active";
+  const isNewTenant = invoices.length === 0 && hasActiveContract;
 
   const contract = {
     lastElectricity: lastInv ? Number(lastInv.electricityNew) || 0 : (baseContract ? Number(baseContract.initialElectricity) || 0 : 0),

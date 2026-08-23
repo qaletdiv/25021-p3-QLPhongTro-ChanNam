@@ -13,7 +13,10 @@ useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = localStorage.getItem("user");
     if (stored) {
-      try { setUser(JSON.parse(stored)); } catch { /* ignore */ }
+      try { setUser(JSON.parse(stored)); } catch {
+        localStorage.removeItem("user");
+        setUser(null);
+      }
     }
     // Restore session via cookie (JWT + cookies). Force-refresh session validity (e.g. after another device logs in).
     authApi.getMe()
@@ -29,9 +32,6 @@ useEffect(() => {
     try {
       const res = await authApi.login(data);
       const result = res.data;
-      
-      // ✅ Debug: In ra response đầy đủ
-      console.log("🔍 LOGIN RESPONSE:", result);
       
       if (!result?.user) {
         throw new Error("Invalid response from server: no user data");
@@ -49,16 +49,10 @@ useEffect(() => {
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
       
-      // ✅ Quan trọng: Quan sát response cookie headers
-      if (res.headers?.['set-cookie']) {
-        console.log("🍪 SET-COOKIE headers:", res.headers['set-cookie']);
-      }
-      
       return userData;
       
     } catch (err) {
-      console.error("Login error:", err);
-      // ✅ Ném error kèm thông tin hữu ích
+      // ✅ Báo lỗi kèm thông tin hữu ích
       if (err.response?.data?.message) {
         throw new Error(err.response.data.message);
       }
@@ -75,7 +69,9 @@ useEffect(() => {
   };
 
   const logout = async () => {
-    try { await authApi.logout(); } catch { /* ignore */ }
+    try { await authApi.logout(); } catch (e) {
+      console.error("Logout error:", e.message);
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);

@@ -50,13 +50,16 @@ exports.saveSettings = async (req, res, next) => {
                 await Setting.create({ key, value, landlordId: req.user.id, buildingId: buildScope });
             }
             if (RATE_KEYS.has(key) && value !== '') {
-                const histExists = await RateHistory.findOne({
-                    where: { key, landlordId: req.user.id, buildingId: buildScope }
-                });
-                if (!histExists && oldValue !== null && oldValue !== '' && !Number.isNaN(Number(oldValue))) {
-                    await RateHistory.create({ key, value: Number(oldValue), landlordId: req.user.id, buildingId: buildScope });
+                // Only create history entry if value actually changed from existing setting
+                const existingValue = existing ? existing.value : null;
+                if (existingValue !== value || existingValue === null) {
+                    // Create old value entry if we're replacing a null/empty value or changing value
+                    if (existingValue !== null && existingValue !== '' && !Number.isNaN(Number(existingValue))) {
+                        await RateHistory.create({ key, value: Number(existingValue), landlordId: req.user.id, buildingId: buildScope });
+                    }
+                    // Create new value entry
+                    await RateHistory.create({ key, value: Number(value), landlordId: req.user.id, buildingId: buildScope });
                 }
-                await RateHistory.create({ key, value: Number(value), landlordId: req.user.id, buildingId: buildScope });
             }
         }
         res.json({ message: "Lưu cài đặt thành công" });
