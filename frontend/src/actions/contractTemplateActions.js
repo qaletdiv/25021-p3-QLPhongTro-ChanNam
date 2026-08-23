@@ -7,9 +7,9 @@ export async function getPdfUrl(id) {
 }
 
 export async function getTemplate() {
-  return serverFetch('/api/settings/rate-history', { method: 'GET' });
+  return serverFetch('/contracts/template', { method: 'GET' });
 }
 
 export async function saveTemplate(data) {
-  return serverFetch('/api/settings', { method: 'POST', body: JSON.stringify(data) });
+  return serverFetch('/contracts/template', { method: 'PUT', body: JSON.stringify(data) });
 }
