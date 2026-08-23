@@ -33,9 +33,9 @@ export const tokens = {
   },
   space: { 1: 4, 2: 8, 3: 12, 4: 16, 6: 24, 8: 32, 12: 48 },
   font: {
-    display: '"Fraunces", "Playfair Display", Georgia, serif',
-    body: '"Be Vietnam Pro", "Segoe UI", system-ui, sans-serif',
-    mono: '"Space Mono", "SFMono-Regular", Consolas, monospace',
+    display: 'Arial, "Helvetica Neue", Helvetica, sans-serif',
+    body: 'Arial, "Helvetica Neue", Helvetica, sans-serif',
+    mono: 'Arial, "Helvetica Neue", Helvetica, sans-serif',
   },
   type: {
     xs: "0.6875rem",

@@ -175,7 +175,7 @@ export default function Settings() {
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Tài Khoản</Typography>
-              <TextField fullWidth placeholder="0988776655" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, fontFamily: "monospace" } }} />
+              <TextField fullWidth placeholder="0988776655" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
             </Box>
             <Box>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Chủ Tài Khoản</Typography>
@@ -197,7 +197,7 @@ export default function Settings() {
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2, alignItems: "center" }}>
             <Box sx={{ gridColumn: { xs: "1", sm: "1 / 2", lg: "1 / 3" } }}>
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Telegram Bot Token (lấy từ @BotFather)</Typography>
-              <TextField fullWidth type="password" placeholder="123456:ABC-DEF..." value={form.telegramBotToken || ""} onChange={(e) => set("telegramBotToken", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" }, fontFamily: "monospace" } }} />
+              <TextField fullWidth type="password" placeholder="123456:ABC-DEF..." value={form.telegramBotToken || ""} onChange={(e) => set("telegramBotToken", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
               <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.75 }}>
                 Khách thuê cần nhập Telegram Chat ID trong mục "Hồ sơ cá nhân" để nhận thông báo.
               </Typography>

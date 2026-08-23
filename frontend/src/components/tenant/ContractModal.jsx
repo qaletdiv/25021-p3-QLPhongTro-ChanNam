@@ -126,7 +126,7 @@ export default function ContractModal({
                 value={contractForm.fingerprintCode}
                 onChange={(e) => setContractForm({ ...contractForm, fingerprintCode: e.target.value })}
                 placeholder="FP-101-88"
-                sx={{ ...inputSx, "& .MuiOutlinedInput-root": { ...inputSx["& .MuiOutlinedInput-root"], fontFamily: "monospace" } }}
+                sx={{ ...inputSx, "& .MuiOutlinedInput-root": { ...inputSx["& .MuiOutlinedInput-root"] } }}
               />
             </Grid>
           </Grid>

@@ -35,7 +35,7 @@ export default function RoomDetailModal({
             </Box>
             {contract?.fingerprintCode && (
               <Box sx={{ fontSize: "0.75rem", color: "#0f172a" }}>
-                Mã Vân Tay: <Box component="span" sx={{ fontFamily: "monospace", fontWeight: 700, bgcolor: "#0f172a", color: "#fcd34d", px: 1, py: 0.25, borderRadius: "6px", ml: 0.5 }}>{contract.fingerprintCode}</Box>
+                Mã Vân Tay: <Box component="span" sx={{ fontWeight: 700, bgcolor: "#0f172a", color: "#fcd34d", px: 1, py: 0.25, borderRadius: "6px", ml: 0.5 }}>{contract.fingerprintCode}</Box>
               </Box>
             )}
           </Paper>

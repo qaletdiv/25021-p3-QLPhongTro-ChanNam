@@ -155,7 +155,7 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
                   </td>
                   <td style={{ padding: "12px 16px" }}>
                     {displayContract?.fingerprintCode ? (
-                      <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
+                      <span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
                         {displayContract.fingerprintCode}
                       </span>
                     ) : "-"}
@@ -201,7 +201,7 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
                       <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
                       <td style={{ padding: "6px 16px" }}>
                         {c.fingerprintCode ? (
-                          <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
+                          <span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
                             {c.fingerprintCode}
                           </span>
                         ) : "-"}

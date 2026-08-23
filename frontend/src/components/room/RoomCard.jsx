@@ -82,7 +82,7 @@ export default function RoomCard({ room, onOpenDetail, onOpenEdit, onDelete }) {
             {contract?.fingerprintCode && (
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", pt: 0.5, mt: 0.5 }}>
                 <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>Mã số vân tay:</Typography>
-                <Typography sx={{ fontFamily: "monospace", fontSize: "0.6875rem", fontWeight: 700, bgcolor: "#e2e8f0", px: 0.75, py: 0.25, borderRadius: "6px" }}>
+                <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, bgcolor: "#e2e8f0", px: 0.75, py: 0.25, borderRadius: "6px" }}>
                   {contract.fingerprintCode}
                 </Typography>
               </Box>

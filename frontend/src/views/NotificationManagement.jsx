@@ -196,7 +196,7 @@ export default function NotificationManagement() {
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mb: 1.5 }}>
                   {VARIABLES.map((v) => (
                     <Box key={v} onClick={() => insertVariable(v)}
-                      sx={{ px: 1.25, py: 0.5, bgcolor: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#dbeafe" } }}
+                      sx={{ px: 1.25, py: 0.5, bgcolor: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#dbeafe" } }}
                     >
                       + {`{{${v}}}`}
                     </Box>
@@ -233,7 +233,7 @@ export default function NotificationManagement() {
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mb: 1.5 }}>
               {AUTO_VARIABLES.map((v) => (
                 <Box key={v} onClick={() => insertAutoVariable(v)}
-                  sx={{ px: 1.25, py: 0.5, bgcolor: "#fff7ed", color: "#b45309", border: "1px solid #fed7aa", fontSize: "0.6875rem", fontFamily: "monospace", fontWeight: 700, borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#ffedd5" } }}
+                  sx={{ px: 1.25, py: 0.5, bgcolor: "#fff7ed", color: "#b45309", border: "1px solid #fed7aa", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "8px", cursor: "pointer", "&:hover": { bgcolor: "#ffedd5" } }}
                 >
                   + {`{{${v}}}`}
                 </Box>
