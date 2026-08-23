@@ -126,6 +126,9 @@ exports.getUtilityUsage = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
         const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
+        const now = new Date();
+        const defaultMonth = `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
+        const month = /^\d{2}\/\d{4}$/.test(String(req.query.month || "")) ? String(req.query.month) : defaultMonth;
 
         const roomWhere = { landlordId };
         if (buildingId) roomWhere.buildingId = buildingId;
@@ -138,6 +141,7 @@ exports.getUtilityUsage = async (req, res, next) => {
         });
 
         const invoices = await Invoice.findAll({
+            where: { month },
             attributes: ["contractId", "month", "electricityOld", "electricityNew", "waterOld", "waterNew"],
             include: [{ model: Contract, as: "contract", attributes: ["roomId"], where: { status: "active" } }]
         });

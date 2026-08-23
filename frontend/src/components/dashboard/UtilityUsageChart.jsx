@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Card, Typography, Select, MenuItem, FormControl, CircularProgress, Alert } from "@mui/material";
+import { Box, Card, Typography, Select, MenuItem, FormControl, CircularProgress, Alert, TextField } from "@mui/material";
 import BoltIcon from "@mui/icons-material/Bolt";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import {
@@ -10,9 +10,20 @@ import {
 import dashboardApi from "../../api/dashboardApi";
 import buildingApi from "../../api/buildingApi";
 
+const currentMonthValue = () => {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}`;
+};
+
+const toApiMonth = (monthValue) => {
+  const [y, m] = String(monthValue).split("-");
+  return `${m}/${y}`;
+};
+
 export default function UtilityUsageChart() {
   const [buildings, setBuildings] = useState([]);
   const [selected, setSelected] = useState("");
+  const [monthValue, setMonthValue] = useState(currentMonthValue);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -32,12 +43,12 @@ export default function UtilityUsageChart() {
     let active = true;
     setLoading(true);
     setError("");
-    dashboardApi.getUtilityUsage(Number(selected))
+    dashboardApi.getUtilityUsage(Number(selected), toApiMonth(monthValue))
       .then((res) => { if (active) setData(res.data.chartData || []); })
       .catch(() => { if (active) setError("Lỗi tải dữ liệu điện nước"); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [selected]);
+  }, [selected, monthValue]);
 
   const buildingOptions = buildings.map((b) => ({ id: String(b.id), label: b.name }));
 
@@ -54,10 +65,16 @@ export default function UtilityUsageChart() {
             </Typography>
           </Box>
         </Box>
-        <Box sx={{ flex: 1, textAlign: { sm: "center" }, display: { xs: "none", sm: "block" } }}>
-          <Typography sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "#0f172a" }}>
-            Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
-          </Typography>
+        <Box sx={{ flex: 1, textAlign: { sm: "center" }, display: "flex", justifyContent: "center" }}>
+          <TextField
+            type="month"
+            size="small"
+            label="Tháng"
+            value={monthValue}
+            onChange={(e) => setMonthValue(e.target.value || currentMonthValue())}
+            slotProps={{ inputLabel: { shrink: true } }}
+            sx={{ width: 160, "& .MuiOutlinedInput-root": { fontSize: "0.8125rem", bgcolor: "#f8fafc", borderRadius: "10px", "& fieldset": { borderColor: "#e2e8f0" } } }}
+          />
         </Box>
         <Box sx={{ flex: { sm: 1 }, display: "flex", justifyContent: { sm: "flex-end" } }}>
           <FormControl size="small" sx={{ minWidth: 180 }}>
