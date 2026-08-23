@@ -4,9 +4,29 @@ import { cookies } from 'next/headers';
 
 const BACKEND_BASE = (process.env.BACKEND_URL || 'http://localhost:3000/api').replace(/\/+$/, '');
 
+function parseSetCookie(sc) {
+  const [pair, ...opts] = sc.split(';');
+  const eqIdx = pair.indexOf('=');
+  if (eqIdx === -1) return null;
+  const name = pair.slice(0, eqIdx).trim();
+  const value = pair.slice(eqIdx + 1).trim();
+  const options = {};
+  for (const opt of opts) {
+    const idx = opt.indexOf('=');
+    const k = (idx === -1 ? opt : opt.slice(0, idx)).trim().toLowerCase();
+    const v = idx === -1 ? '' : opt.slice(idx + 1).trim();
+    if (k === 'httponly') options.httpOnly = true;
+    else if (k === 'secure') options.secure = true;
+    else if (k === 'samesite') options.sameSite = v.toLowerCase();
+    else if (k === 'max-age') options.maxAge = parseInt(v, 10);
+    else if (k === 'path') options.path = v;
+    else if (k === 'domain' && v) options.domain = v;
+  }
+  return { name, value, options };
+}
+
 export async function serverFetch(input, init = {}) {
   const cookieStore = await cookies();
-  const allCookies = cookieStore.getAll();
   const cookieStr = cookieStore.toString();
 
   const url = input.startsWith('http') ? input : `${BACKEND_BASE}${input.startsWith('/') ? '' : '/'}${input}`;
@@ -15,7 +35,6 @@ export async function serverFetch(input, init = {}) {
   headers.set('Content-Type', headers.get('Content-Type') || 'application/json');
   if (cookieStr) headers.set('Cookie', cookieStr);
   init.headers = headers;
-  init.credentials = 'include';
 
   let res;
   try {
@@ -24,6 +43,21 @@ export async function serverFetch(input, init = {}) {
     const e = new Error(err.message || 'Network error');
     e.response = { status: 0, data: null, statusText: '' };
     throw e;
+  }
+
+  // Forward Set-Cookie từ backend về browser (fix lỗi "Token required")
+  const setCookies = typeof res.headers.getSetCookie === 'function'
+    ? res.headers.getSetCookie()
+    : (res.headers.get('set-cookie') ? [res.headers.get('set-cookie')] : []);
+  for (const sc of setCookies) {
+    const parsed = parseSetCookie(sc);
+    if (!parsed) continue;
+    try {
+      // maxAge <= 0 => xoá cookie (logout)
+      cookieStore.set(parsed.name, parsed.value, parsed.options);
+    } catch {
+      /* ignore */
+    }
   }
 
   const text = await res.text();
