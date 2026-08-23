@@ -1,29 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Card, Typography, Select, MenuItem, FormControl, CircularProgress, Alert, TextField } from "@mui/material";
+import { Box, Card, Typography, Select, MenuItem, FormControl, CircularProgress, Alert } from "@mui/material";
 import BoltIcon from "@mui/icons-material/Bolt";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList,
 } from "recharts";
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { viVN } from "@mui/x-date-pickers/locales";
 import dashboardApi from "../../api/dashboardApi";
 import buildingApi from "../../api/buildingApi";
 
-const currentMonthValue = () => {
-  const n = new Date();
-  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}`;
-};
-
-const toApiMonth = (monthValue) => {
-  const [y, m] = String(monthValue).split("-");
-  return `${m}/${y}`;
-};
+dayjs.locale("vi");
 
 export default function UtilityUsageChart() {
   const [buildings, setBuildings] = useState([]);
   const [selected, setSelected] = useState("");
-  const [monthValue, setMonthValue] = useState(currentMonthValue);
+  const [monthValue, setMonthValue] = useState(() => dayjs());
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,7 +41,7 @@ export default function UtilityUsageChart() {
     let active = true;
     setLoading(true);
     setError("");
-    dashboardApi.getUtilityUsage(Number(selected), toApiMonth(monthValue))
+    dashboardApi.getUtilityUsage(Number(selected), monthValue.format("MM/YYYY"))
       .then((res) => { if (active) setData(res.data.chartData || []); })
       .catch(() => { if (active) setError("Lỗi tải dữ liệu điện nước"); })
       .finally(() => { if (active) setLoading(false); });
@@ -66,15 +64,25 @@ export default function UtilityUsageChart() {
           </Box>
         </Box>
         <Box sx={{ flex: 1, textAlign: { sm: "center" }, display: "flex", justifyContent: "center" }}>
-          <TextField
-            type="month"
-            size="small"
-            label="Tháng"
-            value={monthValue}
-            onChange={(e) => setMonthValue(e.target.value || currentMonthValue())}
-            slotProps={{ inputLabel: { shrink: true } }}
-            sx={{ width: 160, "& .MuiOutlinedInput-root": { fontSize: "0.8125rem", bgcolor: "#f8fafc", borderRadius: "10px", "& fieldset": { borderColor: "#e2e8f0" } } }}
-          />
+          <LocalizationProvider
+            dateAdapter={AdapterDayjs}
+            adapterLocale="vi"
+            localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+          >
+            <DatePicker
+              views={["month", "year"]}
+              label="Tháng"
+              value={monthValue}
+              onChange={(d) => d && setMonthValue(d)}
+              format="MM/YYYY"
+              slotProps={{
+                textField: {
+                  size: "small",
+                  sx: { width: 150, "& .MuiOutlinedInput-root": { fontSize: "0.8125rem", bgcolor: "#f8fafc", borderRadius: "10px", "& fieldset": { borderColor: "#e2e8f0" } } },
+                },
+              }}
+            />
+          </LocalizationProvider>
         </Box>
         <Box sx={{ flex: { sm: 1 }, display: "flex", justifyContent: { sm: "flex-end" } }}>
           <FormControl size="small" sx={{ minWidth: 180 }}>
