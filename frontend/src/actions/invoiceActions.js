@@ -1,10 +1,7 @@
 'use server';
-import { serverFetch } from './serverFetch';
 
-function buildParams(params) {
-  if (!params || Object.keys(params).length === 0) return '';
-  return '?' + new URLSearchParams(params).toString();
-}
+import { serverFetch } from './serverFetch';
+import { buildParams } from './utils';
 
 export async function getInvoices(params) {
   return serverFetch(`/invoices${buildParams(params)}`, { method: 'GET' });

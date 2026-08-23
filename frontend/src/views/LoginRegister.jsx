@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { z } from "zod";
+import { useAuth } from "../contexts/AuthContext";
+import { loginSchema, registerSchema } from "../utils/authValidation";
 import {
   Box, Paper, Tabs, Tab, TextField, Button, Typography, Alert, CircularProgress, IconButton, Avatar,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import HomeIcon from "@mui/icons-material/Home";
-import { useAuth } from "../contexts/AuthContext";
 
 const roleConfig = {
   landlord: { label: "Chủ trọ", icon: "🏠" },
@@ -32,6 +34,12 @@ export default function LoginRegister() {
   const handleLogin = async (e) => {
     e.preventDefault(); setError(""); setLoading(true);
     try {
+      const validation = loginSchema.safeParse(loginForm);
+      if (!validation.success) {
+        setError(validation.error.errors[0].message);
+        setLoading(false);
+        return;
+      }
       const user = await login(loginForm);
       if (user.role !== role) {
         setError(`Tài khoản này không phải là ${config.label.toLowerCase()}`);
@@ -47,17 +55,29 @@ export default function LoginRegister() {
 
   const handleRegister = async (e) => {
     e.preventDefault(); setError(""); setSuccessMsg("");
-    if (regForm.password !== regForm.confirmPassword) { setError("Mật khẩu xác nhận không khớp"); return; }
-    setLoading(true);
     try {
-      const payload = { ...regForm, role, companions: companions.filter(c => c.name.trim()) };
-      await register(payload);
-      await logout();
-      setRegForm({ name: "", email: "", phone: "", cccd: "", password: "", confirmPassword: "" });
-      setCompanions([]);
-      setLoginForm({ email: payload.email, password: "" });
-      setSuccessMsg("Đăng ký thành công! Bạn chưa có phòng, vui lòng liên hệ chủ trọ để đăng ký. Bây giờ bạn có thể đăng nhập bằng email trên.");
-      setTab(0);
+      const validation = registerSchema.safeParse(regForm);
+      if (!validation.success) {
+        setError(validation.error.errors[0].message);
+        setLoading(false);
+        return;
+      }
+      if (regForm.password !== regForm.confirmPassword) { setError("Mật khẩu xác nhận không khớp"); return; }
+      setLoading(true);
+      try {
+        const payload = { ...regForm, role, companions: companions.filter(c => c.name.trim()) };
+        await register(payload);
+        await logout();
+        setRegForm({ name: "", email: "", phone: "", cccd: "", password: "", confirmPassword: "" });
+        setCompanions([]);
+        setLoginForm({ email: payload.email, password: "" });
+        setSuccessMsg("Đăng ký thành công! Bạn chưa có phòng, vui lòng liên hệ chủ trọ để đăng ký. Bây giờ bạn có thể đăng nhập bằng email trên.");
+        setTab(0);
+      } catch (err) {
+        const data = err.response?.data;
+        if (data?.error) setError(data.error.map(e => e.msg).join("; "));
+        else setError(data?.message || "Đăng ký thất bại");
+      } finally { setLoading(false); }
     } catch (err) {
       const data = err.response?.data;
       if (data?.error) setError(data.error.map(e => e.msg).join("; "));
@@ -96,8 +116,8 @@ export default function LoginRegister() {
         </Tabs>
 
         <Box sx={{ p: 3 }}>
-          {error && <Alert severity="error" sx={{ mb: 2, borderRadius: "12px" }}>{error}</Alert>}
-          {successMsg && <Alert severity="success" sx={{ mb: 2, borderRadius: "12px" }}>{successMsg}</Alert>}
+          {error && <Alert severity="error" sx={{ mb: 2, borderRadius: "12x" }}>{error}</Alert>}
+          {successMsg && <Alert severity="success" sx={{ mb: 2, borderRadius: "12x" }}>{successMsg}</Alert>}
 
           {tab === 0 && (
             <Box component="form" onSubmit={handleLogin}>

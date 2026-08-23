@@ -14,6 +14,8 @@ export default function useTenantList({ notify }) {
   const [ttTo, setTtTo] = useState("");
   const [buildings, setBuildings] = useState([]);
   const [buildingFilter, setBuildingFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
 
   useEffect(() => {
     buildingApi.getAll()
@@ -23,14 +25,15 @@ export default function useTenantList({ notify }) {
 
   const fetchTenants = useCallback(async () => {
     try {
-      const res = await tenantApi.getAll(search || undefined);
+      const res = await tenantApi.getAll(search || undefined, page, limit);
       setTenants(res.data.tenants);
+      // Note: totalPages available in res.data.totalPages if needed
     } catch {
       notify("Lỗi tải danh sách khách", "error");
     } finally {
       setLoading(false);
     }
-  }, [search, notify]);
+  }, [search, page, limit, notify]);
 
   useEffect(() => { fetchTenants(); }, [fetchTenants]);
 
@@ -65,12 +68,23 @@ export default function useTenantList({ notify }) {
     return true;
   });
 
+  const setPageData = (newPage) => {
+    setPage(newPage);
+    fetchTenants();
+  };
+
+  const setLimitData = (newLimit) => {
+    setLimit(newLimit);
+    setPage(1);
+    fetchTenants();
+  };
+
   const clearDates = () => { setDateFrom(""); setDateTo(""); };
   const clearTtDates = () => { setTtFrom(""); setTtTo(""); };
 
   return {
     tenants, loading, search, statusFilter, companionStatus, dateFrom, dateTo, ttFrom, ttTo, buildings, buildingFilter,
-    filteredTenants, setSearch, setStatusFilter, setCompanionStatus, setDateFrom, setDateTo, clearDates, fetchTenants, setBuildingFilter,
+    page, limit, filteredTenants, setSearch, setStatusFilter, setCompanionStatus, setPageData, setLimitData, setDateFrom, setDateTo, clearDates, fetchTenants, setBuildingFilter,
     setTtFrom, setTtTo, clearTtDates,
   };
 }

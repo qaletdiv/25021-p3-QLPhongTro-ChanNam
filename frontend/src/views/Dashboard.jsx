@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Grid, CircularProgress, Alert, Badge, IconButton, Menu, MenuItem, Divider, Typography } from "@mui/material";
+import { Box, Grid, CircularProgress, Alert, Badge, Icon, Menu, MenuItem, Divider, Typography, Skeleton } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BugReportIcon from "@mui/icons-material/BugReport";
@@ -18,7 +18,9 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [expiring, setExpiring] = useState([]);
   const [chartData, setChartData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [expiringLoading, setExpiringLoading] = useState(true);
+  const [chartLoading, setChartLoading] = useState(true);
   const [error, setError] = useState("");
   const [notifCount, setNotifCount] = useState(0);
   const [notifItems, setNotifItems] = useState([]);
@@ -31,9 +33,14 @@ export default function Dashboard() {
         setStats(statsRes.data);
         setExpiring(expiringRes.data.contracts);
         setChartData(revRes.data.chartData || []);
+        setStatsLoading(false);
+        setExpiringLoading(false);
+        setChartLoading(false);
       })
       .catch((err) => setError(err.response?.data?.message || "Lỗi tải dữ liệu"))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        // Don't set all loading to false here - handled individually
+      });
   }, []);
 
   useEffect(() => {
@@ -59,13 +66,10 @@ export default function Dashboard() {
     router.push(link);
   };
 
-  if (loading) return <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}><CircularProgress /></Box>;
-  if (error) return <Alert severity="error" sx={{ borderRadius: "12px" }}>{error}</Alert>;
-
-  const totalRooms = stats.totalRooms || 0;
-  const vacantRooms = stats.emptyRooms || 0;
-  const rentedRooms = stats.rentedRooms || 0;
-  const currentTenants = stats.currentTenants || 0;
+  const totalRooms = stats?.totalRooms || 0;
+  const vacantRooms = stats?.emptyRooms || 0;
+  const rentedRooms = stats?.rentedRooms || 0;
+  const currentTenants = stats?.currentTenants || 0;
   const occupancyRate = totalRooms > 0 ? Math.round((rentedRooms / totalRooms) * 100) : 0;
 
   const navigate = (path) => router.push(path);
@@ -73,6 +77,30 @@ export default function Dashboard() {
   const kindIcon = (kind) => kind === "invoice"
     ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />
     : <BugReportIcon sx={{ fontSize: 18, color: "#d97706" }} />;
+
+  // Skeleton components for loading states
+  const KpiSkeleton = () => (
+    <Box sx={{ p: 2, borderRadius: "8px", bgcolor: "#f1f5f9", width: "100%" }}
+  );
+
+  const ChartSkeleton = (size) => (
+    <Box sx={{ p: 2, borderRadius: "8px", bgcolor: "#f1f5f9", width: "100%", height: size || "200px" }}
+  );
+
+  if (statsLoading || expiringLoading || chartLoading) {
+    return (
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+          <CircularProgress />
+        </Box>
+        <Skeleton component="div" sx={{ mt: 2, width: "100%", height: "16px" }} />
+        <Skeleton component="div" sx={{ mt: 1, width: "100%", height: "16px" }} />
+        <Skeleton component="div" sx={{ mt: 1, width: "70%", height: "16px" }} />
+      </Box>
+    );
+  }
+
+  if (error) return <Alert severity="error" sx={{ borderRadius: "12px" }}>{error}</Alert>;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -110,28 +138,30 @@ export default function Dashboard() {
 
       <DashboardBanner onNavigate={navigate} />
 
-      <KpiCards
-        totalRooms={totalRooms}
-        rentedRooms={rentedRooms}
-        vacantRooms={vacantRooms}
-        currentTenants={currentTenants}
-        occupancyRate={occupancyRate}
-        monthlyRevenue={stats.monthlyRevenue}
-        totalDebt={stats.totalDebt}
-      />
+      {statsLoading ? <KpiSkeleton /> : (
+        <KpiCards
+          totalRooms={totalRooms}
+          rentedRooms={rentedRooms}
+          vacantRooms={vacantRooms}
+          currentTenants={currentTenants}
+          occupancyRate={occupancyRate}
+          monthlyRevenue={stats?.monthlyRevenue}
+          totalDebt={stats?.totalDebt}
+        />
+      )}
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 8 }}>
-          <RevenueChart data={chartData} monthlyRevenue={stats.monthlyRevenue} />
+          {chartLoading ? <ChartSkeleton "300px" /> : <RevenueChart data={chartData} monthlyRevenue={stats?.monthlyRevenue} />}
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
-          <ExpiringContracts expiring={expiring} onManage={navigate} />
+          {expiringLoading ? <ChartSkeleton "200px" /> : <ExpiringContracts expiring={expiring} onManage={navigate} />}
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <UtilityUsageChart />
+          {chartLoading ? <ChartSkeleton "250px" /> : <UtilityUsageChart />}
         </Grid>
         <Grid size={{ xs: 12 }}>
-          <PriceHistoryChart />
+          {chartLoading ? <ChartSkeleton "250px" /> : <PriceHistoryChart />}
         </Grid>
       </Grid>
     </Box>

@@ -1,7 +1,9 @@
 'use server';
 import { serverFetch } from './serverFetch';
-export async function getTenants(search) {
-  const qs = search ? `?search=${encodeURIComponent(search)}` : '';
+export async function getTenants(search, page, limit) {
+  const qs = search
+    ? `?search=${encodeURIComponent(search)}&page=${page}&limit=${limit}`
+    : `?page=${page}&limit=${limit}`;
   return serverFetch(`/tenants${qs}`, { method: 'GET' });
 }
 export async function createTenant(data) {

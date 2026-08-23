@@ -4,6 +4,9 @@ const { hashPassword } = require("../utils/password");
 
 exports.getTenants = async (req, res, next) => {
     try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const offset = (page - 1) * limit;
         const { search } = req.query;
         const where = {};
         if (search) {
@@ -18,7 +21,7 @@ exports.getTenants = async (req, res, next) => {
             }
             where[Op.or] = orConditions;
         }
-        const tenants = await Tenant.findAll({
+        const { count, rows } = await Tenant.findAndCountAll({
             where,
             include: [
                 { model: Companion, as: "companions", attributes: ["id", "name", "phone", "cccd", "relationship", "telegramChatId", "fingerprintCode", "status", "endedAt", "createdAt", "updatedAt"] },
@@ -26,13 +29,15 @@ exports.getTenants = async (req, res, next) => {
                   include: [{ model: Room, as: "room", attributes: ["room_number"], where: { landlordId: req.user.id }, include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
                 }
             ],
-            order: [['name', 'ASC']]
+            order: [['name', 'ASC']],
+            limit,
+            offset
         });
-        const filtered = tenants.map((tenant) => {
+        const filtered = rows.map((tenant) => {
             const contracts = (tenant.contracts || []).filter((c) => c.room);
             return { ...tenant.toJSON(), contracts };
         });
-        res.json({ tenants: filtered });
+        res.json({ tenants: filtered, total: count, page, totalPages: Math.ceil(count / limit) });
     } catch (error) {
         next(error);
     }
