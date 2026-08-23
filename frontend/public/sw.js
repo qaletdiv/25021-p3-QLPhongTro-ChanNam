@@ -1,8 +1,5 @@
-const CACHE_NAME = "smartrent-v1";
+const CACHE_NAME = "smartrent-v2";
 const APP_PRECACHE = [
-  "/",
-  "/login/landlord",
-  "/login/tenant",
   "/icon-192.png",
   "/icon-512.png",
   "/manifest.webmanifest",
@@ -21,25 +18,49 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+function isImmutableAsset(url) {
+  return url.pathname.startsWith("/_next/static/");
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
-  const url = new URL(request.url);
-  if (url.pathname.startsWith("/api/")) return;
 
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
+  if (url.pathname === "/sw.js") return;
+
+  // Asset có hash trong tên (_next/static) -> bất biến -> cache-first an toàn
+  if (isImmutableAsset(url)) {
+    event.respondWith(
+      caches.match(request).then(
+        (cached) =>
+          cached ||
+          fetch(request).then((response) => {
+            if (response && response.status === 200) {
+              const clone = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            }
+            return response;
+          })
+      )
+    );
+    return;
+  }
+
+  // HTML, RSC payload (?_rsc), và mọi thứ khác -> NETWORK-FIRST
+  // (tránh serving trang cũ tham chiếu chunk đã bị xoá sau khi build mới)
   event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetched = fetch(request)
-        .then((response) => {
-          if (response && response.status === 200 && response.type === "basic") {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached || fetched;
-    })
+    fetch(request)
+      .then((response) => {
+        if (response && response.status === 200 && response.type === "basic") {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request).then((cached) => cached || Response.error()))
   );
 });
 
