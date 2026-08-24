@@ -12,10 +12,10 @@ import { resizeImage } from "../utils/image";
 import { nextMonthLabel, nextMonthOf, formatCurrency } from "../utils/format";
 import { tokens as t } from "../design/tokens";
 
-export default function TenantInvoices() {
-  const [invoices, setInvoices] = useState([]);
-  const [settings, setSettings] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function TenantInvoices({ initialInvoices = [], initialSettings = null }) {
+  const [invoices, setInvoices] = useState(initialInvoices);
+  const [settings, setSettings] = useState(initialSettings);
+  const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const [elecVal, setElecVal] = useState(0);
@@ -43,7 +43,7 @@ export default function TenantInvoices() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  // Dữ liệu ban đầu được fetch server-side; loadData chỉ dùng sau khi gửi chỉ số
 
   const lastInv = invoices.length > 0 ? invoices[0] : null;
   const formMonth = lastInv ? nextMonthOf(lastInv.month) : nextMonthLabel();

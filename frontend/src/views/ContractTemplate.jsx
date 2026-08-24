@@ -60,9 +60,10 @@ const Toolbar = ({ title, active, disabled, onClick, children }) => (
   </Tooltip>
 );
 
-export default function ContractTemplate() {
-  const [template, setTemplate] = useState("");
-  const [loading, setLoading] = useState(true);
+export default function ContractTemplate({ initialTemplate = "" }) {
+  const [template, setTemplate] = useState(initialTemplate);
+
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
@@ -81,15 +82,7 @@ export default function ContractTemplate() {
     onUpdate: ({ editor }) => setTemplate(editor.getHTML()),
   });
 
-  useEffect(() => {
-    contractTemplateApi.getTemplate()
-      .then((res) => {
-        setTemplate(res.data.template || "");
-        if (editor) editor.commands.setContent(res.data.template || "");
-      })
-      .catch(() => setSnack({ open: true, message: "Lỗi tải mẫu hợp đồng", severity: "error" }))
-      .finally(() => setLoading(false));
-  }, [editor]);
+  // Mẫu hợp đồng được fetch server-side qua props initialTemplate
 
   const setLink = () => {
     const previous = editor.getAttributes("link");

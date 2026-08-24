@@ -15,12 +15,11 @@ import NotificationImportantIcon from "@mui/icons-material/NotificationImportant
 import MessageDialog from "../components/MessageDialog";
 import MoneyField from "../components/ui/MoneyField";
 import settingApi from "../api/settingApi";
-import buildingApi from "../api/buildingApi";
 import { requestPushPermission } from "../hooks/usePushSubscription";
 
-export default function Settings() {
-  const [form, setForm] = useState({});
-  const [buildings, setBuildings] = useState([]);
+export default function Settings({ initialSettings = null, initialBuildings = [] }) {
+  const [form, setForm] = useState(initialSettings || {});
+  const [buildings, setBuildings] = useState(initialBuildings);
   const [buildingId, setBuildingId] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
@@ -33,9 +32,8 @@ export default function Settings() {
     setPushMsg(ok ? "Đã bật thông báo đẩy thành công!" : "Bạn chưa cấp quyền nhận thông báo đẩy.");
   };
 
+  // Dữ liệu ban đầu được fetch server-side; chỉ banks cần tải thêm phía client
   useEffect(() => {
-    buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
-    loadSettings("");
     settingApi.getBanks().then((res) => setBanks(res.data.banks || [])).catch(() => {});
   }, []);
 

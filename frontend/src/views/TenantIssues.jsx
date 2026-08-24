@@ -17,9 +17,9 @@ import { tokens as t } from "../design/tokens";
 
 const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
 
-export default function TenantIssues() {
-  const [issues, setIssues] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function TenantIssues({ initialIssues = [] }) {
+  const [issues, setIssues] = useState(initialIssues);
+  const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [openCreate, setOpenCreate] = useState(false);
   const [form, setForm] = useState({ title: "", description: "" });
@@ -36,7 +36,7 @@ export default function TenantIssues() {
     }
   }, []);
 
-  useEffect(() => { fetchIssues(); }, [fetchIssues]);
+  // Dữ liệu ban đầu được fetch server-side; fetchIssues chỉ dùng sau khi tạo báo hỏng
 
   const handleAddImages = async (e) => {
     const files = Array.from(e.target.files || []);

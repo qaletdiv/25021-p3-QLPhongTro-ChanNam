@@ -43,10 +43,10 @@ const inputFieldSx = {
   },
 };
 
-export default function TenantProfile() {
-  const [loading, setLoading] = useState(true);
+export default function TenantProfile({ initialProfile = null }) {
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [profile, setProfile] = useState({ name: "", email: "", phone: "", cccd: "", telegramChatId: "", companions: [] });
+  const [profile, setProfile] = useState(initialProfile || { name: "", email: "", phone: "", cccd: "", telegramChatId: "", companions: [] });
   const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null);
@@ -57,12 +57,7 @@ export default function TenantProfile() {
     setPushMsg(ok ? "Đã bật thông báo đẩy thành công!" : "Bạn chưa cấp quyền nhận thông báo đẩy.");
   };
 
-  useEffect(() => {
-    tenantProfileApi.getProfile()
-      .then((res) => setProfile(res.data.profile))
-      .catch(() => setSnack({ open: true, message: "Lỗi tải thông tin", severity: "error" }))
-      .finally(() => setLoading(false));
-  }, []);
+  // Dữ liệu hồ sơ được fetch server-side qua props
 
   const handleUpdateProfile = async () => {
     try {
