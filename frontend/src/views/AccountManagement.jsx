@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box, Paper, Typography, TextField, Select, MenuItem, InputAdornment, Chip,
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer, CircularProgress,
@@ -16,10 +16,10 @@ import adminUserApi from "../api/adminUserApi";
 import { useAuth } from "../contexts/AuthContext";
 import { formatDate } from "../utils/format";
 
-export default function AccountManagement() {
+export default function AccountManagement({ initialUsers = [] }) {
   const { user: me } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [banner, setBanner] = useState(null);
@@ -42,7 +42,10 @@ export default function AccountManagement() {
     }
   }, [search, statusFilter]);
 
+  // Dữ liệu ban đầu được fetch server-side; chỉ refetch (debounce) khi đổi filter/search
+  const mounted = useRef(false);
   useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
     const t = setTimeout(fetchUsers, 250);
     return () => clearTimeout(t);
   }, [fetchUsers]);

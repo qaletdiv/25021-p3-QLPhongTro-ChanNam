@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box, Paper, Typography, TextField, Select, MenuItem, InputAdornment, Chip,
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer, CircularProgress,
@@ -10,13 +10,12 @@ import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import fingerprintApi from "../api/fingerprintApi";
-import buildingApi from "../api/buildingApi";
 import { formatDateTime } from "../utils/format";
 
-export default function FingerprintManagement() {
-  const [loading, setLoading] = useState(true);
-  const [history, setHistory] = useState([]);
-  const [buildings, setBuildings] = useState([]);
+export default function FingerprintManagement({ initialHistory = [], initialBuildings = [] }) {
+  const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState(initialHistory);
+  const [buildings, setBuildings] = useState(initialBuildings);
   const [buildingFilter, setBuildingFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
@@ -48,11 +47,10 @@ export default function FingerprintManagement() {
     return true;
   });
 
+  // Dữ liệu ban đầu được fetch server-side; chỉ refetch (debounce) khi đổi filter/search
+  const mounted = useRef(false);
   useEffect(() => {
-    buildingApi.getAll().then((res) => setBuildings(res.data.buildings || [])).catch(() => {});
-  }, []);
-
-  useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
     const t = setTimeout(fetchHistory, 250);
     return () => clearTimeout(t);
   }, [fetchHistory]);

@@ -17,10 +17,10 @@ import { resolveNotificationTemplate } from "../utils/notificationTemplate";
 const VARIABLES = ["TENKHACH", "MAPHONG", "TONG_TIEN", "HAN_THANH_TOAN"];
 const AUTO_VARIABLES = ["TENKHACH", "MAPHONG", "TONG_TIEN", "THANG", "HAN_THANH_TOAN"];
 
-export default function NotificationManagement() {
-  const [notifications, setNotifications] = useState([]);
-  const [rooms, setRooms] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function NotificationManagement({ initialNotifications = [], initialRooms = [], initialAutoTemplate = "" }) {
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const [rooms, setRooms] = useState(initialRooms);
+  const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const [title, setTitle] = useState("");
@@ -30,7 +30,7 @@ export default function NotificationManagement() {
   const [targetRoom, setTargetRoom] = useState("all");
   const [isSending, setIsSending] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
-  const [autoTemplate, setAutoTemplate] = useState("");
+  const [autoTemplate, setAutoTemplate] = useState(initialAutoTemplate);
   const [autoSavedMsg, setAutoSavedMsg] = useState("");
   const leftColRef = useRef(null);
   const [leftColHeight, setLeftColHeight] = useState(null);
@@ -56,7 +56,7 @@ export default function NotificationManagement() {
     } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  // Dữ liệu ban đầu được fetch server-side; fetchData chỉ dùng sau khi gửi thông báo
 
   const insertVariable = (varName) => {
     setContent(prev => prev + `{{${varName}}}`);

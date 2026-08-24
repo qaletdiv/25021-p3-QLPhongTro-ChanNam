@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box, Paper, Typography, TextField, Select, MenuItem, InputAdornment, Chip,
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer, CircularProgress,
@@ -22,10 +22,10 @@ const ACTION_LABELS = {
 
 const actionLabel = (action) => ACTION_LABELS[action] || action;
 
-export default function AuditLogView() {
-  const [loading, setLoading] = useState(true);
-  const [logs, setLogs] = useState([]);
-  const [total, setTotal] = useState(0);
+export default function AuditLogView({ initialLogs = [], initialTotal = 0 }) {
+  const [loading, setLoading] = useState(false);
+  const [logs, setLogs] = useState(initialLogs);
+  const [total, setTotal] = useState(initialTotal);
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
   const [page, setPage] = useState(1);
@@ -47,7 +47,10 @@ export default function AuditLogView() {
     }
   }, [search, actionFilter, page]);
 
+  // Dữ liệu ban đầu được fetch server-side; chỉ refetch (debounce) khi đổi filter/search/page
+  const mounted = useRef(false);
   useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
     const t = setTimeout(fetchLogs, 250);
     return () => clearTimeout(t);
   }, [fetchLogs]);
