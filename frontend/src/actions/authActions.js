@@ -28,9 +28,10 @@ export async function loginFormAction(prevState, formData) {
     password: String(formData.get('password') || ''),
   });
   if (!parsed.success) return { error: firstError(parsed) };
+  const role = String(formData.get('role') || '');
   try {
     const res = await serverFetch('/auth/login', { method: 'POST', body: JSON.stringify(parsed.data) });
-    return { ok: true, user: res.data.user };
+    return { ok: true, user: res.data.user, role };
   } catch (err) {
     const data = err.response?.data;
     if (Array.isArray(data?.error)) return { error: data.error.map((e) => e.msg).join('; ') };

@@ -1,4 +1,4 @@
-const CACHE_NAME = "smartrent-v2";
+const CACHE_NAME = "smartrent-v3";
 const APP_PRECACHE = [
   "/icon-192.png",
   "/icon-512.png",

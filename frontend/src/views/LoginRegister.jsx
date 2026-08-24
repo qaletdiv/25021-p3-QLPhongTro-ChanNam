@@ -94,6 +94,7 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
 
           {tab === 0 && (
             <Box component="form" action={submitLogin}>
+              <input type="hidden" name="role" value={role} />
               <TextField fullWidth label="Email" name="email" margin="normal" required defaultValue={prefillEmail} key={prefillEmail} />
               <TextField fullWidth label="Mật khẩu" type="password" name="password" margin="normal" required />
               <Button fullWidth variant="contained" type="submit" disabled={loginPending} sx={{ mt: 2, py: 1.5, fontSize: "0.8125rem" }}>
