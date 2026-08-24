@@ -1,14 +1,17 @@
+const { Op } = require("sequelize");
 const { Issue, Room, Tenant, Building } = require("../models");
 const push = require("../utils/push");
+const { getAccessibleBuildingIds, isBuildingAccessible } = require("../utils/buildingAccess");
 
 exports.getIssues = async (req, res, next) => {
     try {
+        const accIds = await getAccessibleBuildingIds(req.user.id);
         const issues = await Issue.findAll({
             include: [
                 { model: Tenant, as: "tenant", attributes: ["id", "name", "phone"] },
                 {
                     model: Room, as: "room", required: true,
-                    where: { landlordId: req.user.id },
+                    where: { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } },
                     attributes: ["id", "room_number", "floor"],
                     include: [{ model: Building, as: "building", attributes: ["name"] }]
                 }
@@ -23,9 +26,10 @@ exports.getIssues = async (req, res, next) => {
 
 exports.getPendingCount = async (req, res, next) => {
     try {
+        const accIds = await getAccessibleBuildingIds(req.user.id);
         const count = await Issue.count({
             where: { status: 'pending' },
-            include: [{ model: Room, as: "room", required: true, where: { landlordId: req.user.id } }]
+            include: [{ model: Room, as: "room", required: true, where: { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } } }]
         });
         res.json({ count });
     } catch (error) {
@@ -41,9 +45,12 @@ exports.updateIssueStatus = async (req, res, next) => {
         }
         const issue = await Issue.findOne({
             where: { id: req.params.id },
-            include: [{ model: Room, as: "room", required: true, where: { landlordId: req.user.id } }]
+            include: [{ model: Room, as: "room", required: true }]
         });
         if (!issue) return res.status(404).json({ message: "Không tìm thấy báo hỏng" });
+        if (!(await isBuildingAccessible(req.user.id, issue.room?.buildingId))) {
+            return res.status(403).json({ message: "Không có quyền" });
+        }
         issue.status = status;
         await issue.save();
 

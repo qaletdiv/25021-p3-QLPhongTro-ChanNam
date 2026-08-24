@@ -1,12 +1,16 @@
+const { Op } = require("sequelize");
 const { Contract, ContractFurniture, Tenant, Room, Furniture, Companion } = require("../models");
 const { logFingerprintRow, logFingerprintReassign, updateCompanionDetails, logCompanionAssignments, logCompanionReassignments } = require("../utils/fingerprintLog");
+const { getAccessibleBuildingIds, isBuildingAccessible } = require("../utils/buildingAccess");
 
 exports.getContracts = async (req, res, next) => {
     try {
+        const accIds = await getAccessibleBuildingIds(req.user.id);
         const contracts = await Contract.findAll({
+            where: { '$room.buildingId$': { [Op.in]: accIds.length ? accIds : [-1] } },
             include: [
                 { model: Tenant, as: "tenant", attributes: ["name", "phone", "cccd"] },
-                { model: Room, as: "room", where: { landlordId: req.user.id }, attributes: ["room_number", "price"] },
+                { model: Room, as: "room", attributes: ["room_number", "price", "buildingId"] },
                 { model: ContractFurniture, as: "contractFurnitures", include: [{ model: Furniture, as: "furniture", attributes: ["name"] }] }
             ],
             order: [['createdAt', 'DESC']]
@@ -22,11 +26,14 @@ exports.getContractById = async (req, res, next) => {
         const contract = await Contract.findByPk(req.params.id, {
             include: [
                 { model: Tenant, as: "tenant", attributes: ["name", "phone", "cccd"] },
-                { model: Room, as: "room", attributes: ["room_number", "price"] },
+                { model: Room, as: "room", attributes: ["room_number", "price", "buildingId"] },
                 { model: ContractFurniture, as: "contractFurnitures", include: [{ model: Furniture, as: "furniture", attributes: ["name"] }] }
             ]
         });
         if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
+        if (!(await isBuildingAccessible(req.user.id, contract.room?.buildingId))) {
+            return res.status(403).json({ message: "Không có quyền" });
+        }
         const companions = await Companion.findAll({ where: { tenantId: contract.tenantId } });
         res.json({ contract: { ...contract.toJSON(), companions } });
     } catch (error) {
@@ -42,7 +49,9 @@ exports.updateContract = async (req, res, next) => {
             include: [{ model: Room, as: "room" }]
         });
         if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
-        if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
+        if (!(await isBuildingAccessible(req.user.id, contract.room?.buildingId))) {
+            return res.status(403).json({ message: "Không có quyền" });
+        }
 
         const oldFingerprint = contract.fingerprintCode;
         const oldCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId } });
@@ -54,7 +63,7 @@ exports.updateContract = async (req, res, next) => {
 
         if (roomId && Number(roomId) !== contract.roomId) {
             const newRoom = await Room.findByPk(roomId);
-            if (!newRoom || newRoom.landlordId !== req.user.id) return res.status(400).json({ message: "Phòng không hợp lệ" });
+            if (!newRoom || !(await isBuildingAccessible(req.user.id, newRoom.buildingId))) return res.status(400).json({ message: "Phòng không hợp lệ" });
             if (newRoom.status !== 'empty') return res.status(400).json({ message: "Phòng không trống" });
             await contract.room.update({ status: 'empty' });
             await newRoom.update({ status: 'rented' });
@@ -92,7 +101,7 @@ exports.createContract = async (req, res, next) => {
         const { tenantId, roomId, deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints } = req.body;
 
         const room = await Room.findByPk(roomId);
-        if (!room || room.landlordId !== req.user.id) return res.status(400).json({ message: "Phòng không hợp lệ" });
+        if (!room || !(await isBuildingAccessible(req.user.id, room.buildingId))) return res.status(400).json({ message: "Phòng không hợp lệ" });
         if (room.status !== 'empty') return res.status(400).json({ message: "Phòng không trống" });
 
         const contract = await Contract.create({ tenantId, roomId, deposit, price: price ?? room.price, startDate, endDate, paymentDay, fingerprintCode, status: 'active' });
@@ -136,7 +145,7 @@ exports.checkoutContract = async (req, res, next) => {
     try {
         const contract = await Contract.findByPk(req.params.id, { include: [{ model: Room, as: "room" }] });
         if (!contract) return res.status(404).json({ message: "Không tìm thấy hợp đồng" });
-        if (contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
+        if (!(await isBuildingAccessible(req.user.id, contract.room?.buildingId))) return res.status(403).json({ message: "Không có quyền" });
 
         const { promoteCompanionId, removedCompanionIds } = req.body || {};
         const activeCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId, status: 'active' } });

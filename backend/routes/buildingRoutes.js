@@ -12,4 +12,9 @@ router.post('/', authenticateToken, authorizeRole('landlord'), createBuildingVal
 router.put('/:id', authenticateToken, authorizeRole('landlord'), buildingIdParamValidation(), updateBuildingValidationRules(), handleValidationErrors, buildingController.updateBuilding);
 router.delete('/:id', authenticateToken, authorizeRole('landlord'), buildingIdParamValidation(), handleValidationErrors, buildingController.deleteBuilding);
 
+// Quản lý cộng tác viên (chỉ chủ sở hữu nhà)
+router.get('/:id/collaborators', authenticateToken, authorizeRole('landlord'), buildingIdParamValidation(), handleValidationErrors, buildingController.getCollaborators);
+router.post('/:id/collaborators', authenticateToken, authorizeRole('landlord'), buildingIdParamValidation(), handleValidationErrors, buildingController.addCollaborator);
+router.delete('/:id/collaborators/:userId', authenticateToken, authorizeRole('landlord'), buildingIdParamValidation(), handleValidationErrors, buildingController.removeCollaborator);
+
 module.exports = router;

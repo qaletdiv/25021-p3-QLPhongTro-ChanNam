@@ -162,6 +162,23 @@ async function run() {
     }
   } catch(e) { console.log('push_subscriptions error:', e.message); }
 
+  // 7. Create building_collaborators table if missing (shared building access for co-landlords)
+  try {
+    const [tables] = await seq.query("SHOW TABLES LIKE 'building_collaborators'");
+    if (tables.length === 0) {
+      await seq.query(`CREATE TABLE building_collaborators (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        buildingId INT NOT NULL,
+        userId INT NOT NULL,
+        createdAt DATETIME NOT NULL,
+        updatedAt DATETIME NOT NULL,
+        UNIQUE INDEX uq_bc_building_user (buildingId, userId),
+        INDEX idx_bc_user (userId)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+      console.log('Created building_collaborators table');
+    }
+  } catch(e) { console.log('building_collaborators error:', e.message); }
+
   console.log('Done');
   process.exit(0);
 }

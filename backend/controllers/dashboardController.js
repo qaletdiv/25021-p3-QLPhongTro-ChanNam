@@ -1,31 +1,33 @@
 const { Op } = require("sequelize");
 const { Room, Contract, Tenant, Invoice, Issue, Building } = require("../models");
 const { monthStr } = require("../utils/dates");
+const { getAccessibleBuildingIds, roomAccessCondition } = require("../utils/buildingAccess");
 
 exports.getStats = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
-        const rooms = await Room.findAll({ where: { landlordId } });
+        const accIds = await getAccessibleBuildingIds(landlordId);
+        const rooms = await Room.findAll({ where: roomAccessCondition(landlordId, accIds) });
         const total = rooms.length;
         const empty = rooms.filter(r => r.status === 'empty').length;
         const rented = rooms.filter(r => r.status === 'rented').length;
 
         const activeContracts = await Contract.findAll({
             where: { status: 'active' },
-            include: [{ model: Room, as: "room", where: { landlordId }, attributes: [] }]
+            include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), attributes: [] }]
         });
         const currentTenants = activeContracts.length;
 
         const cMonth = monthStr(new Date());
         const paidInvoices = await Invoice.findAll({
             where: { status: 'paid', month: cMonth },
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), required: true, attributes: [] }] }]
         });
         const monthlyRevenue = paidInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
 
         const unpaidInvoices = await Invoice.findAll({
             where: { status: { [Op.in]: ['pending', 'submitted'] } },
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), required: true, attributes: [] }] }]
         });
         const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
 
@@ -38,6 +40,7 @@ exports.getStats = async (req, res, next) => {
 exports.getMonthlyRevenue = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
+        const accIds = await getAccessibleBuildingIds(landlordId);
         const months = [];
         const now = new Date();
         for (let i = 5; i >= 0; i--) {
@@ -47,7 +50,7 @@ exports.getMonthlyRevenue = async (req, res, next) => {
         const paidInvoices = await Invoice.findAll({
             where: { status: 'paid', month: { [Op.in]: months } },
             attributes: ['month', 'total'],
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), required: true, attributes: [] }] }]
         });
 
         const revenueByMonth = {};
@@ -66,15 +69,16 @@ exports.getMonthlyRevenue = async (req, res, next) => {
 exports.getNotifications = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
+        const accIds = await getAccessibleBuildingIds(landlordId);
 
         const unpaidInvoices = await Invoice.findAll({
             where: { status: { [Op.in]: ['pending', 'submitted'] } },
             attributes: ['id', 'month'],
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId }, required: true, attributes: ['room_number'] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), required: true, attributes: ['room_number'] }] }]
         });
         const pendingIssues = await Issue.count({
             where: { status: 'pending' },
-            include: [{ model: Room, as: "room", required: true, where: { landlordId } }]
+            include: [{ model: Room, as: "room", required: true, where: roomAccessCondition(landlordId, accIds) }]
         });
 
         const items = [];
@@ -101,6 +105,7 @@ exports.getNotifications = async (req, res, next) => {
 exports.getExpiringContracts = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
+        const accIds = await getAccessibleBuildingIds(landlordId);
         const thirtyDaysLater = new Date();
         thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30);
 
@@ -111,7 +116,7 @@ exports.getExpiringContracts = async (req, res, next) => {
             },
             include: [
                 { model: Tenant, as: "tenant", attributes: ["name", "phone"] },
-                { model: Room, as: "room", where: { landlordId }, attributes: ["room_number"] }
+                { model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), attributes: ["room_number"] }
             ],
             order: [['endDate', 'ASC']]
         });
@@ -125,12 +130,13 @@ exports.getExpiringContracts = async (req, res, next) => {
 exports.getUtilityUsage = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
+        const accIds = await getAccessibleBuildingIds(landlordId);
         const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
         const now = new Date();
         const defaultMonth = `${String(now.getMonth() + 1).padStart(2, "0")}/${now.getFullYear()}`;
         const month = /^\d{2}\/\d{4}$/.test(String(req.query.month || "")) ? String(req.query.month) : defaultMonth;
 
-        const roomWhere = { landlordId };
+        const roomWhere = { ...roomAccessCondition(landlordId, accIds) };
         if (buildingId) roomWhere.buildingId = buildingId;
 
         const rooms = await Room.findAll({

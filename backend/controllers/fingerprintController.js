@@ -1,10 +1,12 @@
 const { FingerprintHistory, Room, Building } = require("../models");
 const { Op } = require("sequelize");
+const { getAccessibleBuildingIds } = require("../utils/buildingAccess");
 
 exports.getFingerprintHistories = async (req, res, next) => {
     try {
         const { buildingId, fingerprintCode, search, ownerType } = req.query;
-        const where = { landlordId: req.user.id };
+        const accIds = await getAccessibleBuildingIds(req.user.id);
+        const where = { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } };
         if (buildingId && buildingId !== 'all') where.buildingId = Number(buildingId);
         if (fingerprintCode && fingerprintCode !== 'all') where.fingerprintCode = fingerprintCode;
         if (ownerType && ownerType !== 'all') where.ownerType = ownerType;
@@ -32,7 +34,8 @@ exports.getFingerprintHistories = async (req, res, next) => {
 exports.getFingerprintGroups = async (req, res, next) => {
     try {
         const { buildingId, search } = req.query;
-        const where = { landlordId: req.user.id };
+        const accIds = await getAccessibleBuildingIds(req.user.id);
+        const where = { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } };
         if (buildingId && buildingId !== 'all') where.buildingId = Number(buildingId);
         if (search) {
             where[Op.or] = [

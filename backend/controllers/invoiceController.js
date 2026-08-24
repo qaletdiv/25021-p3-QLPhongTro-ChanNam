@@ -3,6 +3,7 @@ const { Invoice, Contract, Room, Tenant, Building } = require("../models");
 const telegram = require("../utils/telegram");
 const push = require("../utils/push");
 const { formatMoney } = require("../utils/money");
+const { getAccessibleBuildingIds, isBuildingAccessible } = require("../utils/buildingAccess");
 
 exports.getInvoices = async (req, res, next) => {
     try {
@@ -11,12 +12,13 @@ exports.getInvoices = async (req, res, next) => {
         if (status && ['pending', 'submitted', 'paid'].includes(status)) where.status = status;
         if (month) where.month = month;
 
+        const accIds = await getAccessibleBuildingIds(req.user.id);
         const invoices = await Invoice.findAll({
             where,
             include: [{
                 model: Contract, as: "contract", required: true,
                 include: [
-                    { model: Room, as: "room", where: { landlordId: req.user.id }, attributes: ["room_number", "price"], include: [{ model: Building, as: "building", attributes: ["id", "name"] }] },
+                    { model: Room, as: "room", where: { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } }, attributes: ["room_number", "price"], include: [{ model: Building, as: "building", attributes: ["id", "name"] }] },
                     { model: Tenant, as: "tenant", attributes: ["name", "phone"] }
                 ]
             }],
@@ -30,9 +32,10 @@ exports.getInvoices = async (req, res, next) => {
 
 exports.getPendingCount = async (req, res, next) => {
     try {
+        const accIds = await getAccessibleBuildingIds(req.user.id);
         const count = await Invoice.count({
             where: { status: { [Op.in]: ['pending', 'submitted'] } },
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { landlordId: req.user.id }, required: true }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } }, required: true }] }]
         });
         res.json({ count });
     } catch (error) {
@@ -46,7 +49,7 @@ exports.markAsPaid = async (req, res, next) => {
             include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room" }, { model: Tenant, as: "tenant", attributes: ["id", "name", "userId"] }] }]
         });
         if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
-        if (invoice.contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
+        if (!(await isBuildingAccessible(req.user.id, invoice.contract.room?.buildingId))) return res.status(403).json({ message: "Không có quyền" });
         if (invoice.status === 'paid') return res.status(400).json({ message: "Hóa đơn đã được thanh toán" });
 
         await invoice.update({ status: 'paid', paidAt: new Date() });
@@ -76,7 +79,7 @@ exports.sendReminder = async (req, res, next) => {
             include: [{ model: Contract, as: "contract", include: [{ model: Room, as: "room" }, { model: Tenant, as: "tenant" }] }]
         });
         if (!invoice) return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
-        if (invoice.contract.room.landlordId !== req.user.id) return res.status(403).json({ message: "Không có quyền" });
+        if (!(await isBuildingAccessible(req.user.id, invoice.contract.room?.buildingId))) return res.status(403).json({ message: "Không có quyền" });
 
         const tenant = invoice.contract.tenant;
         if (!tenant || !tenant.telegramChatId) {

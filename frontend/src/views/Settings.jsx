@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-  Box, Typography, TextField, Button, MenuItem, InputAdornment, Checkbox, FormControlLabel,
+  Box, Typography, TextField, Button, MenuItem, InputAdornment, Checkbox, FormControlLabel, IconButton,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -12,12 +12,17 @@ import PersonIcon from "@mui/icons-material/Person";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import DeleteIcon from "@mui/icons-material/Delete";
 import MessageDialog from "../components/MessageDialog";
 import MoneyField from "../components/ui/MoneyField";
 import settingApi from "../api/settingApi";
 import { requestPushPermission } from "../hooks/usePushSubscription";
+import { useAuth } from "../contexts/AuthContext";
+import { getCollaborators, addCollaborator, removeCollaborator } from "../actions/collaboratorActions";
 
 export default function Settings({ initialSettings = null, initialBuildings = [] }) {
+  const { user } = useAuth();
   const [form, setForm] = useState(initialSettings || {});
   const [buildings, setBuildings] = useState(initialBuildings);
   const [buildingId, setBuildingId] = useState("");
@@ -26,6 +31,39 @@ export default function Settings({ initialSettings = null, initialBuildings = []
   const [checkMsg, setCheckMsg] = useState(null);
   const [banks, setBanks] = useState([]);
   const [pushMsg, setPushMsg] = useState("");
+  const [collabBuilding, setCollabBuilding] = useState("");
+  const [collaborators, setCollaborators] = useState([]);
+  const [collabEmail, setCollabEmail] = useState("");
+
+  const myBuildings = buildings.filter((b) => b.landlordId === user?.id);
+
+  const loadCollaborators = async (bid) => {
+    if (!bid) { setCollaborators([]); return; }
+    try {
+      const res = await getCollaborators(bid);
+      setCollaborators(res.data.collaborators || []);
+    } catch { setCollaborators([]); }
+  };
+
+  const handleAddCollaborator = async () => {
+    if (!collabBuilding || !collabEmail.trim()) return;
+    try {
+      await addCollaborator(collabBuilding, collabEmail.trim());
+      setCollabEmail("");
+      await loadCollaborators(collabBuilding);
+    } catch (err) {
+      setSnack({ open: true, message: err.response?.data?.message || "Không thể thêm cộng tác viên", severity: "error" });
+    }
+  };
+
+  const handleRemoveCollaborator = async (uid) => {
+    try {
+      await removeCollaborator(collabBuilding, uid);
+      await loadCollaborators(collabBuilding);
+    } catch (err) {
+      setSnack({ open: true, message: err.response?.data?.message || "Không thể xóa cộng tác viên", severity: "error" });
+    }
+  };
 
   const handleEnablePush = async () => {
     const ok = await requestPushPermission();
@@ -282,6 +320,55 @@ export default function Settings({ initialSettings = null, initialBuildings = []
             <span>Lưu Cập Nhật Cấu Hình Hệ Thống</span>
           </Button>
         </Box>
+      </Box>
+
+      {/* Cộng tác viên */}
+      <Box sx={sectionSx}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
+          <GroupAddIcon sx={{ fontSize: 18, color: "#7c3aed" }} />
+          <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>Cộng Tác Viên Quản Lý Nhà</Typography>
+        </Box>
+        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 2 }}>
+          Chia sẻ nhà trọ cho một tài khoản chủ trọ khác. Cộng tác viên sẽ xem và quản lý toàn bộ phòng, hóa đơn, khách thuê của nhà được chia sẻ (chỉ chủ sở hữu mới thêm/bỏ được).
+        </Typography>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr auto" }, gap: 2, alignItems: "center", mb: 2 }}>
+          <TextField
+            select fullWidth size="small" label="Chọn nhà của bạn" value={collabBuilding}
+            onChange={(e) => { setCollabBuilding(e.target.value); loadCollaborators(e.target.value); }}
+            sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
+          >
+            {myBuildings.map((b) => (
+              <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            fullWidth size="small" label="Email tài khoản chủ trọ" placeholder="chuhoangsa2@gmail.com"
+            value={collabEmail} onChange={(e) => setCollabEmail(e.target.value)}
+            sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
+          />
+          <Button variant="contained" startIcon={<GroupAddIcon />} onClick={handleAddCollaborator} disabled={!collabBuilding || !collabEmail.trim()}
+            sx={{ py: 1, fontSize: "0.75rem", fontWeight: 700, textTransform: "none", borderRadius: "12px" }}>
+            Thêm
+          </Button>
+        </Box>
+        {collabBuilding && (
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {collaborators.length === 0 && (
+              <Typography sx={{ fontSize: "0.72rem", color: "#94a3b8" }}>Chưa có cộng tác viên nào cho nhà này.</Typography>
+            )}
+            {collaborators.map((c) => (
+              <Box key={c.id} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2, py: 1.25, bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px" }}>
+                <Box>
+                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{c.name}</Typography>
+                  <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>{c.email}</Typography>
+                </Box>
+                <IconButton size="small" onClick={() => handleRemoveCollaborator(c.id)} title="Xóa cộng tác viên">
+                  <DeleteIcon sx={{ fontSize: 18, color: "#e11d48" }} />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
+        )}
       </Box>
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />

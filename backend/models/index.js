@@ -23,6 +23,7 @@ db.Issue = require('./issue')(sequelize, Sequelize);
 db.TenantNotificationRead = require('./tenantNotificationRead')(sequelize, Sequelize);
 db.FingerprintHistory = require('./fingerprintHistory')(sequelize, Sequelize);
 db.PushSubscription = require('./pushSubscription')(sequelize, Sequelize);
+db.BuildingCollaborator = require('./buildingCollaborator')(sequelize, Sequelize);
 
 Object.keys(db).forEach(modelName => {
     if (db[modelName].associate) db[modelName].associate(db);

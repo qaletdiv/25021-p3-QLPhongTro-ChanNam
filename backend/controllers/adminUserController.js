@@ -1,13 +1,18 @@
 const { Op } = require("sequelize");
-const { User, Tenant, Contract, Room } = require("../models");
+const { User, Tenant, Contract, Room, BuildingCollaborator } = require("../models");
 const { writeAuditLog } = require("../utils/auditLog");
 const { hashPassword } = require("../utils/password");
 
 const AUTH_ATTRS = ["id", "name", "email", "phone", "role", "isActive", "currentSessionToken", "avatar", "cccd", "createdAt", "updatedAt"];
 
-// Danh sách userId mà chủ trọ được quản lý: khách thuê có hợp đồng trên phòng của họ
+// Danh sách userId mà chủ trọ được quản lý: khách thuê có hợp đồng trên phòng của mình
+// HOẶC trên các nhà được chia sẻ cho mình làm cộng tác viên
 async function getManageableUserIds(landlordId) {
-    const rooms = await Room.findAll({ where: { landlordId }, attributes: ["id"] });
+    const sharedBuildingIds = (await BuildingCollaborator.findAll({ where: { userId: landlordId }, attributes: ["buildingId"] })).map((b) => b.buildingId);
+    const rooms = await Room.findAll({
+        where: { [Op.or]: [{ landlordId }, ...(sharedBuildingIds.length ? [{ buildingId: { [Op.in]: sharedBuildingIds } }] : [])] },
+        attributes: ["id"]
+    });
     const roomIds = rooms.map((r) => r.id);
     if (!roomIds.length) return [];
     const contracts = await Contract.findAll({ where: { roomId: { [Op.in]: roomIds } }, attributes: ["tenantId"] });

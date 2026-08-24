@@ -2,9 +2,11 @@ const { Op } = require("sequelize");
 const { Notification, Room, Contract, Tenant } = require("../models");
 const telegram = require("../utils/telegram");
 const push = require("../utils/push");
+const { getAccessibleBuildingIds, roomAccessCondition } = require("../utils/buildingAccess");
 
 exports.getNotifications = async (req, res, next) => {
     try {
+        const accIds = await getAccessibleBuildingIds(req.user.id);
         const notifications = await Notification.findAll({
             where: { landlordId: req.user.id },
             order: [['createdAt', 'DESC']]
@@ -18,13 +20,15 @@ exports.getNotifications = async (req, res, next) => {
 exports.createNotification = async (req, res, next) => {
     try {
         const { title, content, targetType, targetRoomIds } = req.body;
+        const accIds = await getAccessibleBuildingIds(req.user.id);
+        const roomScope = roomAccessCondition(req.user.id, accIds);
 
         let activeContracts = [];
         if (targetType === 'all') {
             activeContracts = await Contract.findAll({
                 where: { status: 'active' },
                 include: [
-                    { model: Room, as: "room", where: { landlordId: req.user.id }, required: true },
+                    { model: Room, as: "room", where: roomScope, required: true },
                     { model: Tenant, as: "tenant", required: true }
                 ]
             });
@@ -34,7 +38,7 @@ exports.createNotification = async (req, res, next) => {
                 include: [
                     {
                         model: Room, as: "room",
-                        where: { id: { [Op.in]: targetRoomIds }, landlordId: req.user.id },
+                        where: { id: { [Op.in]: targetRoomIds }, ...roomScope },
                         required: true
                     },
                     { model: Tenant, as: "tenant", required: true }

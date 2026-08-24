@@ -1,6 +1,7 @@
 const { Op } = require("sequelize");
 const { Tenant, Contract, Room, Companion, Building, User } = require("../models");
 const { hashPassword } = require("../utils/password");
+const { getAccessibleBuildingIds } = require("../utils/buildingAccess");
 
 exports.getTenants = async (req, res, next) => {
     try {
@@ -8,6 +9,7 @@ exports.getTenants = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 20;
         const offset = (page - 1) * limit;
         const { search } = req.query;
+        const accIds = await getAccessibleBuildingIds(req.user.id);
         const where = {};
         if (search) {
             const like = { [Op.like]: `%${search}%` };
@@ -26,7 +28,7 @@ exports.getTenants = async (req, res, next) => {
             include: [
                 { model: Companion, as: "companions", attributes: ["id", "name", "phone", "cccd", "relationship", "telegramChatId", "fingerprintCode", "status", "endedAt", "createdAt", "updatedAt"] },
                 { model: Contract, as: "contracts",
-                  include: [{ model: Room, as: "room", attributes: ["room_number"], where: { landlordId: req.user.id }, include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
+                  include: [{ model: Room, as: "room", attributes: ["room_number"], where: { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } }, include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
                 }
             ],
             order: [['name', 'ASC']],
