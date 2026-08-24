@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { z } from "zod";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { loginSchema, registerSchema } from "../utils/authValidation";
+import { registerFormAction } from "../actions/authActions";
 import {
   Box, Paper, Tabs, Tab, TextField, Button, Typography, Alert, CircularProgress, IconButton, Avatar,
 } from "@mui/material";
@@ -17,73 +17,46 @@ const roleConfig = {
   tenant: { label: "Người thuê", icon: "👤" },
 };
 
-export default function LoginRegister() {
-  const { role } = useParams();
-  const { login, register, logout } = useAuth();
+export default function LoginRegister({ role = "tenant", loginAction }) {
+  const { adoptUser } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const config = roleConfig[role] || roleConfig.tenant;
 
-  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
-  const [regForm, setRegForm] = useState({ name: "", email: "", phone: "", cccd: "", password: "", confirmPassword: "" });
+  const [loginState, submitLogin, loginPending] = useActionState(loginAction, null);
+  const [registerState, submitRegister, registerPending] = useActionState(registerFormAction, null);
+
   const [companions, setCompanions] = useState([]);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [prefillEmail, setPrefillEmail] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault(); setError(""); setLoading(true);
-    try {
-      const validation = loginSchema.safeParse(loginForm);
-      if (!validation.success) {
-        setError(validation.error.errors[0].message);
-        setLoading(false);
-        return;
-      }
-      const user = await login(loginForm);
-      if (user.role !== role) {
+  useEffect(() => {
+    if (loginState?.error) setError(loginState.error);
+  }, [loginState]);
+
+  useEffect(() => {
+    if (loginState?.ok) {
+      if (loginState.user.role !== role) {
         setError(`Tài khoản này không phải là ${config.label.toLowerCase()}`);
         return;
       }
-      router.push(user.role === "landlord" ? "/landlord/dashboard" : "/tenant/dashboard");
-    } catch (err) {
-      const data = err.response?.data;
-      if (data?.error) setError(data.error.map(e => e.msg).join("; "));
-      else setError(data?.message || "Đăng nhập thất bại");
-    } finally { setLoading(false); }
-  };
+      adoptUser(loginState.user);
+      router.push(loginState.user.role === "landlord" ? "/landlord/dashboard" : "/tenant/dashboard");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loginState?.ok]);
 
-  const handleRegister = async (e) => {
-    e.preventDefault(); setError(""); setSuccessMsg("");
-    try {
-      const validation = registerSchema.safeParse(regForm);
-      if (!validation.success) {
-        setError(validation.error.errors[0].message);
-        setLoading(false);
-        return;
-      }
-      if (regForm.password !== regForm.confirmPassword) { setError("Mật khẩu xác nhận không khớp"); return; }
-      setLoading(true);
-      try {
-        const payload = { ...regForm, role, companions: companions.filter(c => c.name.trim()) };
-        await register(payload);
-        await logout();
-        setRegForm({ name: "", email: "", phone: "", cccd: "", password: "", confirmPassword: "" });
-        setCompanions([]);
-        setLoginForm({ email: payload.email, password: "" });
-        setSuccessMsg("Đăng ký thành công! Bạn chưa có phòng, vui lòng liên hệ chủ trọ để đăng ký. Bây giờ bạn có thể đăng nhập bằng email trên.");
-        setTab(0);
-      } catch (err) {
-        const data = err.response?.data;
-        if (data?.error) setError(data.error.map(e => e.msg).join("; "));
-        else setError(data?.message || "Đăng ký thất bại");
-      } finally { setLoading(false); }
-    } catch (err) {
-      const data = err.response?.data;
-      if (data?.error) setError(data.error.map(e => e.msg).join("; "));
-      else setError(data?.message || "Đăng ký thất bại");
-    } finally { setLoading(false); }
-  };
+  useEffect(() => {
+    if (registerState?.error) setError(registerState.error);
+    if (registerState?.ok) {
+      setError("");
+      setSuccessMsg("Đăng ký thành công! Bạn chưa có phòng, vui lòng liên hệ chủ trọ để đăng ký. Bây giờ bạn có thể đăng nhập bằng email trên.");
+      setCompanions([]);
+      setPrefillEmail(registerState.email);
+      setTab(0);
+    }
+  }, [registerState]);
 
   const addCompanion = () => setCompanions([...companions, { name: "", phone: "", cccd: "", relationship: "", telegramChatId: "" }]);
   const removeCompanion = (i) => setCompanions(companions.filter((_, idx) => idx !== i));
@@ -116,27 +89,29 @@ export default function LoginRegister() {
         </Tabs>
 
         <Box sx={{ p: 3 }}>
-          {error && <Alert severity="error" sx={{ mb: 2, borderRadius: "12x" }}>{error}</Alert>}
-          {successMsg && <Alert severity="success" sx={{ mb: 2, borderRadius: "12x" }}>{successMsg}</Alert>}
+          {error && <Alert severity="error" sx={{ mb: 2, borderRadius: "12px" }}>{error}</Alert>}
+          {successMsg && <Alert severity="success" sx={{ mb: 2, borderRadius: "12px" }}>{successMsg}</Alert>}
 
           {tab === 0 && (
-            <Box component="form" onSubmit={handleLogin}>
-              <TextField fullWidth label="Email" margin="normal" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} required />
-              <TextField fullWidth label="Mật khẩu" type="password" margin="normal" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} required />
-              <Button fullWidth variant="contained" type="submit" disabled={loading} sx={{ mt: 2, py: 1.5, fontSize: "0.8125rem" }}>
-                {loading ? <CircularProgress size={22} /> : "Đăng nhập"}
+            <Box component="form" action={submitLogin}>
+              <TextField fullWidth label="Email" name="email" margin="normal" required defaultValue={prefillEmail} key={prefillEmail} />
+              <TextField fullWidth label="Mật khẩu" type="password" name="password" margin="normal" required />
+              <Button fullWidth variant="contained" type="submit" disabled={loginPending} sx={{ mt: 2, py: 1.5, fontSize: "0.8125rem" }}>
+                {loginPending ? <CircularProgress size={22} /> : "Đăng nhập"}
               </Button>
             </Box>
           )}
 
           {tab === 1 && (
-            <Box component="form" onSubmit={handleRegister}>
-              <TextField fullWidth label="Họ tên" margin="normal" value={regForm.name} onChange={(e) => setRegForm({ ...regForm, name: e.target.value })} required />
-              <TextField fullWidth label="Email" type="email" margin="normal" value={regForm.email} onChange={(e) => setRegForm({ ...regForm, email: e.target.value })} required />
-              <TextField fullWidth label="Số điện thoại" margin="normal" value={regForm.phone} onChange={(e) => setRegForm({ ...regForm, phone: e.target.value })} required />
-              <TextField fullWidth label="CCCD" margin="normal" value={regForm.cccd} onChange={(e) => setRegForm({ ...regForm, cccd: e.target.value })} />
-              <TextField fullWidth label="Mật khẩu" type="password" margin="normal" value={regForm.password} onChange={(e) => setRegForm({ ...regForm, password: e.target.value })} required />
-              <TextField fullWidth label="Xác nhận mật khẩu" type="password" margin="normal" value={regForm.confirmPassword} onChange={(e) => setRegForm({ ...regForm, confirmPassword: e.target.value })} required />
+            <Box component="form" action={submitRegister}>
+              <TextField fullWidth label="Họ tên" name="name" margin="normal" required />
+              <TextField fullWidth label="Email" type="email" name="email" margin="normal" required />
+              <TextField fullWidth label="Số điện thoại" name="phone" margin="normal" required />
+              <TextField fullWidth label="CCCD" name="cccd" margin="normal" />
+              <TextField fullWidth label="Mật khẩu" type="password" name="password" margin="normal" required />
+              <TextField fullWidth label="Xác nhận mật khẩu" type="password" name="confirmPassword" margin="normal" required />
+
+              <input type="hidden" name="companions" value={JSON.stringify(companions.filter((c) => c.name.trim()))} />
 
               <Box sx={{ mt: 2, mb: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Typography variant="subtitle2">Người đi kèm</Typography>
@@ -152,8 +127,8 @@ export default function LoginRegister() {
                   <IconButton size="small" onClick={() => removeCompanion(i)}><DeleteIcon fontSize="small" /></IconButton>
                 </Box>
               ))}
-              <Button fullWidth variant="contained" type="submit" disabled={loading} sx={{ mt: 2, py: 1.5, fontSize: "0.8125rem" }}>
-                {loading ? <CircularProgress size={22} /> : "Đăng ký"}
+              <Button fullWidth variant="contained" type="submit" disabled={registerPending} sx={{ mt: 2, py: 1.5, fontSize: "0.8125rem" }}>
+                {registerPending ? <CircularProgress size={22} /> : "Đăng ký"}
               </Button>
             </Box>
           )}

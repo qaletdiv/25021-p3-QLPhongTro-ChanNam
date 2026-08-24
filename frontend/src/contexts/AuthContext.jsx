@@ -77,8 +77,14 @@ useEffect(() => {
     setUser(null);
   };
 
+  const adoptUser = (u) => {
+    setUser(u);
+    if (u) localStorage.setItem("user", JSON.stringify(u));
+    else localStorage.removeItem("user");
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, adoptUser }}>
       {children}
     </AuthContext.Provider>
   );

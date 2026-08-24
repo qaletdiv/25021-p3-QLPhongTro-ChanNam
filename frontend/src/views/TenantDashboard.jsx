@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, CircularProgress, Badge, IconButton, Menu, MenuItem, Divider, Typography, Button } from "@mui/material";
+import { Box, Badge, IconButton, Menu, MenuItem, Divider, Typography, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ReceiptIcon from "@mui/icons-material/Receipt";
@@ -9,26 +9,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import MessageDialog from "../components/MessageDialog";
 import TenantOverviewTab from "../components/tenant/TenantOverviewTab";
 import { currentMonthLabel } from "../utils/format";
-import tenantDashboardApi from "../api/tenantDashboardApi";
-import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import tenantNotificationApi from "../api/tenantNotificationApi";
 
-export default function TenantDashboard() {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [settings, setSettings] = useState(null);
+export default function TenantDashboard({ data, settings, notifInit }) {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
-  const [notifCount, setNotifCount] = useState(0);
-  const [notifItems, setNotifItems] = useState([]);
+  const [notifCount, setNotifCount] = useState(notifInit?.unreadCount || 0);
+  const [notifItems, setNotifItems] = useState(notifInit?.items || []);
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
-
-  useEffect(() => {
-    Promise.all([tenantDashboardApi.getDashboard(), tenantInvoiceApi.getInvoiceSettings()])
-      .then(([dashRes, setRes]) => { setData(dashRes.data); setSettings(setRes.data); })
-      .catch(() => setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" }))
-      .finally(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -41,7 +29,6 @@ export default function TenantDashboard() {
         })
         .catch(() => {});
     };
-    loadNotifs();
     const timer = setInterval(loadNotifs, 60000);
     return () => { active = false; clearInterval(timer); };
   }, []);
@@ -76,8 +63,6 @@ export default function TenantDashboard() {
   const roomPrice = Number(settings?.roomPrice || 0) || 3200000;
   const latestInvoice = contract?.invoices?.[0] || null;
   const calcTotal = latestInvoice ? Number(latestInvoice.total) || 0 : roomPrice + serviceFee;
-
-  if (loading) return <CircularProgress />;
 
   const kindIcon = (kind) => kind === "invoice"
     ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />

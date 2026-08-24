@@ -1,14 +1,79 @@
 'use server';
 
+import { z } from 'zod';
 import { serverFetch } from './serverFetch';
+
+const loginSchema = z.object({
+  email: z.string().email({ message: 'Email không hợp lệ' }),
+  password: z.string().min(6, { message: 'Mật khẩu tối thiểu 6 ký tự' }),
+});
+
+const registerSchema = z.object({
+  name: z.string().min(1, { message: 'Tên không được để trống' }),
+  email: z.string().email({ message: 'Email không hợp lệ' }),
+  phone: z.string().regex(/^(0|\+84)[3-9]\d{8,9}$/, { message: 'Số điện thoại không hợp lệ' }),
+  password: z.string().min(6, { message: 'Mật khẩu tối thiểu 6 ký tự' }),
+});
+
+function firstError(parsed) {
+  return parsed.error.errors[0]?.message || 'Dữ liệu không hợp lệ';
+}
+
+export async function loginFormAction(prevState, formData) {
+  const parsed = loginSchema.safeParse({
+    email: String(formData.get('email') || '').trim(),
+    password: String(formData.get('password') || ''),
+  });
+  if (!parsed.success) return { error: firstError(parsed) };
+  try {
+    const res = await serverFetch('/auth/login', { method: 'POST', body: JSON.stringify(parsed.data) });
+    return { ok: true, user: res.data.user };
+  } catch (err) {
+    const data = err.response?.data;
+    if (Array.isArray(data?.error)) return { error: data.error.map((e) => e.msg).join('; ') };
+    return { error: data?.message || 'Đăng nhập thất bại' };
+  }
+}
+
+export async function registerFormAction(prevState, formData) {
+  const raw = {
+    name: String(formData.get('name') || '').trim(),
+    email: String(formData.get('email') || '').trim(),
+    phone: String(formData.get('phone') || '').trim(),
+    cccd: String(formData.get('cccd') || '').trim(),
+    password: String(formData.get('password') || ''),
+    confirmPassword: String(formData.get('confirmPassword') || ''),
+  };
+  if (raw.password !== raw.confirmPassword) return { error: 'Mật khẩu xác nhận không khớp' };
+
+  let companions = [];
+  try { companions = JSON.parse(String(formData.get('companions') || '[]')); } catch { companions = []; }
+
+  const parsed = registerSchema.safeParse(raw);
+  if (!parsed.success) return { error: firstError(parsed) };
+
+  const payload = { ...parsed.data, role: 'tenant', cccd: raw.cccd || undefined, companions };
+  try {
+    await serverFetch('/auth/register', { method: 'POST', body: JSON.stringify(payload) });
+    try { await serverFetch('/auth/logout', { method: 'POST' }); } catch { /* ignore */ }
+    return { ok: true, email: raw.email };
+  } catch (err) {
+    const data = err.response?.data;
+    if (Array.isArray(data?.error)) return { error: data.error.map((e) => e.msg).join('; ') };
+    return { error: data?.message || 'Đăng ký thất bại' };
+  }
+}
+
+export async function getPdfUrl(id) {
+  return `/api/contracts/${id}/pdf`;
+}
 
 export async function register(data) {
   return serverFetch('/auth/register', { method: 'POST', body: JSON.stringify(data) });
 }
 
 export async function login(data) {
-  const res = await serverFetch('/auth/login', { method: 'POST', body: JSON.stringify(data) });
-  return res;
+  return serverFetch('/auth/login', { method: 'POST', body: JSON.stringify(data) });
 }
 
 export async function logout() {
@@ -17,4 +82,12 @@ export async function logout() {
 
 export async function getMe() {
   return serverFetch('/auth/me', { method: 'GET' });
+}
+
+export async function getTemplate() {
+  return serverFetch('/contracts/template', { method: 'GET' });
+}
+
+export async function saveTemplate(data) {
+  return serverFetch('/contracts/template', { method: 'PUT', body: JSON.stringify(data) });
 }

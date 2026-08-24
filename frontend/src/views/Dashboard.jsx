@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Grid, CircularProgress, Alert, Badge, Icon, Menu, MenuItem, Divider, Typography, Skeleton, IconButton } from "@mui/material";
+import { Box, Grid, Badge, Icon, Menu, MenuItem, Divider, Typography, IconButton } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BugReportIcon from "@mui/icons-material/BugReport";
@@ -14,34 +14,11 @@ import PriceHistoryChart from "../components/dashboard/PriceHistoryChart";
 import dashboardApi from "../api/dashboardApi";
 import { useRouter } from "next/navigation";
 
-export default function Dashboard() {
-  const [stats, setStats] = useState(null);
-  const [expiring, setExpiring] = useState([]);
-  const [chartData, setChartData] = useState([]);
-  const [statsLoading, setStatsLoading] = useState(true);
-  const [expiringLoading, setExpiringLoading] = useState(true);
-  const [chartLoading, setChartLoading] = useState(true);
-  const [error, setError] = useState("");
+export default function Dashboard({ stats, revenue, expiring }) {
   const [notifCount, setNotifCount] = useState(0);
   const [notifItems, setNotifItems] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
-
-  useEffect(() => {
-    Promise.all([dashboardApi.getStats(), dashboardApi.getExpiringContracts(), dashboardApi.getMonthlyRevenue()])
-      .then(([statsRes, expiringRes, revRes]) => {
-        setStats(statsRes.data);
-        setExpiring(expiringRes.data.contracts);
-        setChartData(revRes.data.chartData || []);
-        setStatsLoading(false);
-        setExpiringLoading(false);
-        setChartLoading(false);
-      })
-      .catch((err) => setError(err.response?.data?.message || "Lỗi tải dữ liệu"))
-      .finally(() => {
-        // Don't set all loading to false here - handled individually
-      });
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -77,19 +54,6 @@ export default function Dashboard() {
   const kindIcon = (kind) => kind === "invoice"
     ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />
     : <BugReportIcon sx={{ fontSize: 18, color: "#d97706" }} />;
-
-if (statsLoading || expiringLoading || chartLoading) {
-    return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3, p: 4, textAlign: "center" }}>
-        <CircularProgress />
-        <Skeleton animation="wave" variant="rectangular" />
-        <Skeleton animation="wave" variant="rectangular" />
-        <Skeleton animation="wave" variant="rectangular" width="70%" />
-      </Box>
-    );
-  }
-
-  if (error) return <Alert severity="error" sx={{ borderRadius: "12px" }}>{error}</Alert>;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -127,30 +91,28 @@ if (statsLoading || expiringLoading || chartLoading) {
 
       <DashboardBanner onNavigate={navigate} />
 
-      {statsLoading ? <KpiSkeleton /> : (
-        <KpiCards
-          totalRooms={totalRooms}
-          rentedRooms={rentedRooms}
-          vacantRooms={vacantRooms}
-          currentTenants={currentTenants}
-          occupancyRate={occupancyRate}
-          monthlyRevenue={stats?.monthlyRevenue}
-          totalDebt={stats?.totalDebt}
-        />
-      )}
+      <KpiCards
+        totalRooms={totalRooms}
+        rentedRooms={rentedRooms}
+        vacantRooms={vacantRooms}
+        currentTenants={currentTenants}
+        occupancyRate={occupancyRate}
+        monthlyRevenue={stats?.monthlyRevenue}
+        totalDebt={stats?.totalDebt}
+      />
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, lg: 8 }}>
-          {chartLoading ? <Skeleton animation="wave" variant="rectangular" /> : <RevenueChart data={chartData} monthlyRevenue={stats?.monthlyRevenue} />}
+          <RevenueChart data={revenue} monthlyRevenue={stats?.monthlyRevenue} />
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
-          {expiringLoading ? <Skeleton animation="wave" variant="rectangular" /> : <ExpiringContracts expiring={expiring} onManage={navigate} />}
+          <ExpiringContracts expiring={expiring} onManage={navigate} />
         </Grid>
         <Grid size={{ xs: 12 }}>
-          {chartLoading ? <Skeleton animation="wave" variant="rectangular" /> : <UtilityUsageChart />}
+          <UtilityUsageChart />
         </Grid>
         <Grid size={{ xs: 12 }}>
-          {chartLoading ? <Skeleton animation="wave" variant="rectangular" /> : <PriceHistoryChart />}
+          <PriceHistoryChart />
         </Grid>
       </Grid>
     </Box>
