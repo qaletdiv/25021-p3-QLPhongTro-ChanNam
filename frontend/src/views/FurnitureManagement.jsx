@@ -9,9 +9,9 @@ import FurnitureModal from "../components/furniture/FurnitureModal";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import furnitureApi from "../api/furnitureApi";
 
-export default function FurnitureManagement() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function FurnitureManagement({ initialItems = [] }) {
+  const [items, setItems] = useState(initialItems);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deleteItemId, setDeleteItemId] = useState(null);
@@ -23,7 +23,7 @@ export default function FurnitureManagement() {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { fetchItems(); }, [fetchItems]);
+  // Dữ liệu ban đầu được fetch server-side; fetchItems chỉ dùng sau mutations
 
   const openCreate = () => { setEditItem(null); setOpen(true); };
 

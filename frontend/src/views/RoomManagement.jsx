@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Box, Typography, Paper, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ApartmentIcon from "@mui/icons-material/Apartment";
@@ -15,10 +15,10 @@ import contractApi from "../api/contractApi";
 import furnitureApi from "../api/furnitureApi";
 import buildingApi from "../api/buildingApi";
 
-export default function RoomManagement() {
-  const [rooms, setRooms] = useState([]);
-  const [buildings, setBuildings] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function RoomManagement({ initialRooms = [], initialBuildings = [] }) {
+  const [rooms, setRooms] = useState(initialRooms);
+  const [buildings, setBuildings] = useState(initialBuildings);
+  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [buildingFilter, setBuildingFilter] = useState("all");
@@ -51,7 +51,12 @@ export default function RoomManagement() {
     catch { /* bo qua */ }
   }, []);
 
-  useEffect(() => { fetchBuildings(); fetchRooms(); }, [fetchBuildings, fetchRooms]);
+  // Dữ liệu ban đầu được fetch server-side; chỉ refetch khi đổi filter nhà trọ
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
+    fetchRooms();
+  }, [fetchRooms]);
 
   const filteredRooms = rooms.filter((r) => {
     if (filter !== "all" && r.status !== filter) return false;

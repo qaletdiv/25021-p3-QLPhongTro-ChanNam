@@ -11,9 +11,9 @@ import issueApi from "../api/issueApi";
 
 const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
 
-export default function IssueManagement() {
-  const [issues, setIssues] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function IssueManagement({ initialIssues = [] }) {
+  const [issues, setIssues] = useState(initialIssues);
+  const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
   const fetchData = useCallback(async () => {
@@ -27,7 +27,7 @@ export default function IssueManagement() {
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  // Dữ liệu ban đầu được fetch server-side; fetchData chỉ dùng sau mutations
 
   const handleResolve = async (id) => {
     try {

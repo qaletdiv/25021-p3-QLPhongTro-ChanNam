@@ -17,11 +17,11 @@ import useTenantEditor from "../hooks/useTenantEditor";
 import useContractEditor from "../hooks/useContractEditor";
 import useCheckout from "../hooks/useCheckout";
 
-export default function TenantManagement() {
+export default function TenantManagement({ initialTenants = [], initialBuildings = [] }) {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const notify = useCallback((message, severity = "success") => setSnack({ open: true, message, severity }), []);
 
-  const list = useTenantList({ notify });
+  const list = useTenantList({ notify, initialTenants, initialBuildings });
   const formState = useContractFormState();
   const tenantEditor = useTenantEditor({ notify, fetchTenants: list.fetchTenants, formState });
   const contractEditor = useContractEditor({ notify, fetchTenants: list.fetchTenants, formState });

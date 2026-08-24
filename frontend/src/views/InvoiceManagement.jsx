@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Box, Typography, Paper, CircularProgress, MenuItem, TextField, InputAdornment } from "@mui/material";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -23,11 +23,11 @@ const monthOptions = () => {
   return options;
 };
 
-export default function InvoiceManagement() {
-  const [invoices, setInvoices] = useState([]);
-  const [buildings, setBuildings] = useState([]);
-  const [settings, setSettings] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function InvoiceManagement({ initialInvoices = [], initialSettings = null, initialBuildings = [] }) {
+  const [invoices, setInvoices] = useState(initialInvoices);
+  const [buildings, setBuildings] = useState(initialBuildings);
+  const [settings, setSettings] = useState(initialSettings);
+  const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [buildingFilter, setBuildingFilter] = useState("all");
   const [monthFilter, setMonthFilter] = useState(currentMonthLabel());
@@ -52,7 +52,12 @@ export default function InvoiceManagement() {
     } finally { setLoading(false); }
   }, [monthFilter]);
 
-  useEffect(() => { fetchInvoices(); }, [fetchInvoices]);
+  // Dữ liệu ban đầu được fetch server-side; chỉ refetch khi đổi tháng lọc
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
+    fetchInvoices();
+  }, [fetchInvoices]);
 
   const filteredInvoices = invoices.filter((inv) => {
     if (filterStatus !== "all" && inv.status !== filterStatus) return false;

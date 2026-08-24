@@ -11,9 +11,9 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import BuildingModal from "../components/building/BuildingModal";
 import buildingApi from "../api/buildingApi";
 
-export default function BuildingManagement() {
-  const [buildings, setBuildings] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function BuildingManagement({ initialBuildings = [] }) {
+  const [buildings, setBuildings] = useState(initialBuildings);
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deleteItemId, setDeleteItemId] = useState(null);
@@ -25,7 +25,7 @@ export default function BuildingManagement() {
     finally { setLoading(false); }
   }, []);
 
-  useEffect(() => { fetchBuildings(); }, [fetchBuildings]);
+  // Dữ liệu ban đầu được fetch server-side; fetchBuildings chỉ dùng sau mutations
 
   const openCreate = () => { setEditItem(null); setOpen(true); };
   const openEdit = (item) => { setEditItem(item); setOpen(true); };

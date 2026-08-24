@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import tenantApi from "../api/tenantApi";
-import buildingApi from "../api/buildingApi";
 
-export default function useTenantList({ notify }) {
-  const [tenants, setTenants] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function useTenantList({ notify, initialTenants = [], initialBuildings = [] }) {
+  const [tenants, setTenants] = useState(initialTenants);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("renting");
   const [companionStatus, setCompanionStatus] = useState("all");
@@ -12,16 +11,10 @@ export default function useTenantList({ notify }) {
   const [dateTo, setDateTo] = useState("");
   const [ttFrom, setTtFrom] = useState("");
   const [ttTo, setTtTo] = useState("");
-  const [buildings, setBuildings] = useState([]);
+  const [buildings, setBuildings] = useState(initialBuildings);
   const [buildingFilter, setBuildingFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
-
-  useEffect(() => {
-    buildingApi.getAll()
-      .then((res) => setBuildings(res.data.buildings || []))
-      .catch(() => {});
-  }, []);
 
   const fetchTenants = useCallback(async () => {
     try {
@@ -35,7 +28,12 @@ export default function useTenantList({ notify }) {
     }
   }, [search, page, limit, notify]);
 
-  useEffect(() => { fetchTenants(); }, [fetchTenants]);
+  // Dữ liệu ban đầu được fetch server-side; chỉ refetch khi đổi search/page/limit
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
+    fetchTenants();
+  }, [fetchTenants]);
 
   const filteredTenants = tenants.filter((tenant) => {
     const active = tenant.contracts?.find((c) => c.status === "active");
