@@ -6,6 +6,9 @@ exports.getAuditLogs = async (req, res, next) => {
         const { search, action, from, to, entityType, page = 1 } = req.query;
         const where = {};
 
+        // Chỉ cho phép chủ trọ xem nhật ký do chính mình tạo
+        where.actorId = req.user.id;
+
         if (action && action !== "all") where.action = action;
         if (entityType && entityType !== "all") where.entityType = entityType;
 

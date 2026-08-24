@@ -1,15 +1,32 @@
 const { Op } = require("sequelize");
-const { User, Tenant } = require("../models");
+const { User, Tenant, Contract, Room } = require("../models");
 const { writeAuditLog } = require("../utils/auditLog");
 const { hashPassword } = require("../utils/password");
 
 const AUTH_ATTRS = ["id", "name", "email", "phone", "role", "isActive", "currentSessionToken", "avatar", "cccd", "createdAt", "updatedAt"];
+
+// Danh sách userId mà chủ trọ được quản lý: khách thuê có hợp đồng trên phòng của họ
+async function getManageableUserIds(landlordId) {
+    const rooms = await Room.findAll({ where: { landlordId }, attributes: ["id"] });
+    const roomIds = rooms.map((r) => r.id);
+    if (!roomIds.length) return [];
+    const contracts = await Contract.findAll({ where: { roomId: { [Op.in]: roomIds } }, attributes: ["tenantId"] });
+    const tenantIds = [...new Set(contracts.map((c) => c.tenantId).filter(Boolean))];
+    if (!tenantIds.length) return [];
+    const tenants = await Tenant.findAll({ where: { id: { [Op.in]: tenantIds } }, attributes: ["userId"] });
+    return [...new Set(tenants.map((t) => t.userId).filter(Boolean))];
+}
 
 exports.getUsers = async (req, res, next) => {
     try {
         const { search, role, active } = req.query;
         const where = { [Op.and]: [] };
         where[Op.and].push({ role: { [Op.not]: "landlord" } });
+
+        // Chỉ xem tài khoản khách thuê thuộc phòng trọ của mình (data isolation)
+        const manageable = await getManageableUserIds(req.user.id);
+        where[Op.and].push({ id: manageable.length ? manageable : [-1] });
+
         if (search) {
             where[Op.and].push({
                 [Op.or]: [
@@ -59,6 +76,11 @@ exports.revokeSession = async (req, res, next) => {
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng." });
 
+        const manageable = await getManageableUserIds(req.user.id);
+        if (!manageable.includes(Number(id))) {
+            return res.status(403).json({ message: "Bạn không có quyền thao tác trên tài khoản này." });
+        }
+
         await user.update({ currentSessionToken: null });
         await writeAuditLog({ actorId: req.user.id, action: "account.revoke_session", targetType: "user", targetId: Number(id), metadata: { targetName: user.name, targetEmail: user.email } });
         res.json({ message: "Đã thu hồi phiên đăng nhập của tài khoản này." });
@@ -76,6 +98,11 @@ exports.disableAccount = async (req, res, next) => {
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
 
+        const manageableDisable = await getManageableUserIds(req.user.id);
+        if (!manageableDisable.includes(Number(id))) {
+            return res.status(403).json({ message: "Bạn không có quyền thao tác trên tài khoản này." });
+        }
+
         await user.update({ isActive: false, currentSessionToken: null });
         await writeAuditLog({ actorId: req.user.id, action: "user.disable", targetType: "user", targetId: Number(id), metadata: { targetName: user.name, targetEmail: user.email } });
         res.json({ message: "Đã vô hiệu hóa tài khoản." });
@@ -89,6 +116,11 @@ exports.enableAccount = async (req, res, next) => {
         const { id } = req.params;
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+
+        const manageableEnable = await getManageableUserIds(req.user.id);
+        if (!manageableEnable.includes(Number(id))) {
+            return res.status(403).json({ message: "Bạn không có quyền thao tác trên tài khoản này." });
+        }
 
         await user.update({ isActive: true });
         await writeAuditLog({ actorId: req.user.id, action: "user.enable", targetType: "user", targetId: Number(id), metadata: { targetName: user.name, targetEmail: user.email } });
@@ -110,6 +142,11 @@ exports.changePassword = async (req, res, next) => {
         }
         const user = await User.findByPk(id, { include: [{ model: Tenant, as: "tenants", attributes: ["id"] }] });
         if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+
+        const manageablePwd = await getManageableUserIds(req.user.id);
+        if (!manageablePwd.includes(Number(id))) {
+            return res.status(403).json({ message: "Bạn không có quyền thao tác trên tài khoản này." });
+        }
 
         const hashed = await hashPassword(String(newPassword));
         await user.update({ password: hashed, currentSessionToken: null });
