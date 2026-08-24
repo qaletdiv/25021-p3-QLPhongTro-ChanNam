@@ -20,6 +20,9 @@ function firstError(parsed) {
 }
 
 export async function loginFormAction(prevState, formData) {
+  if (!(formData instanceof FormData)) {
+    return { error: 'Trang đã cũ, vui lòng tải lại (F5) và thử lại.' };
+  }
   const parsed = loginSchema.safeParse({
     email: String(formData.get('email') || '').trim(),
     password: String(formData.get('password') || ''),
@@ -36,6 +39,9 @@ export async function loginFormAction(prevState, formData) {
 }
 
 export async function registerFormAction(prevState, formData) {
+  if (!(formData instanceof FormData)) {
+    return { error: 'Trang đã cũ, vui lòng tải lại (F5) và thử lại.' };
+  }
   const raw = {
     name: String(formData.get('name') || '').trim(),
     email: String(formData.get('email') || '').trim(),
