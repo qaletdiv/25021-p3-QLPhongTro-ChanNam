@@ -108,267 +108,236 @@ export default function Settings({ initialSettings = null, initialBuildings = []
     }
   };
 
-  const sectionSx = { bgcolor: "#fff", p: 3, borderRadius: "16px", border: "1px solid #e2e8f0" };
+  const sectionSx = { bgcolor: "#fff", p: 2, borderRadius: "16px", border: "1px solid #e2e8f0" };
+  const fieldSx = { "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } };
+  const labelSx = { fontSize: "0.6875rem", fontWeight: 700, color: "#334155", mb: 0.5 };
+  const headSx = (icon, color, title) => (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 1, mb: 1.5, borderBottom: "1px solid #f1f5f9" }}>
+      {icon}
+      <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>{title}</Typography>
+    </Box>
+  );
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      {/* Header */}
-      <Box>
-        <Typography variant="h5" fontWeight="bold">Cài Đặt Cấu Hình Hệ Thống Chung</Typography>
-        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>
-          Cấu hình đơn giá tiện ích điện nước, tài khoản ngân hàng VietQR, token kết nối Telegram Bot và thông tin vận hành.
-        </Typography>
-      </Box>
-
-      {/* Building scope selector */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+      {/* Header + phạm vi cấu hình trên cùng một hàng */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1.5 }}>
+        <Box>
+          <Typography variant="h6" fontWeight="bold">Cài Đặt Cấu Hình Hệ Thống</Typography>
+          <Typography sx={{ fontSize: "0.72rem", color: "#64748b" }}>
+            Đơn giá điện nước, VietQR, Telegram Bot và cộng tác viên quản lý nhà.
+          </Typography>
+        </Box>
         <TextField
           select size="small" value={buildingId} onChange={(e) => handleBuildingChange(e.target.value)}
           slotProps={{ input: { startAdornment: (<InputAdornment position="start"><ApartmentIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) } }}
-          sx={{ minWidth: 320, "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
+          sx={{ minWidth: 300, "& .MuiSelect-select": { py: 1, fontSize: "0.75rem", fontWeight: 600 } }}
         >
           <MenuItem value="">Mặc định (áp dụng cho tất cả nhà)</MenuItem>
           {buildings.map((b) => (
             <MenuItem key={b.id} value={String(b.id)}>Cấu hình riêng: {b.name}</MenuItem>
           ))}
         </TextField>
-        {buildingId && (
-          <Typography sx={{ fontSize: "0.6875rem", color: "#d97706", fontWeight: 600 }}>
-            Đang chỉnh cấu hình riêng cho nhà này, sẽ ghi đè cấu hình mặc định.
-          </Typography>
-        )}
       </Box>
 
       {savedMsg && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 2, bgcolor: "#d1fae5", color: "#065f46", fontSize: "0.75rem", fontWeight: 700, borderRadius: "16px", border: "1px solid #a7f3d0" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 2, py: 1.25, bgcolor: "#d1fae5", color: "#065f46", fontSize: "0.75rem", fontWeight: 700, borderRadius: "12px", border: "1px solid #a7f3d0" }}>
           <CheckCircleIcon sx={{ fontSize: 18, color: "#059669" }} />
           <span>{savedMsg}</span>
         </Box>
       )}
 
-      <Box component="form" onSubmit={handleSave} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        {/* 1. Đơn giá */}
-        <Box sx={sectionSx}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
-            <BoltIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>1. Đơn Giá Tiện Ích & Dịch Vụ Mặc Định</Typography>
-          </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Điện (đ/kWh)</Typography>
-              <MoneyField fullWidth value={form.electricityRate || ""} onChange={(v) => set("electricityRate", v)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Đơn Giá Nước (đ/m³)</Typography>
-              <MoneyField fullWidth value={form.waterRate || ""} onChange={(v) => set("waterRate", v)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Phí Dịch Vụ & Rác (đ/tháng)</Typography>
-              <MoneyField fullWidth value={form.serviceFee || ""} onChange={(v) => set("serviceFee", v)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-          </Box>
-        </Box>
-
-        {/* 2. Ngân hàng VietQR */}
-        <Box sx={sectionSx}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
-            <CreditCardIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>2. Thông Tin Ngân Hàng Tích Hợp VietQR Automate</Typography>
-          </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "2fr 1fr 1fr 1fr" }, gap: 2 }}>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Ngân Hàng</Typography>
-              <TextField
-                select fullWidth size="small" value={form.bankName || ""}
-                onChange={(e) => set("bankName", e.target.value)}
-                placeholder="Chọn ngân hàng"
-                renderValue={(selected) => {
-                  const b = banks.find((x) => x.shortName === selected);
-                  if (!b) return selected;
-                  return (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                      {b.logo && (
-                        <img src={b.logo} alt={b.shortName} style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 6 }} />
-                      )}
-                      <span>{b.shortName}</span>
-                    </Box>
-                  );
-                }}
-                sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
-              >
-                <MenuItem value="">-- Chọn ngân hàng --</MenuItem>
-                {banks.map((b) => (
-                  <MenuItem key={b.bin} value={b.shortName}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                      {b.logo && (
-                        <img src={b.logo} alt={b.shortName} style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 6 }} />
-                      )}
-                      <span>{b.shortName} ({b.name})</span>
-                    </Box>
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Tài Khoản</Typography>
-              <TextField fullWidth placeholder="0988776655" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Tên Chủ Tài Khoản</Typography>
-              <TextField fullWidth placeholder="NGUYEN VAN A" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} slotProps={{ htmlInput: { style: { textTransform: "uppercase", fontWeight: 700 } } }} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chi Nhánh Ngân Hàng</Typography>
-              <TextField fullWidth placeholder="Chi nhánh Hà Nội" value={form.bankBranch || ""} onChange={(e) => set("bankBranch", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-            </Box>
-          </Box>
-        </Box>
-
-        {/* 3. Telegram Bot */}
-        <Box sx={sectionSx}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
-            <MessageIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>3. Cấu Hình Telegram Bot Gửi Thông Báo</Typography>
-          </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr 1fr" }, gap: 2, alignItems: "center" }}>
-            <Box sx={{ gridColumn: { xs: "1", sm: "1 / 2", lg: "1 / 3" } }}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Telegram Bot Token (lấy từ @BotFather)</Typography>
-              <TextField fullWidth type="password" placeholder="123456:ABC-DEF..." value={form.telegramBotToken || ""} onChange={(e) => set("telegramBotToken", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-              <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.75 }}>
-                Khách thuê cần nhập Telegram Chat ID trong mục "Hồ sơ cá nhân" để nhận thông báo.
-              </Typography>
-            </Box>
-            <Box sx={{ gridColumn: { xs: "1", sm: "2 / -1", lg: "3 / -1" }, display: "flex", flexDirection: "column", gap: 0.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-              <FormControlLabel
-                control={<Checkbox size="small" checked={form.autoReminderEnabled !== "false"} onChange={(e) => set("autoReminderEnabled", e.target.checked ? "true" : "false")} />}
-                label={<Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>Bật Tự Động Nhắc Nợ Qua Telegram</Typography>}
-              />
-              <Typography sx={{ fontSize: "0.6875rem", color: "#64748b", pl: 0.5 }}>
-                Hệ thống tự gửi nhắc nợ vào đúng ngày thu tiền của TỪNG PHÒNG (theo "Ngày thu" trong hợp đồng), mỗi tháng 1 lần cho mỗi phòng.
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 2 }}>
-            <Button variant="outlined" size="small" onClick={handleTestTelegram}
-              sx={{ textTransform: "none", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", borderColor: "#cbd5e1", color: "#334155", "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" } }}>
-              Kiểm Tra Kết Nối Bot
-            </Button>
-            {checkMsg && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, borderRadius: "10px", fontSize: "0.75rem", fontWeight: 700,
-                bgcolor: checkMsg.ok ? "#d1fae5" : "#fee2e2", color: checkMsg.ok ? "#065f46" : "#991b1b", border: `1px solid ${checkMsg.ok ? "#a7f3d0" : "#fecaca"}` }}>
-                {checkMsg.ok ? <CheckCircleIcon sx={{ fontSize: 16 }} /> : <BoltIcon sx={{ fontSize: 16 }} />}
-                <span>{checkMsg.message}</span>
+      <Box component="form" onSubmit={handleSave} sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" }, gap: 1.5, alignItems: "start" }}>
+          {/* 1. Đơn giá */}
+          <Box sx={sectionSx}>
+            {headSx(<BoltIcon sx={{ fontSize: 16, color: "#2563eb" }} />, "#2563eb", "1. Đơn Giá Tiện Ích & Dịch Vụ")}
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 1.5 }}>
+              <Box>
+                <Typography sx={labelSx}>Điện (đ/kWh)</Typography>
+                <MoneyField fullWidth value={form.electricityRate || ""} onChange={(v) => set("electricityRate", v)} sx={fieldSx} />
               </Box>
-            )}
+              <Box>
+                <Typography sx={labelSx}>Nước (đ/m³)</Typography>
+                <MoneyField fullWidth value={form.waterRate || ""} onChange={(v) => set("waterRate", v)} sx={fieldSx} />
+              </Box>
+              <Box>
+                <Typography sx={labelSx}>Phí Dịch Vụ (đ/tháng)</Typography>
+                <MoneyField fullWidth value={form.serviceFee || ""} onChange={(v) => set("serviceFee", v)} sx={fieldSx} />
+              </Box>
+            </Box>
           </Box>
-        </Box>
 
-        {/* 4. Chủ trọ */}
-        <Box sx={sectionSx}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
-            <PersonIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>4. Thông Tin Chủ Trọ Quản Lý</Typography>
+          {/* 2. Ngân hàng VietQR */}
+          <Box sx={sectionSx}>
+            {headSx(<CreditCardIcon sx={{ fontSize: 16, color: "#2563eb" }} />, "#2563eb", "2. Ngân Hàng VietQR")}
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5 }}>
+              <Box>
+                <Typography sx={labelSx}>Tên Ngân Hàng</Typography>
+                <TextField
+                  select fullWidth size="small" value={form.bankName || ""}
+                  onChange={(e) => set("bankName", e.target.value)}
+                  placeholder="Chọn ngân hàng"
+                  renderValue={(selected) => {
+                    const b = banks.find((x) => x.shortName === selected);
+                    if (!b) return selected;
+                    return (
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                        {b.logo && (<img src={b.logo} alt={b.shortName} style={{ width: 24, height: 24, objectFit: "contain", borderRadius: 6 }} />)}
+                        <span>{b.shortName}</span>
+                      </Box>
+                    );
+                  }}
+                  sx={fieldSx}
+                >
+                  <MenuItem value="">-- Chọn ngân hàng --</MenuItem>
+                  {banks.map((b) => (
+                    <MenuItem key={b.bin} value={b.shortName}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                        {b.logo && (<img src={b.logo} alt={b.shortName} style={{ width: 24, height: 24, objectFit: "contain", borderRadius: 6 }} />)}
+                        <span>{b.shortName} ({b.name})</span>
+                      </Box>
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Box>
+              <Box>
+                <Typography sx={labelSx}>Số Tài Khoản</Typography>
+                <TextField fullWidth size="small" placeholder="0988776655" value={form.bankAccount || ""} onChange={(e) => set("bankAccount", e.target.value)} sx={fieldSx} />
+              </Box>
+              <Box>
+                <Typography sx={labelSx}>Tên Chủ Tài Khoản</Typography>
+                <TextField fullWidth size="small" placeholder="NGUYEN VAN A" value={form.bankHolder || ""} onChange={(e) => set("bankHolder", e.target.value)} slotProps={{ htmlInput: { style: { textTransform: "uppercase", fontWeight: 700 } } }} sx={fieldSx} />
+              </Box>
+              <Box>
+                <Typography sx={labelSx}>Chi Nhánh</Typography>
+                <TextField fullWidth size="small" placeholder="Chi nhánh Hà Nội" value={form.bankBranch || ""} onChange={(e) => set("bankBranch", e.target.value)} sx={fieldSx} />
+              </Box>
+            </Box>
           </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 2 }}>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Chủ Trọ</Typography>
-              <TextField fullWidth value={form.landlordName || ""} onChange={(e) => set("landlordName", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+
+          {/* 3. Telegram Bot */}
+          <Box sx={sectionSx}>
+            {headSx(<MessageIcon sx={{ fontSize: 16, color: "#2563eb" }} />, "#2563eb", "3. Telegram Bot Gửi Thông Báo")}
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 1.5, alignItems: "start" }}>
+              <Box>
+                <Typography sx={labelSx}>Bot Token (@BotFather)</Typography>
+                <TextField fullWidth size="small" type="password" placeholder="123456:ABC-DEF..." value={form.telegramBotToken || ""} onChange={(e) => set("telegramBotToken", e.target.value)} sx={fieldSx} />
+                <Button variant="outlined" size="small" type="button" onClick={handleTestTelegram}
+                  sx={{ mt: 1, textTransform: "none", fontSize: "0.7rem", fontWeight: 700, borderRadius: "10px", borderColor: "#cbd5e1", color: "#334155", "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" } }}>
+                  Kiểm Tra Kết Nối
+                </Button>
+              </Box>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5, p: 1.25, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+                <FormControlLabel
+                  control={<Checkbox size="small" checked={form.autoReminderEnabled !== "false"} onChange={(e) => set("autoReminderEnabled", e.target.checked ? "true" : "false")} />}
+                  label={<Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#0f172a" }}>Bật Tự Động Nhắc Nợ Qua Telegram</Typography>}
+                />
+                <Typography sx={{ fontSize: "0.65rem", color: "#64748b" }}>
+                  Tự gửi nhắc nợ vào ngày thu tiền của từng phòng, mỗi tháng 1 lần.
+                </Typography>
+                {checkMsg && (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1, py: 0.5, borderRadius: "8px", fontSize: "0.68rem", fontWeight: 700,
+                    bgcolor: checkMsg.ok ? "#d1fae5" : "#fee2e2", color: checkMsg.ok ? "#065f46" : "#991b1b" }}>
+                    <span>{checkMsg.message}</span>
+                  </Box>
+                )}
+              </Box>
             </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại Liên Hệ</Typography>
-              <TextField fullWidth value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
+          </Box>
+
+          {/* 4 + 5. Chủ trọ & Thông báo đẩy */}
+          <Box sx={sectionSx}>
+            {headSx(<PersonIcon sx={{ fontSize: 16, color: "#2563eb" }} />, "#2563eb", "4. Chủ Trọ & Thông Báo Đẩy")}
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" }, gap: 1.5 }}>
+              <Box>
+                <Typography sx={labelSx}>Họ & Tên Chủ Trọ</Typography>
+                <TextField fullWidth size="small" value={form.landlordName || ""} onChange={(e) => set("landlordName", e.target.value)} sx={fieldSx} />
+              </Box>
+              <Box>
+                <Typography sx={labelSx}>SĐT Liên Hệ</Typography>
+                <TextField fullWidth size="small" value={form.landlordPhone || ""} onChange={(e) => set("landlordPhone", e.target.value)} sx={fieldSx} />
+              </Box>
+              <Box>
+                <Typography sx={labelSx}>Telegram ID Chủ Trọ</Typography>
+                <TextField fullWidth size="small" value={form.landlordTelegramId || ""} onChange={(e) => set("landlordTelegramId", e.target.value)} placeholder="667203953" sx={fieldSx} />
+              </Box>
             </Box>
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Telegram ID Chủ Trọ</Typography>
-              <TextField fullWidth value={form.landlordTelegramId || ""} onChange={(e) => set("landlordTelegramId", e.target.value)} placeholder="Ví dụ: 667203953" sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }} />
-              <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 0.75 }}>
-                Chủ trọ sẽ nhận thông báo báo hỏng & hóa đơn mới qua Telegram kèm link xem chi tiết.
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 1.5, flexWrap: "wrap" }}>
+              <Button variant="outlined" size="small" type="button" onClick={handleEnablePush}
+                sx={{ textTransform: "none", fontSize: "0.7rem", fontWeight: 700, borderRadius: "10px", borderColor: "#cbd5e1", color: "#334155", "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" } }}>
+                Bật Thông Báo Đẩy
+              </Button>
+              {pushMsg && (
+                <Typography sx={{ fontSize: "0.68rem", fontWeight: 700, color: pushMsg.startsWith("Đã") ? "#065f46" : "#d97706" }}>{pushMsg}</Typography>
+              )}
+              <Typography sx={{ fontSize: "0.65rem", color: "#94a3b8" }}>
+                Nhận thông báo trong trình duyệt khi có báo hỏng / hóa đơn mới.
               </Typography>
             </Box>
           </Box>
         </Box>
 
-        {/* 5. Thông báo đẩy (Web Push) */}
+        {/* Cộng tác viên */}
         <Box sx={sectionSx}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
-            <NotificationImportantIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-            <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>5. Thông Báo Đẩy (Push)</Typography>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 1, pb: 1, mb: 1.5, borderBottom: "1px solid #f1f5f9" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <GroupAddIcon sx={{ fontSize: 16, color: "#7c3aed" }} />
+              <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>Cộng Tác Viên Quản Lý Nhà</Typography>
+            </Box>
+            <Typography sx={{ fontSize: "0.65rem", color: "#94a3b8" }}>
+              Cộng tác viên xem và quản lý toàn bộ phòng, hóa đơn, khách thuê của nhà được chia sẻ.
+            </Typography>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-            <Button variant="outlined" size="small" onClick={handleEnablePush}
-              sx={{ textTransform: "none", fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", borderColor: "#cbd5e1", color: "#334155", "&:hover": { borderColor: "#94a3b8", bgcolor: "#f8fafc" } }}>
-              Bật Thông Báo Đẩy
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr auto" }, gap: 1.5, alignItems: "center" }}>
+            <TextField
+              select fullWidth size="small" label="Chọn nhà của bạn" value={collabBuilding}
+              onChange={(e) => { setCollabBuilding(e.target.value); loadCollaborators(e.target.value); }}
+              sx={fieldSx}
+            >
+              {myBuildings.map((b) => (
+                <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              fullWidth size="small" label="Email tài khoản chủ trọ" placeholder="chuhoangsa2@gmail.com"
+              value={collabEmail} onChange={(e) => setCollabEmail(e.target.value)}
+              sx={fieldSx}
+            />
+            <Button variant="contained" startIcon={<GroupAddIcon />} type="button" onClick={handleAddCollaborator} disabled={!collabBuilding || !collabEmail.trim()}
+              sx={{ py: 1, px: 3, fontSize: "0.75rem", fontWeight: 700, textTransform: "none", borderRadius: "12px" }}>
+              Thêm
             </Button>
-            {pushMsg && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1.5, py: 0.75, borderRadius: "10px", fontSize: "0.75rem", fontWeight: 700, bgcolor: "#d1fae5", color: "#065f46", border: "1px solid #a7f3d0" }}>
-                <CheckCircleIcon sx={{ fontSize: 16 }} />
-                <span>{pushMsg}</span>
-              </Box>
-            )}
           </Box>
-          <Typography sx={{ fontSize: "0.6875rem", color: "#94a3b8", mt: 1.5 }}>
-            Nhận thông báo ngay trong trình duyệt khi có báo hỏng mới, hóa đơn đã thanh toán hoặc thông báo từ chủ trọ.
-          </Typography>
+          {collabBuilding && (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1.5 }}>
+              {collaborators.length === 0 && (
+                <Typography sx={{ fontSize: "0.7rem", color: "#94a3b8" }}>Chưa có cộng tác viên nào cho nhà này.</Typography>
+              )}
+              {collaborators.map((c) => (
+                <Box key={c.id} sx={{ display: "flex", alignItems: "center", gap: 1.25, pl: 1.5, pr: 0.75, py: 0.75, bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "999px" }}>
+                  <Box sx={{ lineHeight: 1.15 }}>
+                    <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#0f172a" }}>{c.name}</Typography>
+                    <Typography sx={{ fontSize: "0.62rem", color: "#64748b" }}>{c.email}</Typography>
+                  </Box>
+                  <IconButton size="small" onClick={() => handleRemoveCollaborator(c.id)} title="Xóa cộng tác viên">
+                    <DeleteIcon sx={{ fontSize: 16, color: "#e11d48" }} />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+          )}
         </Box>
 
-        {/* Save */}
+        {/* Save — dưới cùng */}
         <Box sx={{ textAlign: "center" }}>
           <Button type="submit" variant="contained"
-            sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 4, py: 1.5, fontWeight: 700, fontSize: "0.75rem", borderRadius: "12px", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}
+            sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 5, py: 1.25, fontWeight: 700, fontSize: "0.78rem", borderRadius: "12px", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}
           >
             <SaveIcon sx={{ fontSize: 16 }} />
             <span>Lưu Cập Nhật Cấu Hình Hệ Thống</span>
           </Button>
         </Box>
-      </Box>
-
-      {/* Cộng tác viên */}
-      <Box sx={sectionSx}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid #f1f5f9", pb: 2, mb: 3 }}>
-          <GroupAddIcon sx={{ fontSize: 18, color: "#7c3aed" }} />
-          <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>Cộng Tác Viên Quản Lý Nhà</Typography>
-        </Box>
-        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mb: 2 }}>
-          Chia sẻ nhà trọ cho một tài khoản chủ trọ khác. Cộng tác viên sẽ xem và quản lý toàn bộ phòng, hóa đơn, khách thuê của nhà được chia sẻ (chỉ chủ sở hữu mới thêm/bỏ được).
-        </Typography>
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr auto" }, gap: 2, alignItems: "center", mb: 2 }}>
-          <TextField
-            select fullWidth size="small" label="Chọn nhà của bạn" value={collabBuilding}
-            onChange={(e) => { setCollabBuilding(e.target.value); loadCollaborators(e.target.value); }}
-            sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
-          >
-            {myBuildings.map((b) => (
-              <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            fullWidth size="small" label="Email tài khoản chủ trọ" placeholder="chuhoangsa2@gmail.com"
-            value={collabEmail} onChange={(e) => setCollabEmail(e.target.value)}
-            sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#f8fafc", borderRadius: "12px", "& fieldset": { borderColor: "#e2e8f0" } } }}
-          />
-          <Button variant="contained" startIcon={<GroupAddIcon />} onClick={handleAddCollaborator} disabled={!collabBuilding || !collabEmail.trim()}
-            sx={{ py: 1, fontSize: "0.75rem", fontWeight: 700, textTransform: "none", borderRadius: "12px" }}>
-            Thêm
-          </Button>
-        </Box>
-        {collabBuilding && (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            {collaborators.length === 0 && (
-              <Typography sx={{ fontSize: "0.72rem", color: "#94a3b8" }}>Chưa có cộng tác viên nào cho nhà này.</Typography>
-            )}
-            {collaborators.map((c) => (
-              <Box key={c.id} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2, py: 1.25, bgcolor: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px" }}>
-                <Box>
-                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>{c.name}</Typography>
-                  <Typography sx={{ fontSize: "0.6875rem", color: "#64748b" }}>{c.email}</Typography>
-                </Box>
-                <IconButton size="small" onClick={() => handleRemoveCollaborator(c.id)} title="Xóa cộng tác viên">
-                  <DeleteIcon sx={{ fontSize: 18, color: "#e11d48" }} />
-                </IconButton>
-              </Box>
-            ))}
-          </Box>
-        )}
       </Box>
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
