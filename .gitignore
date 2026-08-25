@@ -18,11 +18,3 @@ frontend/next.log
 
 AGENTS.md
 
-# Secrets & local tooling (never commit)
-vm/
-software/
-nginx/
-frontend/.env.local
-.github/workflows/.secrets
-.github/workflows/.vars
-
