@@ -1,5 +1,3 @@
-'use server';
-
 import { cookies } from 'next/headers';
 
 const BACKEND_BASE = (process.env.BACKEND_URL || 'http://localhost:3000/api').replace(/\/+$/, '');
