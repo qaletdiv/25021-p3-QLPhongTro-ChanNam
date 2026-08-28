@@ -123,7 +123,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             {hasContract ? formatCurrency(room?.price || roomPrice) : "—"}
           </Typography>
           <Typography sx={{ fontSize: t.type.xs, color: t.colors.muted, fontWeight: 500 }}>
-            Thu tiền ngày {contract?.paymentDay || 5} hàng tháng
+            {hasContract ? `Thu tiền ngày ${contract?.paymentDay || 5} hàng tháng` : "Chưa có hợp đồng"}
           </Typography>
         </Box>
 
