@@ -27,8 +27,8 @@ exports.getTenants = async (req, res, next) => {
             where,
             include: [
                 { model: Companion, as: "companions", attributes: ["id", "name", "phone", "cccd", "relationship", "telegramChatId", "fingerprintCode", "status", "endedAt", "createdAt", "updatedAt"] },
-                { model: Contract, as: "contracts",
-                  include: [{ model: Room, as: "room", attributes: ["room_number"], where: { buildingId: { [Op.in]: accIds.length ? accIds : [-1] } }, include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
+                { model: Contract, as: "contracts", required: false,
+                  include: [{ model: Room, as: "room", attributes: ["room_number", "buildingId"], include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
                 }
             ],
             order: [['name', 'ASC']],
@@ -36,7 +36,11 @@ exports.getTenants = async (req, res, next) => {
             offset
         });
         const filtered = rows.map((tenant) => {
-            const contracts = (tenant.contracts || []).filter((c) => c.room);
+            // Include all tenants (even those without a contract). Only keep
+            // contracts that belong to buildings the landlord can access.
+            const contracts = (tenant.contracts || []).filter(
+                (c) => c.room && (accIds.length === 0 || accIds.includes(c.room.buildingId))
+            );
             return { ...tenant.toJSON(), contracts };
         });
         res.json({ tenants: filtered, total: count, page, totalPages: Math.ceil(count / limit) });
