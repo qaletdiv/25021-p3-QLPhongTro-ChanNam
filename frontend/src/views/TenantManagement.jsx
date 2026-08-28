@@ -65,6 +65,7 @@ export default function TenantManagement({ initialTenants = [], initialBuildings
         open={formState.openContract}
         editContractId={formState.editContractId}
         tenants={list.tenants}
+        buildingFilter={list.buildingFilter}
         emptyRooms={formState.emptyRooms}
         contractForm={formState.contractForm} setContractForm={formState.setContractForm}
         companionFingerprints={formState.companionFingerprints} setCompanionFingerprints={formState.setCompanionFingerprints}

@@ -9,12 +9,27 @@ import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
 
 export default function ContractModal({
-  open, editContractId, tenants, emptyRooms,
+  open, editContractId, tenants, emptyRooms, buildingFilter,
   contractForm, setContractForm, companionFingerprints, setCompanionFingerprints,
   furnitureList, selectedFurnitures, setSelectedFurnitures,
   paymentDayManuallyChanged, contractLoading, onClose, onSave,
 }) {
   if (!open) return null;
+
+  const selectedTenant = availableTenants.find((t) => t.id === contractForm.tenantId)
+    || tenants.find((t) => t.id === contractForm.tenantId);
+
+  // Only tenants without an active room AND (if a building context is known)
+  // belonging to that nhà trọ are available as contract candidates.
+  const selectedRoom = emptyRooms.find((r) => r.id === contractForm.roomId);
+  const selectedBuildingId = selectedRoom?.buildingId
+    ?? (buildingFilter && buildingFilter !== "all" ? Number(buildingFilter) : null);
+  const availableTenants = tenants.filter((t) => {
+    const hasActive = (t.contracts || []).some((c) => c.status === "active");
+    if (hasActive) return false;
+    if (selectedBuildingId && t.buildingId && t.buildingId !== selectedBuildingId) return false;
+    return true;
+  });
 
   return (
     <ModalShell open={open} onClose={onClose} maxWidth={640}
@@ -56,16 +71,22 @@ export default function ContractModal({
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Khách *</Typography>
               <TextField
                 fullWidth size="small" placeholder="Nguyễn Văn A"
-                value={editContractId ? "" : contractForm.tenantName} onChange={() => {}}
+                value={selectedTenant ? selectedTenant.name : ""} disabled
                 sx={inputSx}
               />
               <Autocomplete
                 fullWidth size="small" disableClearable
-                options={tenants}
-                getOptionLabel={(t) => `${t.name} - ${t.phone}`}
-                value={tenants.find((t) => t.id === contractForm.tenantId) || null}
+                options={availableTenants}
+                getOptionLabel={(t) => `${t.name} - ${t.phone}${t.building?.name ? ` (${t.building.name})` : ""}`}
+                value={availableTenants.find((t) => t.id === contractForm.tenantId) || null}
                 onChange={(e, t) => {
-                  setContractForm({ ...contractForm, tenantId: t ? t.id : "" });
+                  setContractForm({
+                    ...contractForm,
+                    tenantId: t ? t.id : "",
+                    tenantName: t ? t.name : "",
+                    tenantPhone: t ? t.phone : "",
+                    tenantEmail: t ? (t.user?.email || "") : "",
+                  });
                   setCompanionFingerprints(t?.companions?.map(c => ({ id: c.id, name: c.name, fingerprintCode: "" })) || []);
                 }}
                 disabled={!!editContractId}
@@ -76,7 +97,7 @@ export default function ContractModal({
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
               <TextField
                 fullWidth size="small" placeholder="0912345678"
-                value={contractForm.tenantPhone || ""} onChange={() => {}}
+                value={selectedTenant ? selectedTenant.phone : ""} disabled
                 sx={inputSx}
               />
             </Grid>
@@ -84,7 +105,7 @@ export default function ContractModal({
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email (Tùy chọn)</Typography>
               <TextField
                 fullWidth size="small" placeholder="email@gmail.com"
-                value={contractForm.tenantEmail || ""} onChange={() => {}}
+                value={selectedTenant?.user?.email || ""} disabled
                 sx={inputSx}
               />
             </Grid>

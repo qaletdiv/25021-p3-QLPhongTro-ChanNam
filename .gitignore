@@ -18,3 +18,7 @@ frontend/next.log
 
 AGENTS.md
 
+# Local tooling & SSH private keys (never commit)
+software/
+vm/
+

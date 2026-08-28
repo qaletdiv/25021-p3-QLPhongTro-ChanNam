@@ -27,6 +27,7 @@ exports.getTenants = async (req, res, next) => {
             where,
             include: [
                 { model: Companion, as: "companions", attributes: ["id", "name", "phone", "cccd", "relationship", "telegramChatId", "fingerprintCode", "status", "endedAt", "createdAt", "updatedAt"] },
+                { model: User, as: "user", attributes: ["id", "email", "name"], required: false },
                 { model: Building, as: "building", attributes: ["id", "name", "address"], required: false },
                 { model: Contract, as: "contracts", required: false,
                   include: [{ model: Room, as: "room", attributes: ["room_number", "buildingId"], include: [{ model: Building, as: "building", attributes: ["id", "name"] }] }]
