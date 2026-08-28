@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Card, Typography, Select, MenuItem, FormControl, CircularProgress, Alert } from "@mui/material";
+import { Box, Card, Typography, CircularProgress, Alert } from "@mui/material";
 import BoltIcon from "@mui/icons-material/Bolt";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import {
@@ -14,41 +14,25 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { viVN } from "@mui/x-date-pickers/locales";
 import dashboardApi from "../../api/dashboardApi";
-import buildingApi from "../../api/buildingApi";
 
 dayjs.locale("vi");
 
-export default function UtilityUsageChart() {
-  const [buildings, setBuildings] = useState([]);
-  const [selected, setSelected] = useState("");
+export default function UtilityUsageChart({ buildingId = "" }) {
   const [monthValue, setMonthValue] = useState(() => dayjs());
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    buildingApi.getAll()
-      .then((res) => {
-        const list = res.data.buildings || [];
-        setBuildings(list);
-        if (list.length > 0) setSelected((prev) => prev || String(list[0].id));
-      })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (!selected) { setLoading(false); setData([]); return; }
     let active = true;
     setLoading(true);
     setError("");
-    dashboardApi.getUtilityUsage(Number(selected), monthValue.format("MM/YYYY"))
+    dashboardApi.getUtilityUsage(buildingId ? Number(buildingId) : null, monthValue.format("MM/YYYY"))
       .then((res) => { if (active) setData(res.data.chartData || []); })
       .catch(() => { if (active) setError("Lỗi tải dữ liệu điện nước"); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [selected, monthValue]);
-
-  const buildingOptions = buildings.map((b) => ({ id: String(b.id), label: b.name }));
+  }, [buildingId, monthValue]);
 
   return (
     <Card sx={{ borderRadius: "16px", p: 3 }}>
@@ -83,19 +67,6 @@ export default function UtilityUsageChart() {
               }}
             />
           </LocalizationProvider>
-        </Box>
-        <Box sx={{ flex: { sm: 1 }, display: "flex", justifyContent: { sm: "flex-end" } }}>
-          <FormControl size="small" sx={{ minWidth: 180 }}>
-            <Select
-              value={selected}
-              onChange={(e) => setSelected(e.target.value)}
-              sx={{ fontSize: "0.8125rem", borderRadius: "10px", bgcolor: "#f8fafc", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e2e8f0" } }}
-            >
-              {buildingOptions.map((b) => (
-                <MenuItem key={String(b.id)} value={String(b.id)}>{b.label}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </Box>
       </Box>
 

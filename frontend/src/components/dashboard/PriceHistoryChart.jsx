@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Card, Typography, Select, MenuItem, FormControl, CircularProgress, Alert } from "@mui/material";
+import { Box, Card, Typography, CircularProgress, Alert } from "@mui/material";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
@@ -9,7 +9,6 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import dashboardApi from "../../api/dashboardApi";
-import buildingApi from "../../api/buildingApi";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, ChartDataLabels);
 
@@ -32,36 +31,21 @@ const formatDate = (d) => {
 
 const formatVal = (v) => (Number(v) / 1000).toLocaleString("vi-VN");
 
-export default function PriceHistoryChart() {
-  const [buildings, setBuildings] = useState([]);
-  const [selected, setSelected] = useState("");
+export default function PriceHistoryChart({ buildingId = "" }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    buildingApi.getAll()
-      .then((res) => {
-        const list = res.data.buildings || [];
-        setBuildings(list);
-        if (list.length > 0) setSelected((prev) => prev || String(list[0].id));
-      })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (!selected) { setLoading(false); setHistory([]); return; }
     let active = true;
     setLoading(true);
     setError("");
-    dashboardApi.getRateHistory(Number(selected))
+    dashboardApi.getRateHistory(buildingId ? Number(buildingId) : null)
       .then((res) => { if (active) setHistory(res.data.history || []); })
       .catch(() => { if (active) setError("Lỗi tải dữ liệu lịch sử giá"); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [selected]);
-
-  const buildingOptions = buildings.map((b) => ({ id: String(b.id), label: b.name }));
+  }, [buildingId]);
 
   return (
     <Card sx={{ borderRadius: "16px", p: 3 }}>
@@ -70,17 +54,6 @@ export default function PriceHistoryChart() {
           <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>Lịch Sử Thay Đổi Giá</Typography>
           <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>Điện, nước, phí dịch vụ</Typography>
         </Box>
-        <FormControl size="small" sx={{ minWidth: 180 }}>
-          <Select
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-            sx={{ fontSize: "0.8125rem", borderRadius: "10px", bgcolor: "#f8fafc", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e2e8f0" } }}
-          >
-            {buildingOptions.map((b) => (
-              <MenuItem key={String(b.id)} value={String(b.id)}>{b.label}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
       </Box>
 
       {loading ? (

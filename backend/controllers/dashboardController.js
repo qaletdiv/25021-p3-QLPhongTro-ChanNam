@@ -7,27 +7,31 @@ exports.getStats = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
         const accIds = await getAccessibleBuildingIds(landlordId);
-        const rooms = await Room.findAll({ where: roomAccessCondition(landlordId, accIds) });
+        const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
+        const roomWhere = { ...roomAccessCondition(landlordId, accIds) };
+        if (buildingId && accIds.includes(buildingId)) roomWhere.buildingId = buildingId;
+
+        const rooms = await Room.findAll({ where: roomWhere });
         const total = rooms.length;
         const empty = rooms.filter(r => r.status === 'empty').length;
         const rented = rooms.filter(r => r.status === 'rented').length;
 
         const activeContracts = await Contract.findAll({
             where: { status: 'active' },
-            include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), attributes: [] }]
+            include: [{ model: Room, as: "room", where: roomWhere, attributes: [] }]
         });
         const currentTenants = activeContracts.length;
 
         const cMonth = monthStr(new Date());
         const paidInvoices = await Invoice.findAll({
             where: { status: 'paid', month: cMonth },
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), required: true, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomWhere, required: true, attributes: [] }] }]
         });
         const monthlyRevenue = paidInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
 
         const unpaidInvoices = await Invoice.findAll({
             where: { status: { [Op.in]: ['pending', 'submitted'] } },
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), required: true, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomWhere, required: true, attributes: [] }] }]
         });
         const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
 
@@ -41,6 +45,10 @@ exports.getMonthlyRevenue = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
         const accIds = await getAccessibleBuildingIds(landlordId);
+        const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
+        const roomWhere = { ...roomAccessCondition(landlordId, accIds) };
+        if (buildingId && accIds.includes(buildingId)) roomWhere.buildingId = buildingId;
+
         const months = [];
         const now = new Date();
         for (let i = 5; i >= 0; i--) {
@@ -50,7 +58,7 @@ exports.getMonthlyRevenue = async (req, res, next) => {
         const paidInvoices = await Invoice.findAll({
             where: { status: 'paid', month: { [Op.in]: months } },
             attributes: ['month', 'total'],
-            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), required: true, attributes: [] }] }]
+            include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomWhere, required: true, attributes: [] }] }]
         });
 
         const revenueByMonth = {};
@@ -106,6 +114,10 @@ exports.getExpiringContracts = async (req, res, next) => {
     try {
         const landlordId = req.user.id;
         const accIds = await getAccessibleBuildingIds(landlordId);
+        const buildingId = req.query.buildingId ? Number(req.query.buildingId) : null;
+        const roomWhere = { ...roomAccessCondition(landlordId, accIds) };
+        if (buildingId && accIds.includes(buildingId)) roomWhere.buildingId = buildingId;
+
         const thirtyDaysLater = new Date();
         thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30);
 
@@ -116,7 +128,7 @@ exports.getExpiringContracts = async (req, res, next) => {
             },
             include: [
                 { model: Tenant, as: "tenant", attributes: ["name", "phone"] },
-                { model: Room, as: "room", where: roomAccessCondition(landlordId, accIds), attributes: ["room_number"] }
+                { model: Room, as: "room", where: roomWhere, attributes: ["room_number"] }
             ],
             order: [['endDate', 'ASC']]
         });

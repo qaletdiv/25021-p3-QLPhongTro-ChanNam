@@ -2,16 +2,19 @@
 
 import { serverFetch } from './serverFetch';
 
-export async function getStats() {
-  return serverFetch('/dashboard/stats', { method: 'GET' });
+export async function getStats(buildingId) {
+  const qs = buildingId ? `?buildingId=${buildingId}` : '';
+  return serverFetch(`/dashboard/stats${qs}`, { method: 'GET' });
 }
 
-export async function getMonthlyRevenue() {
-  return serverFetch('/dashboard/monthly-revenue', { method: 'GET' });
+export async function getMonthlyRevenue(buildingId) {
+  const qs = buildingId ? `?buildingId=${buildingId}` : '';
+  return serverFetch(`/dashboard/monthly-revenue${qs}`, { method: 'GET' });
 }
 
-export async function getExpiringContracts() {
-  return serverFetch('/dashboard/expiring-contracts', { method: 'GET' });
+export async function getExpiringContracts(buildingId) {
+  const qs = buildingId ? `?buildingId=${buildingId}` : '';
+  return serverFetch(`/dashboard/expiring-contracts${qs}`, { method: 'GET' });
 }
 
 export async function getNotifications() {
