@@ -12,7 +12,7 @@ const signToken = (user, sessionId) => jwt.sign(
 
 exports.register = async (req, res, next) => {
     try {
-        const { name, email, phone, password, role, cccd, companions } = req.body;
+        const { name, email, phone, password, role, cccd, companions, buildingId } = req.body;
         if ((role || 'tenant') === 'landlord') {
             return res.status(403).json({ message: "Không được phép tự đăng ký tài khoản chủ trọ" });
         }
@@ -20,7 +20,7 @@ exports.register = async (req, res, next) => {
         const newUser = await User.create({ name, email, phone, password: hashed, role: role || 'tenant' });
 
         if (role === 'tenant') {
-            const tenant = await Tenant.create({ name, phone, cccd: cccd || null, password, userId: newUser.id });
+            const tenant = await Tenant.create({ name, phone, cccd: cccd || null, password, userId: newUser.id, buildingId: buildingId || null });
             if (companions && companions.length > 0) {
                 const items = companions.map(c => ({ ...c, tenantId: tenant.id }));
                 await Companion.bulkCreate(items);

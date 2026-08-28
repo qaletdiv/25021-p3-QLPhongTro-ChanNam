@@ -55,11 +55,12 @@ export async function registerFormAction(prevState, formData) {
 
   let companions = [];
   try { companions = JSON.parse(String(formData.get('companions') || '[]')); } catch { companions = []; }
+  const buildingId = String(formData.get('buildingId') || '').trim();
 
   const parsed = registerSchema.safeParse(raw);
   if (!parsed.success) return { error: firstError(parsed) };
 
-  const payload = { ...parsed.data, role: 'tenant', cccd: raw.cccd || undefined, companions };
+  const payload = { ...parsed.data, role: 'tenant', cccd: raw.cccd || undefined, companions, buildingId: buildingId ? Number(buildingId) : undefined };
   try {
     await serverFetch('/auth/register', { method: 'POST', body: JSON.stringify(payload) });
     try { await serverFetch('/auth/logout', { method: 'POST' }); } catch { /* ignore */ }

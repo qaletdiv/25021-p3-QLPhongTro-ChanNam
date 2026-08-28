@@ -6,6 +6,9 @@ const authorizeRole = require('../middlewares/authorizeRole');
 const { createBuildingValidationRules, updateBuildingValidationRules, buildingIdParamValidation } = require('../validators/buildingValidator');
 const handleValidationErrors = require('../middlewares/validationErrorHandler');
 
+// Public list of buildings so tenants can pick their nhà trọ at registration (no auth).
+router.get('/public', buildingController.getPublicBuildings);
+
 router.get('/', authenticateToken, authorizeRole('landlord'), buildingController.getBuildings);
 router.get('/:id', authenticateToken, authorizeRole('landlord'), buildingIdParamValidation(), handleValidationErrors, buildingController.getBuildingById);
 router.post('/', authenticateToken, authorizeRole('landlord'), createBuildingValidationRules(), handleValidationErrors, buildingController.createBuilding);

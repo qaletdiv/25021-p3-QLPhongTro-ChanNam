@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { registerFormAction } from "../actions/authActions";
+import { getPublicBuildings } from "../actions/buildingActions";
 import {
   Box, Paper, Tabs, Tab, TextField, Button, Typography, Alert, CircularProgress, IconButton, Avatar,
+  FormControl, InputLabel, Select, MenuItem,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -30,6 +32,17 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [prefillEmail, setPrefillEmail] = useState("");
+  const [buildings, setBuildings] = useState([]);
+  const [selectedBuildingId, setSelectedBuildingId] = useState("");
+
+  useEffect(() => {
+    if (role !== "tenant") return;
+    let active = true;
+    getPublicBuildings()
+      .then((list) => { if (active) setBuildings(list || []); })
+      .catch(() => { if (active) setBuildings([]); });
+    return () => { active = false; };
+  }, [role]);
 
   useEffect(() => {
     if (loginState?.error) setError(loginState.error);
@@ -58,7 +71,7 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
     }
   }, [registerState]);
 
-  const addCompanion = () => setCompanions([...companions, { name: "", phone: "", cccd: "", relationship: "", telegramChatId: "" }]);
+  const addCompanion = () => setCompanions([...companions, { name: "", phone: "" }]);
   const removeCompanion = (i) => setCompanions(companions.filter((_, idx) => idx !== i));
   const updateCompanion = (i, field, value) => {
     const updated = [...companions];
@@ -108,6 +121,24 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
               <TextField fullWidth label="Họ tên" name="name" margin="normal" required />
               <TextField fullWidth label="Email" type="email" name="email" margin="normal" required />
               <TextField fullWidth label="Số điện thoại" name="phone" margin="normal" required />
+
+              <FormControl fullWidth margin="normal" required>
+                <InputLabel id="building-select-label">Nhà trọ bạn đang thuê</InputLabel>
+                <Select
+                  labelId="building-select-label"
+                  label="Nhà trọ bạn đang thuê"
+                  value={selectedBuildingId}
+                  onChange={(e) => setSelectedBuildingId(e.target.value)}
+                >
+                  {buildings.map((b) => (
+                    <MenuItem key={b.id} value={String(b.id)}>
+                      {b.name}{b.address ? ` — ${b.address}` : ""}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <input type="hidden" name="buildingId" value={selectedBuildingId} />
+
               <TextField fullWidth label="CCCD" name="cccd" margin="normal" />
               <TextField fullWidth label="Mật khẩu" type="password" name="password" margin="normal" required />
               <TextField fullWidth label="Xác nhận mật khẩu" type="password" name="confirmPassword" margin="normal" required />
@@ -122,9 +153,6 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
                 <Box key={i} sx={{ display: "flex", gap: 1, alignItems: "center", mb: 1 }}>
                   <TextField size="small" label="Họ tên" value={c.name} onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={{ flex: 2 }} />
                   <TextField size="small" label="SĐT" value={c.phone} onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ flex: 1.5 }} />
-                  <TextField size="small" label="CCCD" value={c.cccd} onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={{ flex: 1.5 }} />
-                  <TextField size="small" label="Quan hệ" value={c.relationship} onChange={(e) => updateCompanion(i, "relationship", e.target.value)} sx={{ flex: 1 }} />
-                  <TextField size="small" label="Telegram" value={c.telegramChatId || ""} onChange={(e) => updateCompanion(i, "telegramChatId", e.target.value)} sx={{ flex: 1.5 }} />
                   <IconButton size="small" onClick={() => removeCompanion(i)}><DeleteIcon fontSize="small" /></IconButton>
                 </Box>
               ))}

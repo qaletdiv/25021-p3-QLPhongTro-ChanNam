@@ -107,8 +107,8 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
                 >
                   <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>
                     Phòng {displayContract?.room?.room_number || "-"}
-                    {displayContract?.room?.building?.name && (
-                      <div style={{ fontSize: "0.625rem", color: "#2563eb", fontWeight: 600 }}>{displayContract.room.building.name}</div>
+                    {(displayContract?.room?.building?.name || tenant.building?.name) && (
+                      <div style={{ fontSize: "0.625rem", color: "#2563eb", fontWeight: 600 }}>{displayContract?.room?.building?.name || tenant.building?.name}</div>
                     )}
                   </td>
                   <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>

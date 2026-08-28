@@ -179,6 +179,15 @@ async function run() {
     }
   } catch(e) { console.log('building_collaborators error:', e.message); }
 
+  // 8. Add buildingId to tenants if missing (tenant-selected building at registration)
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM tenants LIKE 'buildingId'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE tenants ADD COLUMN buildingId INT NULL DEFAULT NULL AFTER userId");
+      console.log('Added buildingId to tenants');
+    }
+  } catch(e) { console.log('tenants buildingId error:', e.message); }
+
   console.log('Done');
   process.exit(0);
 }

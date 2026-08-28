@@ -52,6 +52,18 @@ exports.removeCollaborator = async (req, res, next) => {
 };
 
 
+exports.getPublicBuildings = async (req, res, next) => {
+    try {
+        const buildings = await Building.findAll({
+            attributes: ["id", "name", "address"],
+            order: [['name', 'ASC']],
+        });
+        res.json({ buildings });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.getBuildings = async (req, res, next) => {
     try {
         const accIds = await getAccessibleBuildingIds(req.user.id);
