@@ -11,13 +11,14 @@ import BugReportIcon from "@mui/icons-material/BugReport";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import MessageDialog from "../components/MessageDialog";
 import TenantPageHeader from "../components/tenant/TenantPageHeader";
+import NoRoomNotice from "../components/tenant/NoRoomNotice";
 import tenantIssueApi from "../api/tenantIssueApi";
 import { resizeImage } from "../utils/image";
 import { tokens as t } from "../design/tokens";
 
 const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
 
-export default function TenantIssues({ initialIssues = [] }) {
+export default function TenantIssues({ initialIssues = [], hasRoom = true }) {
   const [issues, setIssues] = useState(initialIssues);
   const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
@@ -64,6 +65,20 @@ export default function TenantIssues({ initialIssues = [] }) {
   };
 
   if (loading) return <CircularProgress />;
+
+  if (!hasRoom) {
+    return (
+      <Box>
+        <TenantPageHeader
+          eyebrow="Bảo Trì & Sửa Chữa"
+          title="Báo hỏng"
+          subtitle="Theo dõi và gửi báo cáo các vấn đề hỏng hóc"
+        />
+        <NoRoomNotice />
+        <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
+      </Box>
+    );
+  }
 
   return (
     <Box>

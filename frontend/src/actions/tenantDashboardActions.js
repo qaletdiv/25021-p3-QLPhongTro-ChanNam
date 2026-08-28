@@ -6,3 +6,6 @@ export async function getTenantDashboard() {
 export async function getTenantUtilityUsage() {
   return serverFetch('/tenant/dashboard/utility-usage', { method: 'GET' });
 }
+export async function getTenantActiveContract() {
+  return serverFetch('/tenant/active-contract', { method: 'GET' });
+}

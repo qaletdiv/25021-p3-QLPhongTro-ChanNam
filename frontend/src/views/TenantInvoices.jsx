@@ -7,12 +7,13 @@ import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
 import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";
 import NewTenantTab from "../components/tenant/NewTenantTab";
 import TenantPageHeader from "../components/tenant/TenantPageHeader";
+import NoRoomNotice from "../components/tenant/NoRoomNotice";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
 import { nextMonthLabel, nextMonthOf, formatCurrency } from "../utils/format";
 import { tokens as t } from "../design/tokens";
 
-export default function TenantInvoices({ initialInvoices = [], initialSettings = null }) {
+export default function TenantInvoices({ initialInvoices = [], initialSettings = null, hasRoom = true }) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [settings, setSettings] = useState(initialSettings);
   const [loading, setLoading] = useState(false);
@@ -143,6 +144,20 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
   };
 
   if (loading) return <CircularProgress />;
+
+  if (!hasRoom) {
+    return (
+      <Box>
+        <TenantPageHeader
+          eyebrow="Hóa Đơn & Chỉ Số"
+          title="Hóa đơn của tôi"
+          subtitle="Quản lý chỉ số điện nước và theo dõi hóa đơn hàng tháng"
+        />
+        <NoRoomNotice />
+        <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />
+      </Box>
+    );
+  }
 
   return (
     <Box>
