@@ -8,7 +8,7 @@ import ModalShell from "../ui/ModalShell";
 import TenantUtilityUsageChart from "./TenantUtilityUsageChart";
 import { tokens as t } from "../../design/tokens";
 
-const LeaseGauge = ({ daysLeft, startDate, endDate }) => {
+const LeaseGauge = ({ daysLeft, startDate, endDate, active }) => {
   const { pct, urgent } = useMemo(() => {
     const total = endDate && startDate
       ? Math.max(1, Math.round((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)))
@@ -41,17 +41,17 @@ const LeaseGauge = ({ daysLeft, startDate, endDate }) => {
       </svg>
       <Box sx={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#fff" }}>
         <Typography className="font-mono" sx={{ fontSize: "1.75rem", fontWeight: 700, lineHeight: 1, color: urgent ? "#fde68a" : "#fff" }}>
-          {Math.abs(daysLeft)}
+          {active ? Math.abs(daysLeft) : "—"}
         </Typography>
         <Typography sx={{ fontSize: "0.625rem", color: "rgba(255,255,255,0.75)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em", mt: 0.5 }}>
-          ngày còn lại
+          {active ? "ngày còn lại" : "chưa có hợp đồng"}
         </Typography>
       </Box>
     </Box>
   );
 };
 
-export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice, landlordAddress, companions }) {
+export default function TenantOverviewTab({ room, tenant, contract, daysLeft, notifications, calcTotal, monthStr, roomPrice, latestInvoice, landlordAddress, companions, hasContract }) {
   const [furnitureOpen, setFurnitureOpen] = useState(false);
   const handoverItems = contract?.contractFurnitures || [];
 
@@ -107,7 +107,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             </Box>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <LeaseGauge daysLeft={daysLeft} startDate={contract?.startDate} endDate={contract?.endDate} />
+            <LeaseGauge daysLeft={daysLeft} startDate={contract?.startDate} endDate={contract?.endDate} active={hasContract} />
           </Box>
         </Box>
       </Box>
@@ -120,7 +120,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
             Giá Thuê Phòng
           </Typography>
           <Typography className="font-display" sx={{ fontSize: "1.75rem", fontWeight: 600, color: t.colors.accent, lineHeight: 1.15 }}>
-            {formatCurrency(room?.price || roomPrice)}
+            {hasContract ? formatCurrency(room?.price || roomPrice) : "—"}
           </Typography>
           <Typography sx={{ fontSize: t.type.xs, color: t.colors.muted, fontWeight: 500 }}>
             Thu tiền ngày {contract?.paymentDay || 5} hàng tháng
@@ -137,7 +137,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
               sx={{ bgcolor: statusInfo.bg, color: statusInfo.fg, fontWeight: 700, fontSize: "0.6875rem", borderRadius: t.radius.pill, border: `1px solid ${statusInfo.hair}` }} />
           </Box>
           <Typography sx={{ fontSize: t.type.xs, color: t.colors.muted, fontWeight: 500 }}>
-            Tổng cộng <Box component="span" sx={{ fontWeight: 800, color: t.colors.ink }}>{formatCurrency(calcTotal)}</Box>
+            Tổng cộng <Box component="span" sx={{ fontWeight: 800, color: t.colors.ink }}>{hasContract ? formatCurrency(calcTotal) : "—"}</Box>
           </Typography>
         </Box>
 

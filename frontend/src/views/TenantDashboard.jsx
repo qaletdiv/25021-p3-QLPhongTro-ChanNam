@@ -54,15 +54,17 @@ export default function TenantDashboard({ data, settings, notifInit }) {
   };
 
   const contract = data?.contract;
+  const hasContract = !!contract;
   const room = contract?.room;
   const tenant = data?.tenant;
   const notifications = data?.notifications || [];
   const daysLeft = contract ? Math.max(0, Math.ceil((new Date(contract.endDate) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
   const s = settings?.settings || {};
   const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
-  const roomPrice = Number(settings?.roomPrice || 0) || 3200000;
+  // No fake default price when there is no active contract/room.
+  const roomPrice = settings ? Number(settings.roomPrice || 0) : 0;
   const latestInvoice = contract?.invoices?.[0] || null;
-  const calcTotal = latestInvoice ? Number(latestInvoice.total) || 0 : roomPrice + serviceFee;
+  const calcTotal = latestInvoice ? Number(latestInvoice.total) || 0 : (hasContract ? roomPrice + serviceFee : 0);
 
   const kindIcon = (kind) => kind === "invoice"
     ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />
@@ -113,6 +115,7 @@ export default function TenantDashboard({ data, settings, notifInit }) {
         latestInvoice={latestInvoice}
         landlordAddress={room?.building?.address || ""}
         roomPrice={roomPrice}
+        hasContract={hasContract}
         companions={data?.companions || []}
       />
 

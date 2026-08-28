@@ -62,7 +62,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
   const electricityRate = Number(s.electricityRate) || 3500;
   const waterRate = Number(s.waterRate) || 15000;
   const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
-  const roomPrice = Number(settings?.roomPrice || 0) || 3200000;
+  const roomPrice = Number(settings?.roomPrice || 0);
 
   const calcElecUsage = Math.max(0, elecVal - (contract?.lastElectricity || 0));
   const calcWaterUsage = Math.max(0, waterVal - (contract?.lastWater || 0));
