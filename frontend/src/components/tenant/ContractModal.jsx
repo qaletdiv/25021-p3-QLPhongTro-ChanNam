@@ -16,9 +16,6 @@ export default function ContractModal({
 }) {
   if (!open) return null;
 
-  const selectedTenant = availableTenants.find((t) => t.id === contractForm.tenantId)
-    || tenants.find((t) => t.id === contractForm.tenantId);
-
   // Only tenants without an active room AND (if a building context is known)
   // belonging to that nhà trọ are available as contract candidates.
   const selectedRoom = emptyRooms.find((r) => r.id === contractForm.roomId);
@@ -30,6 +27,9 @@ export default function ContractModal({
     if (selectedBuildingId && t.buildingId && t.buildingId !== selectedBuildingId) return false;
     return true;
   });
+
+  const selectedTenant = availableTenants.find((t) => t.id === contractForm.tenantId)
+    || tenants.find((t) => t.id === contractForm.tenantId);
 
   return (
     <ModalShell open={open} onClose={onClose} maxWidth={640}
