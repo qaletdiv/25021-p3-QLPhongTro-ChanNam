@@ -3,6 +3,19 @@ const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notifica
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const { monthStr } = require("../utils/dates");
 
+// Lightweight check used by tenant pages (invoices, issues) to decide whether
+// the tenant has been assigned a room/active contract.
+exports.getActiveContract = async (req, res, next) => {
+  try {
+    const tenant = await findTenantByUser(req.user.id);
+    if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
+    const contract = await findActiveContract(tenant.id);
+    res.json({ contract: contract || null });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getDashboard = async (req, res, next) => {
     try {
         let tenant = await findTenantByUser(req.user.id);

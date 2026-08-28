@@ -14,6 +14,7 @@ const auth = [authenticateToken, authorizeRole('tenant')];
 
 router.get('/dashboard', ...auth, tenantDashboardController.getDashboard);
 router.get('/dashboard/utility-usage', ...auth, tenantDashboardController.getUtilityUsage);
+router.get('/active-contract', ...auth, tenantDashboardController.getActiveContract);
 
 router.post('/logout', ...auth, authController.logout);
 
