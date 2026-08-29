@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Grid, Badge, Icon, Menu, MenuItem, Divider, Typography, IconButton, FormControl, InputLabel, Select } from "@mui/material";
+import { Box, Grid, Badge, Icon, Menu, MenuItem, Divider, Typography, IconButton } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BugReportIcon from "@mui/icons-material/BugReport";
@@ -96,24 +96,8 @@ export default function Dashboard({ stats, revenue, expiring }) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-        <FormControl size="small" sx={{ minWidth: 240 }}>
-          <InputLabel id="dash-building-label">Nhà trọ</InputLabel>
-          <Select
-            labelId="dash-building-label"
-            label="Nhà trọ"
-            value={selectedBuilding}
-            onChange={(e) => setSelectedBuilding(e.target.value)}
-            sx={{ fontSize: "0.8125rem", borderRadius: "10px", bgcolor: "#f8fafc", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e2e8f0" } }}
-          >
-            <MenuItem value=""><em>Tất Cả Nhà</em></MenuItem>
-            {buildings.map((b) => (
-              <MenuItem key={String(b.id)} value={String(b.id)}>{b.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 1 }}>
-          {dashLoading && <Typography sx={{ fontSize: "0.7rem", color: "#94a3b8" }}>Đang tải...</Typography>}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+        {dashLoading && <Typography sx={{ fontSize: "0.7rem", color: "#94a3b8" }}>Đang tải...</Typography>}
         <IconButton onClick={openBell} sx={{ bgcolor: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", "&:hover": { bgcolor: "#f8fafc" } }}>
           <Badge badgeContent={notifCount > 0 ? notifCount : null} color="error" sx={{ "& .MuiBadge-badge": { fontSize: "0.625rem", minWidth: 16, height: 16, borderRadius: "8px" } }}>
             <NotificationsIcon sx={{ fontSize: 20, color: "#475569" }} />
@@ -143,10 +127,14 @@ export default function Dashboard({ stats, revenue, expiring }) {
             </Box>
           ))}
           </Menu>
-        </Box>
       </Box>
 
-      <DashboardBanner onNavigate={navigate} />
+      <DashboardBanner
+        onNavigate={navigate}
+        buildings={buildings}
+        selectedBuilding={selectedBuilding}
+        onBuildingChange={(v) => setSelectedBuilding(v)}
+      />
 
       <KpiCards
         totalRooms={totalRooms}

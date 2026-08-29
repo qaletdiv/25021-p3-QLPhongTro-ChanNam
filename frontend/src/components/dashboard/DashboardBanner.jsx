@@ -1,12 +1,12 @@
 "use client";
 
-import { Box, Paper, Chip, Typography } from "@mui/material";
+import { Box, Paper, Chip, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import ShieldIcon from "@mui/icons-material/Shield";
 
-export default function DashboardBanner({ onNavigate }) {
+export default function DashboardBanner({ onNavigate, buildings = [], selectedBuilding = "", onBuildingChange }) {
   return (
     <Paper
       sx={{
@@ -30,7 +30,22 @@ export default function DashboardBanner({ onNavigate }) {
             Theo dõi biến động doanh thu, tỷ lệ lấp đầy phòng, xử lý công nợ và quản lý hợp đồng cho thuê.
           </Typography>
         </Box>
-        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", alignItems: "center" }}>
+          <FormControl size="small" sx={{ minWidth: 200, bgcolor: "#fff", borderRadius: "10px", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e2e8f0" } }}>
+            <InputLabel id="banner-building-label">Nhà trọ</InputLabel>
+            <Select
+              labelId="banner-building-label"
+              label="Nhà trọ"
+              value={selectedBuilding}
+              onChange={(e) => onBuildingChange?.(e.target.value)}
+              sx={{ fontSize: "0.8125rem", borderRadius: "10px", color: "#0f172a" }}
+            >
+              <MenuItem value=""><em>Tất Cả Nhà</em></MenuItem>
+              {buildings.map((b) => (
+                <MenuItem key={String(b.id)} value={String(b.id)}>{b.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <Box
             onClick={() => onNavigate("/landlord/notifications")}
             sx={{ display: "inline-flex", alignItems: "center", gap: 1, px: 2, py: 1.25, bgcolor: "#2563eb", color: "#fff", borderRadius: "12px", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", "&:hover": { bgcolor: "#1d4ed8" }, boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)" }}
