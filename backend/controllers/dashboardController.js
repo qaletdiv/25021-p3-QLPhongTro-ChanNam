@@ -89,9 +89,8 @@ exports.getNotifications = async (req, res, next) => {
             include: [{ model: Room, as: "room", required: true, where: roomAccessCondition(landlordId, accIds) }]
         });
 
-        // Người thuê chưa có phòng (chưa có hợp đồng active) trong các nhà trọ của chủ trọ
+        // Người thuê chưa có phòng (chưa có hợp đồng active) - đồng bộ với trang /landlord/tenants
         const tenantsNoRoom = await Tenant.findAll({
-            where: { buildingId: { [Op.in]: accIds } },
             attributes: ['id', 'name', 'phone'],
             include: [{ model: Contract, as: 'contracts', required: false, where: { status: 'active' }, attributes: [] }]
         });
