@@ -25,8 +25,8 @@ const StatusBadge = ({ status }) => {
     );
   }
   return (
-    <span style={{ padding: "4px 10px", backgroundColor: "#f1f5f9", color: "#475569", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "9999px", border: "1px solid #e2e8f0" }}>
-      ○ Chờ Thu Tiền
+    <span style={{ padding: "4px 10px", backgroundColor: "#fee2e2", color: "#991b1b", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "9999px", border: "1px solid #fecaca" }}>
+      ○ Chưa Gửi Chỉ Số
     </span>
   );
 };
