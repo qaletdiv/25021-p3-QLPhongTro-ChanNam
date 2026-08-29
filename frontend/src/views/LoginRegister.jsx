@@ -20,7 +20,7 @@ const roleConfig = {
 };
 
 export default function LoginRegister({ role = "tenant", loginAction }) {
-  const { adoptUser } = useAuth();
+  const { user, loading, adoptUser } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState(0);
   const config = roleConfig[role] || roleConfig.tenant;
@@ -43,6 +43,13 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
       .catch(() => { if (active) setBuildings([]); });
     return () => { active = false; };
   }, [role]);
+
+  // Nếu đã đăng nhập thì không ở lại trang login mà chuyển thẳng về dashboard.
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace(user.role === "landlord" ? "/landlord/dashboard" : "/tenant/dashboard");
+    }
+  }, [loading, user, router]);
 
   useEffect(() => {
     if (loginState?.error) setError(loginState.error);
@@ -78,6 +85,14 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
     updated[i][field] = value;
     setCompanions(updated);
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", bgcolor: "#f1f5f9" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", bgcolor: "#f1f5f9", p: 2 }}>
