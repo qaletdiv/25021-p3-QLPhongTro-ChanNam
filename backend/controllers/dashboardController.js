@@ -90,11 +90,12 @@ exports.getNotifications = async (req, res, next) => {
         });
 
         // Người thuê chưa có phòng (chưa có hợp đồng active) - đồng bộ với trang /landlord/tenants
-        const tenantsNoRoom = await Tenant.findAll({
-            attributes: ['id', 'name', 'phone'],
-            include: [{ model: Contract, as: 'contracts', required: false, where: { status: 'active' }, attributes: [] }]
-        });
-        const pendingTenants = tenantsNoRoom.filter((t) => !t.contracts || t.contracts.length === 0);
+        const tenantsNoRoom = await Tenant.findAll({ attributes: ['id', 'name', 'phone'] });
+        const activeContractTenantIds = (await Contract.findAll({
+            where: { status: 'active' },
+            attributes: ['tenantId']
+        })).map((c) => c.tenantId);
+        const pendingTenants = tenantsNoRoom.filter((t) => !activeContractTenantIds.includes(t.id));
 
         const items = [];
         for (const inv of unpaidInvoices) {
