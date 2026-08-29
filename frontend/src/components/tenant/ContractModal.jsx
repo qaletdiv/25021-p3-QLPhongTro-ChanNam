@@ -16,12 +16,13 @@ export default function ContractModal({
 }) {
   if (!open) return null;
 
-  // Only tenants without an active room AND (if a building context is known)
-  // belonging to that nhà trọ are available as contract candidates.
+  // Only tenants who self-registered (có tài khoản -> t.user) AND have no active
+  // room are eligible. Khách chưa đăng ký không được lập hợp đồng.
   const selectedRoom = emptyRooms.find((r) => r.id === contractForm.roomId);
   const selectedBuildingId = selectedRoom?.buildingId
     ?? (buildingFilter && buildingFilter !== "all" ? Number(buildingFilter) : null);
   const availableTenants = tenants.filter((t) => {
+    if (!t.user) return false;
     const hasActive = (t.contracts || []).some((c) => c.status === "active");
     if (hasActive) return false;
     if (selectedBuildingId && t.buildingId && t.buildingId !== selectedBuildingId) return false;
