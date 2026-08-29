@@ -89,6 +89,14 @@ exports.getNotifications = async (req, res, next) => {
             include: [{ model: Room, as: "room", required: true, where: roomAccessCondition(landlordId, accIds) }]
         });
 
+        // Người thuê chưa có phòng (chưa có hợp đồng active) trong các nhà trọ của chủ trọ
+        const tenantsNoRoom = await Tenant.findAll({
+            where: { buildingId: { [Op.in]: accIds } },
+            attributes: ['id', 'name', 'phone'],
+            include: [{ model: Contract, as: 'contracts', required: false, where: { status: 'active' }, attributes: [] }]
+        });
+        const pendingTenants = tenantsNoRoom.filter((t) => !t.contracts || t.contracts.length === 0);
+
         const items = [];
         for (const inv of unpaidInvoices) {
             const [mm, yyyy] = String(inv.month).split("/");
@@ -103,8 +111,18 @@ exports.getNotifications = async (req, res, next) => {
         if (pendingIssues > 0) {
             items.push({ kind: 'issue', title: 'Báo hỏng cần xem', message: `Có ${pendingIssues} báo hỏng đang chờ xử lý`, count: pendingIssues, link: '/landlord/issues' });
         }
+        for (const t of pendingTenants) {
+            items.push({
+                kind: 'tenant_no_room',
+                title: `${t.name} — ${t.phone}`,
+                message: 'Chưa có phòng, vui lòng lập hợp đồng',
+                count: 1,
+                link: '/landlord/tenants',
+                tenantId: t.id
+            });
+        }
 
-        res.json({ unreadCount: unpaidInvoices.length + pendingIssues, items });
+        res.json({ unreadCount: unpaidInvoices.length + pendingIssues + pendingTenants.length, items });
     } catch (error) {
         next(error);
     }

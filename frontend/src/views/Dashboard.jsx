@@ -5,6 +5,7 @@ import { Box, Grid, Badge, Icon, Menu, MenuItem, Divider, Typography, IconButton
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BugReportIcon from "@mui/icons-material/BugReport";
+import PersonIcon from "@mui/icons-material/Person";
 import DashboardBanner from "../components/dashboard/DashboardBanner";
 import KpiCards from "../components/dashboard/KpiCards";
 import RevenueChart from "../components/dashboard/RevenueChart";
@@ -90,9 +91,11 @@ export default function Dashboard({ stats, revenue, expiring }) {
 
   const navigate = (path) => router.push(path);
 
-  const kindIcon = (kind) => kind === "invoice"
-    ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />
-    : <BugReportIcon sx={{ fontSize: 18, color: "#d97706" }} />;
+  const kindIcon = (kind) => {
+    if (kind === "invoice") return <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />;
+    if (kind === "tenant_no_room") return <PersonIcon sx={{ fontSize: 18, color: "#7c3aed" }} />;
+    return <BugReportIcon sx={{ fontSize: 18, color: "#d97706" }} />;
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
