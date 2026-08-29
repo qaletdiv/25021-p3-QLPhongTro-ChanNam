@@ -60,10 +60,7 @@ export default function KpiCards({ totalRooms, rentedRooms, vacantRooms, current
                 </Box>
                 <Box>
                   <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    Chưa Thanh Toán Tiền Phòng
-                    <Box component="span" sx={{ textTransform: "none", fontWeight: 600, ml: 0.75, color: "#64748b" }}>
-                      tháng {unpaidMonth}
-                    </Box>
+                    Chưa Thanh Toán Tiền Phòng — Tháng {unpaidMonth}
                   </Typography>
                   <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#dc2626", lineHeight: 1.1 }}>
                     {unpaidTenants} người thuê
