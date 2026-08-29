@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Grid, Card, CardContent, Typography } from "@mui/material";
+import { Box, Grid, Card, CardContent, Typography, Button } from "@mui/material";
 import HotelIcon from "@mui/icons-material/Hotel";
 import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
 import PeopleIcon from "@mui/icons-material/People";
@@ -9,7 +9,7 @@ import PaidIcon from "@mui/icons-material/Paid";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { formatCurrency } from "../../utils/format";
 
-export default function KpiCards({ totalRooms, rentedRooms, vacantRooms, currentTenants, occupancyRate, monthlyRevenue, totalDebt }) {
+export default function KpiCards({ totalRooms, rentedRooms, vacantRooms, currentTenants, occupancyRate, monthlyRevenue, totalDebt, unpaidTenants, unpaidMonth, onViewUnpaid }) {
   const cards = [
     { label: "Tổng Phòng", value: totalRooms, sub: "Quy mô cơ sở", icon: <HotelIcon />, color: "#475569", bg: "#f1f5f9", valueColor: "#0f172a" },
     { label: "Đã Cho Thuê", value: rentedRooms, sub: `Tỷ lệ: ${occupancyRate}%`, icon: <PeopleIcon />, color: "#059669", bg: "#d1fae5", valueColor: "#059669" },
@@ -49,6 +49,37 @@ export default function KpiCards({ totalRooms, rentedRooms, vacantRooms, current
           </Card>
         </Grid>
       ))}
+
+      {typeof unpaidTenants === "number" && (
+        <Grid size={{ xs: 12 }}>
+          <Card sx={{ borderRadius: "16px", border: "1px solid #fecaca", bgcolor: "#fff5f5" }}>
+            <CardContent sx={{ p: 2.5, "&:last-child": { pb: 2.5 }, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, flexWrap: "wrap" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box sx={{ p: 1.25, bgcolor: "#fee2e2", color: "#dc2626", borderRadius: "12px", display: "flex" }}>
+                  <WarningIcon />
+                </Box>
+                <Box>
+                  <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Chưa Thanh Toán Tiền Phòng
+                  </Typography>
+                  <Typography sx={{ fontSize: "1.5rem", fontWeight: 700, color: "#dc2626", lineHeight: 1.1 }}>
+                    {unpaidTenants} người thuê
+                    <Box component="span" sx={{ fontSize: "0.8125rem", fontWeight: 600, color: "#64748b", ml: 1 }}>
+                      tháng {unpaidMonth}
+                    </Box>
+                  </Typography>
+                </Box>
+              </Box>
+              {onViewUnpaid && (
+                <Button variant="contained" size="small" onClick={onViewUnpaid}
+                  sx={{ bgcolor: "#dc2626", "&:hover": { bgcolor: "#b91c1c" }, borderRadius: "10px", textTransform: "none", fontWeight: 700 }}>
+                  Xem danh sách
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </Grid>
+      )}
     </Grid>
   );
 }

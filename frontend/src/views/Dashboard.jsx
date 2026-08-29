@@ -147,6 +147,9 @@ export default function Dashboard({ stats, revenue, expiring }) {
         occupancyRate={occupancyRate}
         monthlyRevenue={dashStats?.monthlyRevenue}
         totalDebt={dashStats?.totalDebt}
+        unpaidTenants={dashStats?.unpaidTenants}
+        unpaidMonth={dashStats?.unpaidMonth}
+        onViewUnpaid={() => navigate("/landlord/invoices?status=unpaid")}
       />
 
       <Grid container spacing={2}>

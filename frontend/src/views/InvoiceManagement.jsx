@@ -30,6 +30,13 @@ export default function InvoiceManagement({ initialInvoices = [], initialSetting
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [buildingFilter, setBuildingFilter] = useState("all");
+
+  // Honor ?status= query param (e.g. from dashboard "Xem danh sách")
+  useEffect(() => {
+    const sp = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+    const s = sp.get("status");
+    if (["all", "unpaid", "submitted", "paid"].includes(s)) setFilterStatus(s);
+  }, []);
   const [monthFilter, setMonthFilter] = useState(currentMonthLabel());
   const [searchQuery, setSearchQuery] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
