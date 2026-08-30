@@ -23,9 +23,10 @@ const monthOptions = () => {
   return options;
 };
 
-export default function InvoiceManagement({ initialInvoices = [], initialBuildings = [] }) {
+export default function InvoiceManagement({ initialInvoices = [], initialBuildings = [], initialSettings = {} }) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [buildings, setBuildings] = useState(initialBuildings);
+  const [settings, setSettings] = useState(initialSettings);
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [buildingFilter, setBuildingFilter] = useState("all");
@@ -44,18 +45,22 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
   const [printableInvoice, setPrintableInvoice] = useState(null);
 
   const fetchInvoices = useCallback(async () => {
-    try {
-      const [invRes, setRes, bRes] = await Promise.all([
-        invoiceApi.getAll({ month: monthFilter }),
-        settingApi.getAll(),
-        buildingApi.getAll()
-      ]);
-      setInvoices(invRes.data.invoices);
-      setSettings(setRes.data);
-      setBuildings(bRes.data.buildings || []);
-    } catch {
-      setSnack({ open: true, message: "Lỗi tải dữ liệu", severity: "error" });
-    } finally { setLoading(false); }
+    setLoading(true);
+    // Không dùng Promise.all (fail-fast): nếu /settings hay /buildings lỗi cũng
+    // không được làm mất danh sách hóa đơn đã tải được.
+    const [invRes, setRes, bRes] = await Promise.allSettled([
+      invoiceApi.getAll({ month: monthFilter }),
+      settingApi.getAll(),
+      buildingApi.getAll()
+    ]);
+    if (invRes.status === "fulfilled") {
+      setInvoices(invRes.value.data.invoices);
+    } else {
+      setSnack({ open: true, message: "Lỗi tải danh sách hóa đơn", severity: "error" });
+    }
+    if (setRes.status === "fulfilled") setSettings(setRes.value.data);
+    if (bRes.status === "fulfilled") setBuildings(bRes.value.data.buildings || []);
+    setLoading(false);
   }, [monthFilter]);
 
   // Dữ liệu ban đầu được fetch server-side; chỉ refetch khi đổi tháng lọc

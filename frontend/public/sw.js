@@ -1,4 +1,4 @@
-const CACHE_NAME = "smartrent-v3";
+const CACHE_NAME = "smartrent-v4";
 const APP_PRECACHE = [
   "/icon-192.png",
   "/icon-512.png",
@@ -22,6 +22,17 @@ function isImmutableAsset(url) {
   return url.pathname.startsWith("/_next/static/");
 }
 
+// Cache là tối ưu hoá best-effort: nếu trình duyệt chặn put (response opaque /
+// bị CORP), bỏ qua thay vì ném lỗi Uncaught ra console.
+function safeCachePut(cache, request, response) {
+  if (!response || response.status !== 200 || response.type === "opaque") return Promise.resolve();
+  try {
+    return cache.put(request, response.clone()).catch(() => {});
+  } catch (e) {
+    return Promise.resolve();
+  }
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
@@ -39,8 +50,7 @@ self.addEventListener("fetch", (event) => {
           cached ||
           fetch(request).then((response) => {
             if (response && response.status === 200) {
-              const clone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+              caches.open(CACHE_NAME).then((cache) => safeCachePut(cache, request, response));
             }
             return response;
           })
@@ -55,8 +65,7 @@ self.addEventListener("fetch", (event) => {
     fetch(request)
       .then((response) => {
         if (response && response.status === 200 && response.type === "basic") {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          caches.open(CACHE_NAME).then((cache) => safeCachePut(cache, request, response));
         }
         return response;
       })
