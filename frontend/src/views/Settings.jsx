@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Box, Typography, TextField, Button, MenuItem, InputAdornment, Checkbox, FormControlLabel, IconButton,
 } from "@mui/material";
@@ -73,6 +73,14 @@ const [banks, setBanks] = useState([]);
   useEffect(() => {
     settingApi.getBanks().then((res) => setBanks(res.data.banks || [])).catch(() => {});
   }, []);
+
+  // Luôn đảm bảo giá trị đã lưu có mặt trong danh sách chọn (tránh warning
+  // out-of-range của MUI trong lúc banks chưa kịp load hoặc không có trong danh sách).
+  const bankOptions = useMemo(() => {
+    if (!form.bankName) return banks;
+    if (banks.some((b) => b.shortName === form.bankName)) return banks;
+    return [{ bin: form.bankName, code: form.bankName, name: form.bankName, shortName: form.bankName, logo: "" }, ...banks];
+  }, [banks, form.bankName]);
 
   const loadSettings = (bid) => {
     settingApi.getAll(bid).then((res) => setForm(res.data.settings || {})).catch(() => {});
@@ -177,20 +185,24 @@ const [banks, setBanks] = useState([]);
                   select fullWidth size="small" value={form.bankName || ""}
                   onChange={(e) => set("bankName", e.target.value)}
                   placeholder="Chọn ngân hàng"
-                  renderValue={(selected) => {
-                    const b = banks.find((x) => x.shortName === selected);
-                    if (!b) return selected;
-                    return (
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-                        {b.logo && (<img src={b.logo} alt={b.shortName} style={{ width: 24, height: 24, objectFit: "contain", borderRadius: 6 }} />)}
-                        <span>{b.shortName}</span>
-                      </Box>
-                    );
+                  slotProps={{
+                    select: {
+                      renderValue: (selected) => {
+                        const b = banks.find((x) => x.shortName === selected);
+                        if (!b) return selected;
+                        return (
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                            {b.logo && (<img src={b.logo} alt={b.shortName} style={{ width: 24, height: 24, objectFit: "contain", borderRadius: 6 }} />)}
+                            <span>{b.shortName}</span>
+                          </Box>
+                        );
+                      },
+                    },
                   }}
                   sx={fieldSx}
                 >
                   <MenuItem value="">-- Chọn ngân hàng --</MenuItem>
-                  {banks.map((b) => (
+                  {bankOptions.map((b) => (
                     <MenuItem key={b.bin} value={b.shortName}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
                         {b.logo && (<img src={b.logo} alt={b.shortName} style={{ width: 24, height: 24, objectFit: "contain", borderRadius: 6 }} />)}
