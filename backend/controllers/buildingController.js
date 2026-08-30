@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Building, Room, BuildingCollaborator, User } = require("../models");
 const { getAccessibleBuildingIds } = require("../utils/buildingAccess");
 const { writeAuditLog } = require("../utils/auditLog");
+const { hashPassword } = require("../utils/password");
 
 exports.getCollaborators = async (req, res, next) => {
     try {
@@ -23,6 +24,7 @@ exports.addCollaborator = async (req, res, next) => {
         if (!building) return res.status(404).json({ message: "Không tìm thấy nhà hoặc bạn không phải chủ sở hữu" });
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).json({ message: "Vui lòng nhập email và mật khẩu cộng tác viên" });
+        if (String(password).length < 6) return res.status(400).json({ message: "Mật khẩu cộng tác viên phải có ít nhất 6 ký tự" });
         const emailLower = String(email).trim().toLowerCase();
         let user = await User.findOne({ where: { email: emailLower } });
         if (!user) {

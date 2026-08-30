@@ -1,5 +1,12 @@
 require('dotenv').config();
 
+// JWT_SECRET không có giá trị sẽ khiến mọi lần đăng nhập lỗi 500 khó truy vết,
+// nên dừng ngay khi khởi động để lỗi cấu hình hiện rõ ràng.
+if (!process.env.JWT_SECRET) {
+    console.error("Thiếu biến môi trường JWT_SECRET. Hãy tạo file .env dựa trên .env-example trước khi chạy server.");
+    process.exit(1);
+}
+
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -66,8 +73,13 @@ app.use("/api/push", pushRoutes);
 
 app.use(errorHandlerMiddleware);
 
-db.sequelize.sync()
-    .then(() => console.log("Kết nối CSDL & đồng bộ bảng thành công"))
+// sync() mặc định không sửa bảng đã tồn tại: thay đổi model sẽ KHÔNG tự migrate.
+// Đặt DB_SYNC_ALTER=true (chỉ dùng ở môi trường dev) để Sequelize tự ALTER bảng,
+// hoặc chạy `node database/fix_db.js` để áp các thay đổi schema đã viết sẵn.
+const syncAlter = process.env.DB_SYNC_ALTER === "true";
+
+db.sequelize.sync({ alter: syncAlter })
+    .then(() => console.log(`Kết nối CSDL & đồng bộ bảng thành công${syncAlter ? " (alter: true)" : ""}`))
     .catch(err => console.error('Không thể kết nối CSDL', err));
 
 app.listen(PORT, () => {

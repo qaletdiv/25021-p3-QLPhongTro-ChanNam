@@ -32,27 +32,20 @@ useEffect(() => {
     try {
       const res = await authApi.login(data);
       const result = res.data;
-      
+
       if (!result?.user) {
         throw new Error("Invalid response from server: no user data");
       }
-      
+
+      // Token chỉ tồn tại trong cookie HttpOnly do backend set (không đọc được từ JS).
+      // Ở đây chỉ cache thông tin user để render nhanh trước khi /auth/me trả về.
       const userData = result.user;
-      
-      // ✅ EXPLICITLY store token in localStorage (bổ t bổ trợ cho HttpOnly cookie)
-      // Mặc dù backend set cookie HttpOnly, nhưng set localStorage giúp tránh lỗi "Token required"
-      // khi server render (SSR) chưa kịp gửi cookie hoặc cookie path/domain mismatch
-      if (result.token) {
-        localStorage.setItem("token", result.token);
-      }
-      
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
-      
+
       return userData;
-      
+
     } catch (err) {
-      // ✅ Báo lỗi kèm thông tin hữu ích
       if (err.response?.data?.message) {
         throw new Error(err.response.data.message);
       }
@@ -72,7 +65,6 @@ useEffect(() => {
     try { await authApi.logout(); } catch (e) {
       console.error("Logout error:", e.message);
     }
-    localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
   };

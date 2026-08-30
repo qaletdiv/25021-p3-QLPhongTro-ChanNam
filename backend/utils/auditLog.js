@@ -2,6 +2,9 @@ const models = require("../models");
 
 exports.writeAuditLog = async ({ actorId, actorType, action, targetType, targetId, req, metadata = {} }) => {
     try {
+        // Không phải request nào cũng có User-Agent: phải kiểm tra trước khi slice,
+        // nếu không sẽ ném TypeError và làm mất bản ghi nhật ký.
+        const rawUserAgent = req && req.headers ? req.headers["user-agent"] : null;
         await models.AuditLog.create({
             actorId: actorId || null,
             actorType: actorType || "user",
@@ -9,7 +12,7 @@ exports.writeAuditLog = async ({ actorId, actorType, action, targetType, targetI
             entityType: targetType || null,
             entityId: targetId || null,
             ipAddress: req ? (req.ip || null) : null,
-            userAgent: req ? ((req.headers && req.headers["user-agent"]) || null).slice(0, 255) : null,
+            userAgent: rawUserAgent ? String(rawUserAgent).slice(0, 255) : null,
             metadata,
         });
     } catch (error) {
