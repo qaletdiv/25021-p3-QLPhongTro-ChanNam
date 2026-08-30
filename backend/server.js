@@ -29,6 +29,7 @@ const errorHandlerMiddleware = require("./middlewares/errorHandler");
 
 const db = require("./models");
 const { startAutoReminderJob } = require("./jobs/autoReminderJob");
+const { startDisableInactiveTenantJob } = require("./jobs/disableInactiveTenantJob");
 const push = require("./utils/push");
 push.init();
 
@@ -74,3 +75,4 @@ app.listen(PORT, () => {
 });
 
 startAutoReminderJob();
+startDisableInactiveTenantJob();
