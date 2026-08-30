@@ -1,4 +1,4 @@
-import { getUsers, revokeSession, disableAccount, enableAccount, changeUserPassword } from "../actions/adminUserActions";
+import { getUsers, revokeSession, disableAccount, enableAccount, changeUserPassword, deleteAccount } from "../actions/adminUserActions";
 
 const adminUserApi = {
   getUsers,

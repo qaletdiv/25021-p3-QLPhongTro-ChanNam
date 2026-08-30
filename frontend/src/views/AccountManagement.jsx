@@ -130,7 +130,6 @@ export default function AccountManagement({ initialUsers = [] }) {
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Người Dùng</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Vai Trò</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Trạng Thái</TableCell>
-                <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Hoạt Động</TableCell>
                 <TableCell sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Tham Gia</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 700, fontSize: "0.6875rem", color: "#64748b" }}>Thao Tác</TableCell>
               </TableRow>
@@ -159,16 +158,6 @@ export default function AccountManagement({ initialUsers = [] }) {
                         <Chip size="small" label="Hoạt động" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#dcfce7", color: "#15803d" }} />
                       ) : (
                         <Chip size="small" label="Vô hiệu hóa" sx={{ fontSize: "0.625rem", fontWeight: 700, bgcolor: "#ffe4e6", color: "#e11d48" }} />
-                      )}
-                    </TableCell>
-                    <TableCell sx={{ fontSize: "0.75rem" }}>
-                      {u.online ? (
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                          <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#22c55e" }} />
-                          <Typography sx={{ fontSize: "0.75rem", color: "#15803d", fontWeight: 600 }}>Đang trực tuyến</Typography>
-                        </Box>
-                      ) : (
-                        <Typography sx={{ fontSize: "0.75rem", color: "#94a3b8" }}>Đang ngoại tuyến</Typography>
                       )}
                     </TableCell>
                     <TableCell sx={{ fontSize: "0.75rem", color: "#64748b" }}>{formatDate(u.createdAt)}</TableCell>

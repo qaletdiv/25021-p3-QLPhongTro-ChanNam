@@ -3,7 +3,7 @@ const { User, Tenant, Contract, Room, BuildingCollaborator } = require("../model
 const { writeAuditLog } = require("../utils/auditLog");
 const { hashPassword } = require("../utils/password");
 
-const AUTH_ATTRS = ["id", "name", "email", "phone", "role", "isActive", "currentSessionToken", "avatar", "cccd", "createdAt", "updatedAt"];
+const AUTH_ATTRS = ["id", "name", "email", "phone", "role", "isActive", "avatar", "cccd", "createdAt", "updatedAt"];
 
 // Danh sách userId mà chủ trọ được quản lý: khách thuê có hợp đồng trên phòng của mình
 // HOẶC trên các nhà được chia sẻ cho mình làm cộng tác viên
@@ -59,7 +59,6 @@ exports.getUsers = async (req, res, next) => {
             phone: u.phone,
             role: u.role,
             isActive: u.isActive,
-            online: Boolean(u.currentSessionToken),
             avatar: u.avatar,
             cccd: u.cccd,
             createdAt: u.createdAt,
