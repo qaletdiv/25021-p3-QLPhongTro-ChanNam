@@ -16,6 +16,16 @@ exports.getNotifications = async (req, res, next) => {
     }
 };
 
+exports.markAsRead = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        await Notification.update({ isRead: true }, { where: { id, landlordId: req.user.id } });
+        res.json({ message: "Đã đánh dấu đã đọc" });
+    } catch (error) {
+        next(error);
+    }
+};
+
 exports.createNotification = async (req, res, next) => {
     try {
         const { title, content, targetType, targetRoomIds } = req.body;
