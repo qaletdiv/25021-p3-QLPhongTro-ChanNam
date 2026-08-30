@@ -21,11 +21,19 @@ exports.addCollaborator = async (req, res, next) => {
     try {
         const building = await Building.findOne({ where: { id: req.params.id, landlordId: req.user.id } });
         if (!building) return res.status(404).json({ message: "Không tìm thấy nhà hoặc bạn không phải chủ sở hữu" });
-        const { email } = req.body;
-        if (!email) return res.status(400).json({ message: "Vui lòng nhập email cộng tác viên" });
-        const user = await User.findOne({ where: { email: String(email).trim().toLowerCase() } });
-        if (!user || user.role !== "landlord") {
-            return res.status(400).json({ message: "Chỉ có thể chia sẻ cho tài khoản chủ trọ đã tồn tại" });
+        const { email, password } = req.body;
+        if (!email || !password) return res.status(400).json({ message: "Vui lòng nhập email và mật khẩu cộng tác viên" });
+        const emailLower = String(email).trim().toLowerCase();
+        let user = await User.findOne({ where: { email: emailLower } });
+        if (!user) {
+            // Tạo mới tài khoản landlord
+            const name = req.user.name; // lấy name từ chủ trọ tạo ra
+            const phone = req.user.phone; // lấy phone từ chủ trọ tạo ra
+            const hashed = await hashPassword(password);
+            user = await User.create({ name, email: emailLower, phone, password: hashed, role: "landlord" });
+        }
+        if (user.role !== "landlord") {
+            return res.status(400).json({ message: "Chỉ có thể chia sẻ cho tài khoản chủ trọ" });
         }
         if (user.id === req.user.id) return res.status(400).json({ message: "Bạn là chủ sở hữu nhà này" });
         const exists = await BuildingCollaborator.findOne({ where: { buildingId: building.id, userId: user.id } });

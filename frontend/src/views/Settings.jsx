@@ -33,6 +33,7 @@ export default function Settings({ initialSettings = null, initialBuildings = []
   const [collabBuilding, setCollabBuilding] = useState("");
   const [collaborators, setCollaborators] = useState([]);
   const [collabEmail, setCollabEmail] = useState("");
+  const [collabPassword, setCollabPassword] = useState("");
 
   const myBuildings = buildings.filter((b) => b.landlordId === user?.id);
 
@@ -45,10 +46,11 @@ export default function Settings({ initialSettings = null, initialBuildings = []
   };
 
   const handleAddCollaborator = async () => {
-    if (!collabBuilding || !collabEmail.trim()) return;
+    if (!collabBuilding || !collabEmail.trim() || !collabPassword.trim()) return;
     try {
-      await addCollaborator(collabBuilding, collabEmail.trim());
+      await addCollaborator(collabBuilding, collabEmail.trim(), collabPassword.trim());
       setCollabEmail("");
+      setCollabPassword("");
       await loadCollaborators(collabBuilding);
     } catch (err) {
       setSnack({ open: true, message: err.response?.data?.message || "Không thể thêm cộng tác viên", severity: "error" });
@@ -303,7 +305,12 @@ export default function Settings({ initialSettings = null, initialBuildings = []
               value={collabEmail} onChange={(e) => setCollabEmail(e.target.value)}
               sx={fieldSx}
             />
-            <Button variant="contained" startIcon={<GroupAddIcon />} type="button" onClick={handleAddCollaborator} disabled={!collabBuilding || !collabEmail.trim()}
+            <TextField
+              fullWidth size="small" label="Mật khẩu" type="password" placeholder="*****"
+              value={collabPassword} onChange={(e) => setCollabPassword(e.target.value)}
+              sx={fieldSx}
+/>
+            <Button variant="contained" startIcon={<GroupAddIcon />} type="button" onClick={handleAddCollaborator} disabled={!collabBuilding || !collabEmail.trim() || !collabPassword.trim()}
               sx={{ py: 1, px: 3, fontSize: "0.75rem", fontWeight: 700, textTransform: "none", borderRadius: "12px" }}>
               Thêm
             </Button>
