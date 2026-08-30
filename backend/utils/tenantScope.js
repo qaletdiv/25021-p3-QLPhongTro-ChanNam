@@ -3,30 +3,50 @@ const { Tenant, Contract, Room } = require("../models");
 const { getAccessibleBuildingIds } = require("./buildingAccess");
 
 /**
+ * Khách thuê "chưa được gán": chưa chọn nhà trọ và chưa có hợp đồng nào.
+ * Đây là hàng đợi onboarding - chủ trọ phải thấy để lập hợp đồng đầu tiên,
+ * nên nhóm này hiển thị cho mọi chủ trọ. Ngay khi có hợp đồng (createContract
+ * sẽ gán buildingId theo phòng) hoặc khi khách chọn nhà lúc đăng ký thì
+ * bản ghi rời khỏi nhóm này và chỉ còn chủ nhà tương ứng nhìn thấy.
+ */
+async function getUnassignedTenantIds() {
+    const rows = await Tenant.findAll({
+        where: { buildingId: null },
+        attributes: ["id"],
+        include: [{ model: Contract, as: "contracts", required: false, attributes: ["id"] }]
+    });
+    return rows.filter((t) => !t.contracts || t.contracts.length === 0).map((t) => t.id);
+}
+
+/**
  * Danh sách id khách thuê mà user (chủ trọ / cộng tác viên) được phép nhìn thấy:
- * - Khách đã chọn nhà trọ này khi đăng ký (tenants.buildingId)
+ * - Khách đã chọn nhà trọ thuộc quyền truy cập (tenants.buildingId)
  * - Khách có hợp đồng trên phòng thuộc nhà được phép truy cập
- *
- * Trả về [] khi không có khách nào, để caller tự quy đổi thành điều kiện chặn.
+ * - Khách chưa được gán nhà và chưa có hợp đồng (hàng đợi onboarding)
  */
 async function getAccessibleTenantIds(userId, accessibleBuildingIds) {
     const accIds = accessibleBuildingIds || (await getAccessibleBuildingIds(userId));
-    if (!accIds.length) return [];
 
-    const [byBuilding, byContract] = await Promise.all([
-        Tenant.findAll({ where: { buildingId: { [Op.in]: accIds } }, attributes: ["id"] }),
-        Contract.findAll({
-            attributes: ["tenantId"],
-            include: [{
-                model: Room, as: "room", required: true, attributes: [],
-                where: { buildingId: { [Op.in]: accIds } }
-            }]
-        })
+    const [byBuilding, byContract, unassigned] = await Promise.all([
+        accIds.length
+            ? Tenant.findAll({ where: { buildingId: { [Op.in]: accIds } }, attributes: ["id"] })
+            : [],
+        accIds.length
+            ? Contract.findAll({
+                attributes: ["tenantId"],
+                include: [{
+                    model: Room, as: "room", required: true, attributes: [],
+                    where: { buildingId: { [Op.in]: accIds } }
+                }]
+            })
+            : [],
+        getUnassignedTenantIds()
     ]);
 
     return [...new Set([
         ...byBuilding.map((t) => t.id),
-        ...byContract.map((c) => c.tenantId).filter(Boolean)
+        ...byContract.map((c) => c.tenantId).filter(Boolean),
+        ...unassigned
     ])];
 }
 
@@ -48,4 +68,4 @@ async function isTenantAccessible(userId, tenantId) {
     return ids.includes(Number(tenantId));
 }
 
-module.exports = { getAccessibleTenantIds, tenantAccessCondition, isTenantAccessible };
+module.exports = { getAccessibleTenantIds, getUnassignedTenantIds, tenantAccessCondition, isTenantAccessible };

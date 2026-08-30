@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { User, Tenant, Companion } = require("../models");
+const { User, Tenant, Companion, Building } = require("../models");
 const { generateSessionToken, setAuthCookie } = require("../utils/cookies");
 const { writeAuditLog } = require("../utils/auditLog");
 const { hashPassword, comparePassword } = require("../utils/password");
@@ -13,14 +13,24 @@ const signToken = (user, sessionId) => jwt.sign(
 exports.register = async (req, res, next) => {
     try {
         const { name, email, phone, password, role, cccd, companions, buildingId } = req.body;
-        if ((role || 'tenant') === 'landlord') {
+        const targetRole = role || 'tenant';
+        if (targetRole === 'landlord') {
             return res.status(403).json({ message: "Không được phép tự đăng ký tài khoản chủ trọ" });
         }
+        // Khách thuê phải chọn nhà trọ để bản ghi thuộc về đúng chủ nhà,
+        // nếu không sẽ nằm lơ lửng và hiện ra ở danh sách của mọi chủ trọ.
+        if (!buildingId) {
+            return res.status(400).json({ message: "Vui lòng chọn nhà trọ bạn đang thuê" });
+        }
+        const building = await Building.findByPk(buildingId);
+        if (!building) {
+            return res.status(400).json({ message: "Nhà trọ không tồn tại" });
+        }
         const hashed = await hashPassword(password);
-        const newUser = await User.create({ name, email, phone, password: hashed, role: role || 'tenant' });
+        const newUser = await User.create({ name, email, phone, password: hashed, role: targetRole });
 
-        if (role === 'tenant') {
-            const tenant = await Tenant.create({ name, phone, cccd: cccd || null, userId: newUser.id, buildingId: buildingId || null });
+        if (targetRole === 'tenant') {
+            const tenant = await Tenant.create({ name, phone, cccd: cccd || null, userId: newUser.id, buildingId: building.id });
             if (companions && companions.length > 0) {
                 const items = companions.map(c => ({ ...c, tenantId: tenant.id }));
                 await Companion.bulkCreate(items);
@@ -31,7 +41,7 @@ exports.register = async (req, res, next) => {
         await newUser.update({ currentSessionToken: sessionId });
         const token = signToken(newUser, sessionId);
         setAuthCookie(res, token);
-        res.status(201).json({ message: "Đăng ký thành công", user: { id: newUser.id, name, email, phone, role: role || 'tenant' } });
+        res.status(201).json({ message: "Đăng ký thành công", user: { id: newUser.id, name, email, phone, role: targetRole } });
     } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
             const field = error.errors[0].path;

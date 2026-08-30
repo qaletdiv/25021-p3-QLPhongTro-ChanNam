@@ -106,10 +106,10 @@ exports.createContract = async (req, res, next) => {
         if (room.status !== 'empty') return res.status(400).json({ message: "Phòng không trống" });
 
         // Không cho lập hợp đồng với khách thuê của nhà trọ khác.
+        // isTenantAccessible đã bao gồm nhóm khách chưa được gán nhà (hàng đợi onboarding).
         const tenant = await Tenant.findByPk(tenantId);
         if (!tenant) return res.status(400).json({ message: "Khách thuê không tồn tại" });
-        const tenantOwned = tenant.buildingId == null && !(await Contract.count({ where: { tenantId } }));
-        if (!tenantOwned && !(await isTenantAccessible(req.user.id, tenantId))) {
+        if (!(await isTenantAccessible(req.user.id, tenantId))) {
             return res.status(403).json({ message: "Bạn không có quyền trên khách thuê này" });
         }
 
