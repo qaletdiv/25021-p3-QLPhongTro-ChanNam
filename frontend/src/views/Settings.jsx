@@ -58,6 +58,7 @@ export default function Settings({ initialSettings = null, initialBuildings = []
   };
 
   const handleRemoveCollaborator = async (uid) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa cộng tác viên này?")) return;
     try {
       await removeCollaborator(collabBuilding, uid);
       await loadCollaborators(collabBuilding);
@@ -290,9 +291,10 @@ export default function Settings({ initialSettings = null, initialBuildings = []
               Cộng tác viên xem và quản lý toàn bộ phòng, hóa đơn, khách thuê của nhà được chia sẻ.
             </Typography>
           </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr auto" }, gap: 1.5, alignItems: "center" }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr auto" }, gap: 1, alignItems: "center" }}>
             <TextField
-              select fullWidth size="small" label="Chọn nhà của bạn" value={collabBuilding}
+              select fullWidth size="small" label="Tòa nhà" value={collabBuilding}
+              sx={{ mb: 0 }}
               onChange={(e) => { setCollabBuilding(e.target.value); loadCollaborators(e.target.value); }}
               sx={fieldSx}
             >
@@ -300,18 +302,18 @@ export default function Settings({ initialSettings = null, initialBuildings = []
                 <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
               ))}
             </TextField>
-            <TextField
+<TextField
               fullWidth size="small" label="Email tài khoản chủ trọ" placeholder="chuhoangsa2@gmail.com"
               value={collabEmail} onChange={(e) => setCollabEmail(e.target.value)}
-              sx={fieldSx}
-            />
+              sx={{ mb: 0, margin: "dense" }}
+/>
             <TextField
               fullWidth size="small" label="Mật khẩu" type="password" placeholder="*****"
               value={collabPassword} onChange={(e) => setCollabPassword(e.target.value)}
-              sx={fieldSx}
+              sx={{ mb: 0, margin: "dense" }}
 />
             <Button variant="contained" startIcon={<GroupAddIcon />} type="button" onClick={handleAddCollaborator} disabled={!collabBuilding || !collabEmail.trim() || !collabPassword.trim()}
-              sx={{ py: 1, px: 3, fontSize: "0.75rem", fontWeight: 700, textTransform: "none", borderRadius: "12px" }}>
+              sx={{ py: 1.5, px: 3, fontSize: "0.75rem", fontWeight: 600, textTransform: "none", borderRadius: "8px" }}>
               Thêm
             </Button>
           </Box>
