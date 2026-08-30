@@ -30,10 +30,11 @@ export default function Settings({ initialSettings = null, initialBuildings = []
   const [checkMsg, setCheckMsg] = useState(null);
   const [banks, setBanks] = useState([]);
   const [pushMsg, setPushMsg] = useState("");
-  const [collabBuilding, setCollabBuilding] = useState("");
-  const [collaborators, setCollaborators] = useState([]);
+const [collabBuilding, setCollabBuilding] = useState("");
   const [collabEmail, setCollabEmail] = useState("");
   const [collabPassword, setCollabPassword] = useState("");
+  const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
+  const [removeUid, setRemoveUid] = useState(null);
 
   const myBuildings = buildings.filter((b) => b.landlordId === user?.id);
 
@@ -58,13 +59,8 @@ export default function Settings({ initialSettings = null, initialBuildings = []
   };
 
   const handleRemoveCollaborator = async (uid) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa cộng tác viên này?")) return;
-    try {
-      await removeCollaborator(collabBuilding, uid);
-      await loadCollaborators(collabBuilding);
-    } catch (err) {
-      setSnack({ open: true, message: err.response?.data?.message || "Không thể xóa cộng tác viên", severity: "error" });
-    }
+    setRemoveUid(uid);
+    setRemoveConfirmOpen(true);
   };
 
   const handleEnablePush = async () => {
@@ -328,9 +324,17 @@ export default function Settings({ initialSettings = null, initialBuildings = []
                     <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#0f172a" }}>{c.name}</Typography>
                     <Typography sx={{ fontSize: "0.62rem", color: "#64748b" }}>{c.email}</Typography>
                   </Box>
-                  <IconButton size="small" onClick={() => handleRemoveCollaborator(c.id)} title="Xóa cộng tác viên">
+                  <IconButton size="small" onClick={() => { setRemoveUid(c.id); setRemoveConfirmOpen(true); }} title="Xóa cộng tác viên">
                     <DeleteIcon sx={{ fontSize: 16, color: "#e11d48" }} />
                   </IconButton>
+                  {removeConfirmOpen && removeUid === c.id && (
+                    <MessageDialog
+                      open={removeConfirmOpen}
+                      severity="warning"
+                      message="Bạn có chắc chắn muốn xóa cộng tác viên này?"
+                      onClose={() => { removeCollaborator(collabBuilding, c.id); setRemoveConfirmOpen(false); setRemoveUid(null); }}
+                    />
+                  )}
                 </Box>
               ))}
             </Box>
