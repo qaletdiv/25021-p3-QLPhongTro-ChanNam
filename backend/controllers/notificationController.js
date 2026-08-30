@@ -6,7 +6,6 @@ const { getAccessibleBuildingIds, roomAccessCondition } = require("../utils/buil
 
 exports.getNotifications = async (req, res, next) => {
     try {
-        const accIds = await getAccessibleBuildingIds(req.user.id);
         const notifications = await Notification.findAll({
             where: { landlordId: req.user.id },
             order: [['createdAt', 'DESC']]

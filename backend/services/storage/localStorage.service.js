@@ -40,7 +40,7 @@ exports.upload = async ({ base64, folderId = "general", publicId }) => {
 exports.resolveToAbs = (key) => {
     try {
         return safeJoin(STORAGE_ROOT, key);
-    } catch (e) {
+    } catch {
         return null;
     }
 };

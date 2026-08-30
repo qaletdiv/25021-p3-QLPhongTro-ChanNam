@@ -43,7 +43,6 @@ exports.saveSettings = async (req, res, next) => {
             const existing = await Setting.findOne({
                 where: { key, landlordId: req.user.id, buildingId: buildScope }
             });
-            const oldValue = existing ? existing.value : null;
             if (existing) {
                 await existing.update({ value });
             } else {

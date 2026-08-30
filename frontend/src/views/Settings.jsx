@@ -11,7 +11,6 @@ import MessageIcon from "@mui/icons-material/Message";
 import PersonIcon from "@mui/icons-material/Person";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MessageDialog from "../components/MessageDialog";
@@ -24,7 +23,7 @@ import { getCollaborators, addCollaborator, removeCollaborator } from "../action
 export default function Settings({ initialSettings = null, initialBuildings = [] }) {
   const { user } = useAuth();
   const [form, setForm] = useState(initialSettings || {});
-  const [buildings, setBuildings] = useState(initialBuildings);
+  const [buildings] = useState(initialBuildings);
   const [buildingId, setBuildingId] = useState("");
   const [savedMsg, setSavedMsg] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });

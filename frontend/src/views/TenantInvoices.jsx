@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Box, Typography, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
+import { useState, useCallback } from "react";
+import { Box, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
 import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
 import InvoiceHistoryTable from "../components/tenant/InvoiceHistoryTable";

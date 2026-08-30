@@ -193,7 +193,6 @@ exports.getUtilityUsage = async (req, res, next) => {
         for (const inv of invoices) {
             const roomId = inv.contract?.roomId;
             if (!roomId || !roomMap.has(roomId)) continue;
-            const key = `${roomId}|${inv.month}`;
             const prev = latestByRoom.get(roomId);
             if (!prev || inv.month > prev.month) latestByRoom.set(roomId, inv);
         }

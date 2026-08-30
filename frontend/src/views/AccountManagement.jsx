@@ -37,7 +37,7 @@ export default function AccountManagement({ initialUsers = [] }) {
       if (statusFilter !== "all") params.active = statusFilter;
       const res = await adminUserApi.getUsers(params);
       setUsers(res.data.users || []);
-    } catch (e) {
+    } catch {
       setUsers([]);
     } finally {
       setLoading(false);

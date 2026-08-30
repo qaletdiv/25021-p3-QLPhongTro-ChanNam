@@ -13,11 +13,10 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import roomApi from "../api/roomApi";
 import contractApi from "../api/contractApi";
 import furnitureApi from "../api/furnitureApi";
-import buildingApi from "../api/buildingApi";
 
 export default function RoomManagement({ initialRooms = [], initialBuildings = [] }) {
   const [rooms, setRooms] = useState(initialRooms);
-  const [buildings, setBuildings] = useState(initialBuildings);
+  const [buildings] = useState(initialBuildings);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -46,10 +45,6 @@ export default function RoomManagement({ initialRooms = [], initialBuildings = [
     finally { setLoading(false); }
   }, [buildingFilter]);
 
-  const fetchBuildings = useCallback(async () => {
-    try { const res = await buildingApi.getAll(); setBuildings(res.data.buildings || []); }
-    catch { /* bo qua */ }
-  }, []);
 
   // Dữ liệu ban đầu được fetch server-side; chỉ refetch khi đổi filter nhà trọ
   const mounted = useRef(false);

@@ -23,10 +23,9 @@ const monthOptions = () => {
   return options;
 };
 
-export default function InvoiceManagement({ initialInvoices = [], initialSettings = null, initialBuildings = [] }) {
+export default function InvoiceManagement({ initialInvoices = [], initialBuildings = [] }) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [buildings, setBuildings] = useState(initialBuildings);
-  const [settings, setSettings] = useState(initialSettings);
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
   const [buildingFilter, setBuildingFilter] = useState("all");

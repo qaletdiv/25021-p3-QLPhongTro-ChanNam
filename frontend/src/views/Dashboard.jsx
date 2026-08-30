@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Grid, Badge, Icon, Menu, MenuItem, Divider, Typography, IconButton } from "@mui/material";
+import { Box, Grid, Badge, Menu, MenuItem, Divider, Typography, IconButton } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BugReportIcon from "@mui/icons-material/BugReport";

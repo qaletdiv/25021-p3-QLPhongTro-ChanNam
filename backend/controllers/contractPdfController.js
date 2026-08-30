@@ -127,7 +127,7 @@ const renderTable = (doc, block) => {
             y = doc.page.margins.top || 50;
             cx = leftMargin;
         }
-        row.cells.forEach((cell, c) => {
+        row.cells.forEach((cell) => {
             const colX = cx;
             // draw border
             doc.rect(colX, y, colW, row.height).stroke();

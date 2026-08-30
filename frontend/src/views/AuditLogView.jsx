@@ -39,7 +39,7 @@ export default function AuditLogView({ initialLogs = [], initialTotal = 0 }) {
       const res = await auditApi.getLogs(params);
       setLogs(res.data.logs || []);
       setTotal(res.data.total || 0);
-    } catch (e) {
+    } catch {
       setLogs([]);
       setTotal(0);
     } finally {

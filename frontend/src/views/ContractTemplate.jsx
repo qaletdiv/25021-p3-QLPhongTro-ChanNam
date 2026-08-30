@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box, Typography, Button, Paper, CircularProgress, Chip,
   Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
@@ -63,7 +63,7 @@ const Toolbar = ({ title, active, disabled, onClick, children }) => (
 export default function ContractTemplate({ initialTemplate = "" }) {
   const [template, setTemplate] = useState(initialTemplate);
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 

@@ -15,7 +15,7 @@ import { formatDateTime } from "../utils/format";
 export default function FingerprintManagement({ initialHistory = [], initialBuildings = [] }) {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState(initialHistory);
-  const [buildings, setBuildings] = useState(initialBuildings);
+  const [buildings] = useState(initialBuildings);
   const [buildingFilter, setBuildingFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
@@ -29,7 +29,7 @@ export default function FingerprintManagement({ initialHistory = [], initialBuil
       if (search) params.search = search;
       const res = await fingerprintApi.getHistory(params);
       setHistory(res.data.history || []);
-    } catch (e) {
+    } catch {
       setHistory([]);
     } finally {
       setLoading(false);

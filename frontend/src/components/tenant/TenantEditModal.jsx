@@ -14,7 +14,7 @@ export default function TenantEditModal({
   editTenantId, editContractId, tenantForm, setTenantForm,
   emptyRooms, contractForm, setContractForm,
   companionFingerprints, setCompanionFingerprints,
-  furnitureList, selectedFurnitures, setSelectedFurnitures,
+  furnitureList, selectedFurnitures,
   paymentDayManuallyChanged, contractLoading, openContract, onClose, onSave,
 }) {
   const [showPassword, setShowPassword] = useState(false);

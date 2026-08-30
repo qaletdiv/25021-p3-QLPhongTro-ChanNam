@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box, Typography, TextField, Button, Paper, Grid, CircularProgress, IconButton,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -44,7 +44,7 @@ const inputFieldSx = {
 };
 
 export default function TenantProfile({ initialProfile = null }) {
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState(initialProfile || { name: "", email: "", phone: "", cccd: "", telegramChatId: "", companions: [] });
   const [passwords, setPasswords] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });

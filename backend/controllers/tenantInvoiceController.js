@@ -84,7 +84,7 @@ exports.saveInitialReadings = async (req, res, next) => {
         });
 
         const roomPrice = Number(contract.room.price) || 0;
-        const invoice = await Invoice.create({
+        await Invoice.create({
             contractId: contract.id,
             month: monthStr(new Date()),
             roomPrice,
