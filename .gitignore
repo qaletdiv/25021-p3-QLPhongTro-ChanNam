@@ -4,6 +4,7 @@ backend/storage/images/**
 !backend/storage/images/.gitkeep
 backend/node_modules/
 backend/.env
+backend/.env-example
 backend/server.log
 backend/server.err
 backend/uploads/
