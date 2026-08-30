@@ -27,7 +27,6 @@ import LinkOffIcon from "@mui/icons-material/LinkOff";
 import TitleIcon from "@mui/icons-material/Title";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
 import { Table, TableRow, TableHeader, TableCell } from "@tiptap/extension-table";
 import contractTemplateApi from "../api/contractTemplateApi";
@@ -69,8 +68,7 @@ export default function ContractTemplate({ initialTemplate = "" }) {
   const editor = useEditor({
     immediatelyRender: true,
     extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
-      Link.configure({ openOnClick: false }),
+      StarterKit.configure({ heading: { levels: [1, 2, 3] }, link: { openOnClick: false } }),
       TextAlign.configure({ types: ["heading", "paragraph", "tableCell"] }),
       Table.configure({ resizable: true }),
       TableRow,
