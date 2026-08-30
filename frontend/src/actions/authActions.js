@@ -89,7 +89,15 @@ export async function logout() {
 }
 
 export async function getMe() {
-  return serverFetch('/auth/me', { method: 'GET' });
+  try {
+    const res = await serverFetch('/auth/me', { method: 'GET' });
+    return res;
+  } catch (err) {
+    // 401 (chưa đăng nhập) là trường hợp bình thường khi mở trang login.
+    // Trả về user null thay vì ném lỗi, nếu không server action sẽ trả 500
+    // và gây noise ở console mỗi khi load trang chưa xác thực.
+    return { data: { user: null }, status: err.response?.status || 401 };
+  }
 }
 
 export async function getTemplate() {
