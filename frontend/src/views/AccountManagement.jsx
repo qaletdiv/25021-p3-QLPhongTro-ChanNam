@@ -12,6 +12,7 @@ import LockResetIcon from "@mui/icons-material/LockReset";
 import BlockIcon from "@mui/icons-material/Block";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import KeyIcon from "@mui/icons-material/Key";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import adminUserApi from "../api/adminUserApi";
 import { useAuth } from "../contexts/AuthContext";
 import { formatDate } from "../utils/format";
@@ -26,6 +27,7 @@ export default function AccountManagement({ initialUsers = [] }) {
   const [errorMsg, setErrorMsg] = useState(null);
   const [passwordTarget, setPasswordTarget] = useState(null);
   const [newPassword, setNewPassword] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -201,6 +203,13 @@ export default function AccountManagement({ initialUsers = [] }) {
                             </IconButton>
                           </span>
                         </Tooltip>
+                        <Tooltip title={isSelf ? "Không thể xóa chính mình" : "Xóa tài khoản khách thuê"}>
+                          <span>
+                            <IconButton size="small" disabled={isSelf} onClick={() => setDeleteTarget(u)} sx={{ color: "#e11d48", border: "1px solid #fecdd3", "&.Mui-disabled": { opacity: 0.35 } }}>
+                              <DeleteOutlineIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -225,6 +234,20 @@ export default function AccountManagement({ initialUsers = [] }) {
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button size="small" onClick={() => setPasswordTarget(null)} color="inherit">Hủy</Button>
           <Button size="small" variant="contained" onClick={submitChangePassword}>Xác Nhận</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} fullWidth maxWidth="xs">
+        <DialogTitle sx={{ fontSize: "0.9375rem", fontWeight: 700 }}>Xác Nhận Xóa Tài Khoản</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
+            Bạn có chắc muốn xóa tài khoản khách thuê <Box component="span" sx={{ fontWeight: 700, color: "#0f172a" }}>{deleteTarget?.name}</Box>?
+            Hành động này xóa quyền đăng nhập; hợp đồng và hóa đơn hiện có vẫn được giữ lại.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button size="small" onClick={() => setDeleteTarget(null)} color="inherit">Hủy</Button>
+          <Button size="small" variant="contained" color="error" onClick={() => { const t = deleteTarget; setDeleteTarget(null); runAction(() => adminUserApi.deleteAccount(t.id), "Đã xóa tài khoản khách thuê."); }}>Xóa</Button>
         </DialogActions>
       </Dialog>
 

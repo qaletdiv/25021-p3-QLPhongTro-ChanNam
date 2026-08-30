@@ -136,32 +136,62 @@ exports.enableAccount = async (req, res, next) => {
 };
 
 exports.changePassword = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const { newPassword } = req.body;
-        if (!newPassword || String(newPassword).length < 6) {
-            return res.status(400).json({ message: "Mật khẩu mới phải có ít nhất 6 ký tự." });
-        }
-        if (String(id) === String(req.user.id)) {
-            return res.status(400).json({ message: "Hãy dùng chức năng đổi mật khẩu ở trang Cài Đặt cho chính tài khoản admin." });
-        }
-        const user = await User.findByPk(id, { include: [{ model: Tenant, as: "tenants", attributes: ["id"] }] });
-        if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
-
-        const manageablePwd = await getManageableUserIds(req.user.id);
-        if (!manageablePwd.includes(Number(id))) {
-            return res.status(403).json({ message: "Bạn không có quyền thao tác trên tài khoản này." });
-        }
-
-        const hashed = await hashPassword(String(newPassword));
-        await user.update({ password: hashed, currentSessionToken: null });
-
-        const tenant = user.tenants && user.tenants[0];
-        if (tenant) await Tenant.update({ password: String(newPassword) }, { where: { id: tenant.id } });
-
-        await writeAuditLog({ actorId: req.user.id, action: "user.change_password", targetType: "user", targetId: Number(id), metadata: { targetName: user.name, targetEmail: user.email } });
-        res.json({ message: "Đã đổi mật khẩu và thu hồi phiên đăng nhập hiện tại của tài khoản này." });
-    } catch (error) {
-        next(error);
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+    if (!newPassword || String(newPassword).length < 6) {
+      return res.status(400).json({ message: "Mật khẩu mới phải có ít nhất 6 ký tự." });
     }
+    if (String(id) === String(req.user.id)) {
+      return res.status(400).json({ message: "Hãy dùng chức năng đổi mật khẩu ở trang Cài Đặt cho chính tài khoản admin." });
+    }
+    const user = await User.findByPk(id, { include: [{ model: Tenant, as: "tenants", attributes: ["id"] }] });
+    if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+
+    const manageablePwd = await getManageableUserIds(req.user.id);
+    if (!manageablePwd.includes(Number(id))) {
+      return res.status(403).json({ message: "Bạn không có quyền thao tác trên tài khoản này." });
+    }
+
+    const hashed = await hashPassword(String(newPassword));
+    await user.update({ password: hashed, currentSessionToken: null });
+
+    const tenant = user.tenants && user.tenants[0];
+    if (tenant) await Tenant.update({ password: String(newPassword) }, { where: { id: tenant.id } });
+
+    await writeAuditLog({ actorId: req.user.id, action: "user.change_password", targetType: "user", targetId: Number(id), metadata: { targetName: user.name, targetEmail: user.email } });
+    res.json({ message: "Đã đổi mật khẩu và thu hồi phiên đăng nhập hiện tại của tài khoản này." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteAccount = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (String(id) === String(req.user.id)) {
+      return res.status(400).json({ message: "Không thể xóa chính tài khoản admin đang sử dụng." });
+    }
+    const user = await User.findByPk(id, { include: [{ model: Tenant, as: "tenants", attributes: ["id"] }] });
+    if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng." });
+
+    if (user.role === "landlord") {
+      return res.status(400).json({ message: "Chỉ có thể xóa tài khoản khách thuê." });
+    }
+
+    // Chỉ chủ trọ của nhà chứa phòng của khách mới được xóa (data isolation)
+    const manageable = await getManageableUserIds(req.user.id);
+    if (!manageable.includes(Number(id))) {
+      return res.status(403).json({ message: "Bạn không có quyền xóa tài khoản khách thuê của nhà trọ khác." });
+    }
+
+    // Gỡ liên kết khách thuê để tránh vi phạm FK; giữ nguyên hợp đồng/hoá đơn để bảo toàn dữ liệu
+    await Tenant.update({ userId: null }, { where: { userId: id } });
+    await user.destroy();
+
+    await writeAuditLog({ actorId: req.user.id, action: "user.delete", targetType: "user", targetId: Number(id), metadata: { targetName: user.name, targetEmail: user.email } });
+    res.json({ message: "Đã xóa tài khoản khách thuê." });
+  } catch (error) {
+    next(error);
+  }
 };

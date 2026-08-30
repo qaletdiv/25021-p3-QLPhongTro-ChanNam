@@ -9,5 +9,6 @@ router.post('/users/:id/revoke', authenticateToken, authorizeRole('landlord'), a
 router.post('/users/:id/disable', authenticateToken, authorizeRole('landlord'), adminUserController.disableAccount);
 router.post('/users/:id/enable', authenticateToken, authorizeRole('landlord'), adminUserController.enableAccount);
 router.post('/users/:id/change-password', authenticateToken, authorizeRole('landlord'), adminUserController.changePassword);
+router.post('/users/:id/delete', authenticateToken, authorizeRole('landlord'), adminUserController.deleteAccount);
 
 module.exports = router;

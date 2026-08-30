@@ -6,6 +6,7 @@ const adminUserApi = {
   disableAccount,
   enableAccount,
   changePassword: changeUserPassword,
+  deleteAccount,
 };
 
 export default adminUserApi;
