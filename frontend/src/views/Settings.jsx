@@ -333,7 +333,7 @@ const [banks, setBanks] = useState([]);
                       open={removeConfirmOpen}
                       severity="warning"
                       message="Bạn có chắc chắn muốn xóa cộng tác viên này?"
-                      onClose={() => { removeCollaborator(collabBuilding, c.id); setRemoveConfirmOpen(false); setRemoveUid(null); loadCollaborators(collabBuilding); }}
+                      onClose={() => { removeCollaborator(collabBuilding, c.id); setRemoveConfirmOpen(false); setRemoveUid(null); setSnack({ open: true, message: "Đã xóa cộng tác viên thành công!", severity: "success" }); loadCollaborators(collabBuilding); }}
                     />
                   )}
                 </Box>
