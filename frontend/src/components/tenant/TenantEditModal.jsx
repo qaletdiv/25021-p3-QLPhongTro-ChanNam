@@ -42,7 +42,9 @@ export default function TenantEditModal({
             sx={inputSx} />
           <TextField fullWidth size="small" label="CCCD" value={tenantForm.cccd} onChange={(e) => setTenantForm({ ...tenantForm, cccd: e.target.value })}
             sx={inputSx} />
-          <TextField fullWidth size="small" label="Mật khẩu đăng nhập" type={showPassword ? "text" : "password"} value={tenantForm.password}
+          <TextField fullWidth size="small" label="Đặt lại mật khẩu" type={showPassword ? "text" : "password"} value={tenantForm.password}
+            placeholder="Để trống nếu không đổi"
+            helperText="Nhập mật khẩu mới (tối thiểu 6 ký tự) để đặt lại. Mật khẩu hiện tại được mã hóa nên không thể xem lại."
             onChange={(e) => setTenantForm({ ...tenantForm, password: e.target.value })}
             slotProps={{
               input: {

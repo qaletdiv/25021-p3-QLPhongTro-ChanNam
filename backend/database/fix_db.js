@@ -61,14 +61,16 @@ async function run() {
     }
   } catch(e) { console.log('contracts checkoutDate error:', e.message); }
 
-  // 2c. Add password (plaintext for landlord view/edit) to tenants if missing
+  // 2c. Drop the legacy plaintext tenants.password column (security fix).
+  // Tenant credentials live only in users.password (bcrypt hash); the mirrored
+  // plaintext copy is removed together with any data still stored in it.
   try {
     const [cols] = await seq.query("SHOW COLUMNS FROM tenants LIKE 'password'");
-    if (cols.length === 0) {
-      await seq.query("ALTER TABLE tenants ADD COLUMN password VARCHAR(255) DEFAULT NULL AFTER cccd");
-      console.log('Added password to tenants');
+    if (cols.length > 0) {
+      await seq.query("ALTER TABLE tenants DROP COLUMN password");
+      console.log('Dropped legacy plaintext password column from tenants');
     }
-  } catch(e) { console.log('tenants password error:', e.message); }
+  } catch(e) { console.log('tenants drop password error:', e.message); }
 
   // 3. Create rate_histories table if missing
   try {
@@ -187,6 +189,25 @@ async function run() {
       console.log('Added buildingId to tenants');
     }
   } catch(e) { console.log('tenants buildingId error:', e.message); }
+
+  // 9. Backfill tenants.buildingId from the building of the room they rent.
+  // The tenant list is scoped by building access, so legacy rows created before
+  // the buildingId column existed must be attached to their building to stay visible.
+  try {
+    const [result] = await seq.query(`
+      UPDATE tenants t
+      JOIN (
+        SELECT c.tenantId, MAX(r.buildingId) AS buildingId
+        FROM contracts c
+        JOIN rooms r ON r.id = c.roomId
+        WHERE r.buildingId IS NOT NULL
+        GROUP BY c.tenantId
+      ) src ON src.tenantId = t.id
+      SET t.buildingId = src.buildingId
+      WHERE t.buildingId IS NULL
+    `);
+    console.log('Backfilled tenants.buildingId from contracts:', result.affectedRows ?? 0, 'row(s)');
+  } catch(e) { console.log('tenants buildingId backfill error:', e.message); }
 
   console.log('Done');
   process.exit(0);

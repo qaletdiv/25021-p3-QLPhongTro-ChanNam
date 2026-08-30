@@ -4,6 +4,7 @@ const createTenantValidationRules = () => [
     body('name').notEmpty().withMessage("Tên khách không được để trống").trim(),
     body('phone').notEmpty().withMessage("SĐT không được để trống").trim(),
     body('cccd').optional().trim(),
+    body('buildingId').optional({ values: 'falsy' }).isInt({ min: 1 }).withMessage("Nhà trọ không hợp lệ"),
 ];
 
 const tenantIdParamValidation = () => [

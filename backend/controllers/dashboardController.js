@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Room, Contract, Tenant, Invoice, Issue, Building } = require("../models");
 const { monthStr } = require("../utils/dates");
 const { getAccessibleBuildingIds, roomAccessCondition } = require("../utils/buildingAccess");
+const { getAccessibleTenantIds } = require("../utils/tenantScope");
 
 exports.getStats = async (req, res, next) => {
     try {
@@ -95,13 +96,21 @@ exports.getNotifications = async (req, res, next) => {
             include: [{ model: Room, as: "room", required: true, where: roomAccessCondition(landlordId, accIds) }]
         });
 
-        // Người thuê chưa có phòng (chưa có hợp đồng active) - đồng bộ với trang /landlord/tenants
-        const tenantsNoRoom = await Tenant.findAll({ attributes: ['id', 'name', 'phone'] });
-        const activeContractTenantIds = (await Contract.findAll({
-            where: { status: 'active' },
-            attributes: ['tenantId']
-        })).map((c) => c.tenantId);
-        const pendingTenants = tenantsNoRoom.filter((t) => !activeContractTenantIds.includes(t.id));
+        // Người thuê chưa có phòng (chưa có hợp đồng active) - đồng bộ với trang /landlord/tenants.
+        // Chỉ xét khách thuê thuộc nhà mình sở hữu / được chia sẻ, không quét toàn bộ bảng tenants.
+        const accessibleTenantIds = await getAccessibleTenantIds(landlordId, accIds);
+        let pendingTenants = [];
+        if (accessibleTenantIds.length) {
+            const scopedTenants = await Tenant.findAll({
+                where: { id: { [Op.in]: accessibleTenantIds } },
+                attributes: ['id', 'name', 'phone']
+            });
+            const activeTenantIds = new Set((await Contract.findAll({
+                where: { status: 'active', tenantId: { [Op.in]: accessibleTenantIds } },
+                attributes: ['tenantId']
+            })).map((c) => c.tenantId));
+            pendingTenants = scopedTenants.filter((t) => !activeTenantIds.has(t.id));
+        }
 
         const items = [];
         for (const inv of unpaidInvoices) {

@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Contract, ContractFurniture, Tenant, Room, Furniture, Companion } = require("../models");
 const { logFingerprintRow, logFingerprintReassign, updateCompanionDetails, logCompanionAssignments, logCompanionReassignments } = require("../utils/fingerprintLog");
 const { getAccessibleBuildingIds, isBuildingAccessible } = require("../utils/buildingAccess");
+const { isTenantAccessible } = require("../utils/tenantScope");
 
 exports.getContracts = async (req, res, next) => {
     try {
@@ -104,7 +105,20 @@ exports.createContract = async (req, res, next) => {
         if (!room || !(await isBuildingAccessible(req.user.id, room.buildingId))) return res.status(400).json({ message: "Phòng không hợp lệ" });
         if (room.status !== 'empty') return res.status(400).json({ message: "Phòng không trống" });
 
+        // Không cho lập hợp đồng với khách thuê của nhà trọ khác.
+        const tenant = await Tenant.findByPk(tenantId);
+        if (!tenant) return res.status(400).json({ message: "Khách thuê không tồn tại" });
+        const tenantOwned = tenant.buildingId == null && !(await Contract.count({ where: { tenantId } }));
+        if (!tenantOwned && !(await isTenantAccessible(req.user.id, tenantId))) {
+            return res.status(403).json({ message: "Bạn không có quyền trên khách thuê này" });
+        }
+
         const contract = await Contract.create({ tenantId, roomId, deposit, price: price ?? room.price, startDate, endDate, paymentDay, fingerprintCode, status: 'active' });
+
+        // Khách tự đăng ký nhưng chưa chọn nhà: gắn vào nhà của phòng vừa thuê.
+        if (tenant.buildingId == null && room.buildingId) {
+            await tenant.update({ buildingId: room.buildingId });
+        }
 
         await updateCompanionDetails(companionFingerprints);
 
@@ -115,7 +129,6 @@ exports.createContract = async (req, res, next) => {
 
         await room.update({ status: 'rented' });
 
-        const tenant = await Tenant.findByPk(contract.tenantId);
         if (contract.fingerprintCode) {
             await logFingerprintRow({
                 fingerprintCode: contract.fingerprintCode, ownerType: 'tenant', ownerId: contract.tenantId,

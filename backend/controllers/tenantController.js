@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Tenant, Contract, Room, Companion, Building, User } = require("../models");
 const { hashPassword } = require("../utils/password");
 const { getAccessibleBuildingIds } = require("../utils/buildingAccess");
+const { tenantAccessCondition, isTenantAccessible } = require("../utils/tenantScope");
 
 exports.getTenants = async (req, res, next) => {
     try {
@@ -10,7 +11,8 @@ exports.getTenants = async (req, res, next) => {
         const offset = (page - 1) * limit;
         const { search } = req.query;
         const accIds = await getAccessibleBuildingIds(req.user.id);
-        const where = {};
+        // Chỉ trả về khách thuê thuộc nhà mình sở hữu / được chia sẻ (data isolation)
+        const where = { ...(await tenantAccessCondition(req.user.id, accIds)) };
         if (search) {
             const like = { [Op.like]: `%${search}%` };
             const matchedCompanionTenantIds = await Companion.findAll({
@@ -53,8 +55,14 @@ exports.getTenants = async (req, res, next) => {
 
 exports.createTenant = async (req, res, next) => {
     try {
-        const { name, phone, cccd } = req.body;
-        const tenant = await Tenant.create({ name, phone, cccd });
+        const { name, phone, cccd, buildingId } = req.body;
+        // Khách thuê phải gắn với một nhà mà chủ trọ được phép quản lý, nếu không
+        // bản ghi sẽ không thuộc về ai và lọt ra danh sách của chủ trọ khác.
+        const accIds = await getAccessibleBuildingIds(req.user.id);
+        if (!buildingId || !accIds.includes(Number(buildingId))) {
+            return res.status(400).json({ message: "Nhà trọ không hợp lệ hoặc không thuộc về bạn" });
+        }
+        const tenant = await Tenant.create({ name, phone, cccd, buildingId: Number(buildingId) });
         res.status(201).json({ message: "Thêm khách thuê thành công", tenant });
     } catch (error) {
         next(error);
@@ -63,15 +71,21 @@ exports.createTenant = async (req, res, next) => {
 
 exports.updateTenant = async (req, res, next) => {
     try {
+        if (!(await isTenantAccessible(req.user.id, req.params.id))) {
+            return res.status(403).json({ message: "Bạn không có quyền trên khách thuê này" });
+        }
         const tenant = await Tenant.findByPk(req.params.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy khách thuê" });
         const { name, phone, cccd, password } = req.body;
         const updateData = { name, phone, cccd };
+        // Mật khẩu chỉ được lưu dạng hash ở bảng users, không lưu bản rõ ở tenants.
         if (password && String(password).trim() !== '') {
-            updateData.password = String(password).trim();
+            if (String(password).trim().length < 6) {
+                return res.status(400).json({ message: "Mật khẩu mới phải có ít nhất 6 ký tự" });
+            }
             if (tenant.userId) {
                 const hashed = await hashPassword(String(password).trim());
-                await User.update({ password: hashed }, { where: { id: tenant.userId } });
+                await User.update({ password: hashed, currentSessionToken: null }, { where: { id: tenant.userId } });
             }
         }
         await tenant.update(updateData);

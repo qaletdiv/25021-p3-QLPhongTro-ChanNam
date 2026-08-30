@@ -14,7 +14,6 @@ module.exports = (sequelize, DataType) => {
         name: { type: DataType.STRING(100), allowNull: false },
         phone: { type: DataType.STRING(20), allowNull: false },
         cccd: { type: DataType.STRING(20) },
-        password: { type: DataType.STRING(255) },
         telegramChatId: { type: DataType.STRING(64) },
         userId: { type: DataType.INTEGER },
         buildingId: { type: DataType.INTEGER }

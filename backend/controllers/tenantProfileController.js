@@ -87,8 +87,6 @@ exports.changePassword = async (req, res, next) => {
 
         const hashed = await hashPassword(newPassword);
         await user.update({ password: hashed });
-        const tenant = await findTenantByUser(req.user.id);
-        if (tenant) await tenant.update({ password: newPassword });
         res.json({ message: "Đổi mật khẩu thành công" });
     } catch (error) {
         next(error);

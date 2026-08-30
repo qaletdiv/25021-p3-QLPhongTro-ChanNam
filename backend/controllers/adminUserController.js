@@ -144,7 +144,7 @@ exports.changePassword = async (req, res, next) => {
     if (String(id) === String(req.user.id)) {
       return res.status(400).json({ message: "Hãy dùng chức năng đổi mật khẩu ở trang Cài Đặt cho chính tài khoản admin." });
     }
-    const user = await User.findByPk(id, { include: [{ model: Tenant, as: "tenants", attributes: ["id"] }] });
+    const user = await User.findByPk(id);
     if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
 
     const manageablePwd = await getManageableUserIds(req.user.id);
@@ -154,9 +154,6 @@ exports.changePassword = async (req, res, next) => {
 
     const hashed = await hashPassword(String(newPassword));
     await user.update({ password: hashed, currentSessionToken: null });
-
-    const tenant = user.tenants && user.tenants[0];
-    if (tenant) await Tenant.update({ password: String(newPassword) }, { where: { id: tenant.id } });
 
     await writeAuditLog({ actorId: req.user.id, action: "user.change_password", targetType: "user", targetId: Number(id), metadata: { targetName: user.name, targetEmail: user.email } });
     res.json({ message: "Đã đổi mật khẩu và thu hồi phiên đăng nhập hiện tại của tài khoản này." });
