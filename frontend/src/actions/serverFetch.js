@@ -35,7 +35,7 @@ export async function serverFetch(input, init = {}) {
   const url = input.startsWith('http') ? input : `${BACKEND_BASE}${input.startsWith('/') ? '' : '/'}${input}`;
 
   const headers = new Headers(init.headers || {});
-  headers.set('Content-Type', headers.get('Content-Type') || 'application/json');
+  headers.set('Content-Type', headers.get('Content-Type') || 'application/json; charset=utf-8');
   if (cookieStr) headers.set('Cookie', cookieStr);
   init.headers = headers;
 
