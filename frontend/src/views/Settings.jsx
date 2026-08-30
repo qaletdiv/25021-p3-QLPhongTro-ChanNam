@@ -28,9 +28,10 @@ export default function Settings({ initialSettings = null, initialBuildings = []
   const [savedMsg, setSavedMsg] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [checkMsg, setCheckMsg] = useState(null);
-  const [banks, setBanks] = useState([]);
+const [banks, setBanks] = useState([]);
   const [pushMsg, setPushMsg] = useState("");
-const [collabBuilding, setCollabBuilding] = useState("");
+  const [collaborators, setCollaborators] = useState([]);
+  const [collabBuilding, setCollabBuilding] = useState("");
   const [collabEmail, setCollabEmail] = useState("");
   const [collabPassword, setCollabPassword] = useState("");
   const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
