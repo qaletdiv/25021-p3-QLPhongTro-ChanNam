@@ -190,6 +190,15 @@ async function run() {
     }
   } catch(e) { console.log('tenants buildingId error:', e.message); }
 
+  // 8b. Add isRead to notifications if missing (model expects it; missing column 500s every GET).
+  try {
+    const [cols] = await seq.query("SHOW COLUMNS FROM notifications LIKE 'isRead'");
+    if (cols.length === 0) {
+      await seq.query("ALTER TABLE notifications ADD COLUMN isRead TINYINT(1) NOT NULL DEFAULT 0 AFTER status");
+      console.log('Added isRead to notifications');
+    }
+  } catch(e) { console.log('notifications isRead error:', e.message); }
+
   // 9. Backfill tenants.buildingId from the building of the room they rent.
   // The tenant list is scoped by building access, so legacy rows created before
   // the buildingId column existed must be attached to their building to stay visible.
