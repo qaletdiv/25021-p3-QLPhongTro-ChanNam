@@ -1,6 +1,11 @@
 import { cookies } from 'next/headers';
 
-const BACKEND_BASE = (process.env.BACKEND_URL || 'http://localhost:3000/api').replace(/\/+$/, '');
+// Chấp nhận cả hai dạng cấu hình: có hậu tố "/api" hoặc chỉ origin.
+// Base luôn được chuẩn hoá về dạng "<origin>/api" để các path như "/auth/login" ghép đúng.
+const BACKEND_ORIGIN = (process.env.BACKEND_URL || 'http://localhost:3000')
+  .replace(/\/+$/, '')
+  .replace(/\/api$/, '');
+const BACKEND_BASE = `${BACKEND_ORIGIN}/api`;
 
 function parseSetCookie(sc) {
   const [pair, ...opts] = sc.split(';');
