@@ -68,7 +68,6 @@ export default function ContractTemplate({ initialTemplate = "" }) {
   const [settings, setSettings] = useState({});
 
   const editor = useEditor({
-    immediatelyRender: true,
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3] }, link: { openOnClick: false } }),
       TextAlign.configure({ types: ["heading", "paragraph", "tableCell"] }),
