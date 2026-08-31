@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const contractController = require('../controllers/contractController');
+const contractTemplateController = require('../controllers/contractTemplateController');
 const authenticateToken = require('../middlewares/authenticateToken');
 const authorizeRole = require('../middlewares/authorizeRole');
 const { createContractValidationRules, contractIdParamValidation } = require('../validators/contractValidator');
 const handleValidationErrors = require('../middlewares/validationErrorHandler');
 
+router.get('/template', authenticateToken, authorizeRole('landlord'), contractTemplateController.getTemplate);
+router.put('/template', authenticateToken, authorizeRole('landlord'), contractTemplateController.saveTemplate);
 router.get('/', authenticateToken, authorizeRole('landlord'), contractController.getContracts);
 router.get('/:id', authenticateToken, authorizeRole('landlord'), contractIdParamValidation(), handleValidationErrors, contractController.getContractById);
 router.post('/', authenticateToken, authorizeRole('landlord'), createContractValidationRules(), handleValidationErrors, contractController.createContract);

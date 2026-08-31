@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import {
@@ -64,6 +64,8 @@ export default function ContractTemplate({ initialTemplate = "" }) {
   const [loading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
+  const [banks, setBanks] = useState([]);
+  const [settings, setSettings] = useState({});
 
   const editor = useEditor({
     immediatelyRender: true,
@@ -79,12 +81,12 @@ export default function ContractTemplate({ initialTemplate = "" }) {
     onUpdate: ({ editor }) => setTemplate(editor.getHTML()),
   });
 
-  // Máº«u há»£p Ä‘á»“ng Ä‘Æ°á»£c fetch server-side qua props initialTemplate
+  // Mẫu hợp đồng được fetch server-side qua props initialTemplate
 
   const setLink = () => {
     const previous = editor.getAttributes("link");
     const url = previous.href || "";
-    const value = window.prompt("Nháº­p Ä‘á»‹a chá»‰ liÃªn káº¿t:", url);
+    const value = window.prompt("Nhập địa chỉ liên kết:", url);
     if (value === null) return;
     if (value === "") editor.chain().focus().extendMarkRange("link").unsetLink().run();
     else editor.chain().focus().extendMarkRange("link").setLink({ href: value }).run();
@@ -95,9 +97,9 @@ export default function ContractTemplate({ initialTemplate = "" }) {
       setSaving(true);
       const toSave = (editor ? editor.getHTML() : template).replace(/ {2,}/g, (m) => Array.from({ length: m.length }, () => "&nbsp;").join(""));
       await contractTemplateApi.saveTemplate({ template: toSave });
-      setSnack({ open: true, message: "ÄÃ£ lÆ°u há»£p Ä‘á»“ng thÃ nh cÃ´ng", severity: "success" });
+      setSnack({ open: true, message: "Đã lưu hợp đồng thành công", severity: "success" });
     } catch {
-      setSnack({ open: true, message: "Lá»—i lÆ°u máº«u", severity: "error" });
+      setSnack({ open: true, message: "Lỗi lưu mẫu", severity: "error" });
     } finally {
       setSaving(false);
     }
@@ -113,14 +115,14 @@ export default function ContractTemplate({ initialTemplate = "" }) {
   return (
     <Box>
       <Box sx={{ mb: 3 }}>
-        <Typography sx={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a" }}>Máº«u há»£p Ä‘á»“ng</Typography>
-        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>Quáº£n lÃ½ ná»™i dung máº«u há»£p Ä‘á»“ng thuÃª phÃ²ng</Typography>
+        <Typography sx={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a" }}>Mẫu hợp đồng</Typography>
+        <Typography sx={{ fontSize: "0.75rem", color: "#64748b", mt: 0.5 }}>Quản lý nội dung mẫu hợp đồng thuê phòng</Typography>
       </Box>
 
       <Paper sx={{ borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)", p: 3 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, pb: 2, mb: 3, borderBottom: "1px solid #e2e8f0" }}>
           <Typography sx={{ fontWeight: 700, color: "#0f172a", fontSize: "0.875rem" }}>
-            Biáº¿n máº«u há»£p Ä‘á»“ng
+            Biến mẫu hợp đồng
           </Typography>
         </Box>
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 3 }}>
@@ -157,31 +159,31 @@ export default function ContractTemplate({ initialTemplate = "" }) {
               p: 1,
             }}
           >
-            <Toolbar title="Chá»¯ Ä‘áº­m" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()}><FormatBoldIcon fontSize="small" /></Toolbar>
-            <Toolbar title="Chá»¯ nghiÃªng" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()}><FormatItalicIcon /></Toolbar>
-            <Toolbar title="Gáº¡ch chÃ¢n" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()}><FormatUnderlinedIcon /></Toolbar>
+            <Toolbar title="Chữ đậm" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()}><FormatBoldIcon fontSize="small" /></Toolbar>
+            <Toolbar title="Chữ nghiêng" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()}><FormatItalicIcon /></Toolbar>
+            <Toolbar title="Gạch chân" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()}><FormatUnderlinedIcon /></Toolbar>
             <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-            <Toolbar title="TiÃªu Ä‘á» lá»›n" active={editor.isActive("heading", { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}><TitleIcon /></Toolbar>
-            <Toolbar title="TiÃªu Ä‘á» vá»«a" active={editor.isActive("heading", { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><Typography sx={{ fontSize: 15, fontWeight: 700, lineHeight: 1 }}>H2</Typography></Toolbar>
-            <Toolbar title="TiÃªu Ä‘á» nhá»" active={editor.isActive("heading", { level: 3 })} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}><Typography sx={{ fontSize: 13, fontWeight: 700, lineHeight: 1 }}>H3</Typography></Toolbar>
-            <Toolbar title="Äoáº¡n vÄƒn" active={editor.isActive("paragraph")} onClick={() => editor.chain().focus().setParagraph().run()}><Typography sx={{ fontSize: 14, lineHeight: 1 }}>P</Typography></Toolbar>
+            <Toolbar title="Tiêu đề lớn" active={editor.isActive("heading", { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}><TitleIcon /></Toolbar>
+            <Toolbar title="Tiêu đề vừa" active={editor.isActive("heading", { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}><Typography sx={{ fontSize: 15, fontWeight: 700, lineHeight: 1 }}>H2</Typography></Toolbar>
+            <Toolbar title="Tiêu đề nhỏ" active={editor.isActive("heading", { level: 3 })} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}><Typography sx={{ fontSize: 13, fontWeight: 700, lineHeight: 1 }}>H3</Typography></Toolbar>
+            <Toolbar title="Đoạn văn" active={editor.isActive("paragraph")} onClick={() => editor.chain().focus().setParagraph().run()}><Typography sx={{ fontSize: 14, lineHeight: 1 }}>P</Typography></Toolbar>
             <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-            <Toolbar title="Danh sÃ¡ch gáº¡ch Ä‘áº§u dÃ²ng" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()}><FormatListBulletedIcon /></Toolbar>
-            <Toolbar title="Danh sÃ¡ch Ä‘Ã¡nh sá»‘" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()}><FormatListNumberedIcon /></Toolbar>
+            <Toolbar title="Danh sách gạch đầu dòng" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()}><FormatListBulletedIcon /></Toolbar>
+            <Toolbar title="Danh sách đánh số" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()}><FormatListNumberedIcon /></Toolbar>
             <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-            <Toolbar title="TrÃ­ch dáº«n" active={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()}><FormatQuoteIcon /></Toolbar>
-            <Toolbar title="Khá»‘i mÃ£" active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()}><CodeIcon /></Toolbar>
-            <Toolbar title="CÄƒn trÃ¡i" active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()}><FormatAlignLeftIcon /></Toolbar>
-            <Toolbar title="CÄƒn giá»¯a" active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()}><FormatAlignCenterIcon /></Toolbar>
-            <Toolbar title="CÄƒn pháº£i" active={editor.isActive({ textAlign: "right" })} onClick={() => editor.chain().focus().setTextAlign("right").run()}><FormatAlignRightIcon /></Toolbar>
-            <Toolbar title="CÄƒn Ä‘á»u" active={editor.isActive({ textAlign: "justify" })} onClick={() => editor.chain().focus().setTextAlign("justify").run()}><FormatAlignJustifyIcon /></Toolbar>
-            <Toolbar title="LiÃªn káº¿t" active={editor.isActive("link")} onClick={setLink}><LinkIcon /></Toolbar>
-            <Toolbar title="Gá»¡ liÃªn káº¿t" disabled={!editor.isActive("link")} onClick={() => editor.chain().focus().unsetLink().run()}><LinkOffIcon /></Toolbar>
+            <Toolbar title="Trích dẫn" active={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()}><FormatQuoteIcon /></Toolbar>
+            <Toolbar title="Khối mã" active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()}><CodeIcon /></Toolbar>
+            <Toolbar title="Căn trái" active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()}><FormatAlignLeftIcon /></Toolbar>
+            <Toolbar title="Căn giữa" active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()}><FormatAlignCenterIcon /></Toolbar>
+            <Toolbar title="Căn phải" active={editor.isActive({ textAlign: "right" })} onClick={() => editor.chain().focus().setTextAlign("right").run()}><FormatAlignRightIcon /></Toolbar>
+            <Toolbar title="Căn đều" active={editor.isActive({ textAlign: "justify" })} onClick={() => editor.chain().focus().setTextAlign("justify").run()}><FormatAlignJustifyIcon /></Toolbar>
+            <Toolbar title="Liên kết" active={editor.isActive("link")} onClick={setLink}><LinkIcon /></Toolbar>
+            <Toolbar title="Gỡ liên kết" disabled={!editor.isActive("link")} onClick={() => editor.chain().focus().unsetLink().run()}><LinkOffIcon /></Toolbar>
             <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-            <Toolbar title="ChÃ¨n báº£ng" onClick={() => editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()}><GridOnIcon /></Toolbar>
-            <Toolbar title="ThÃªm dÃ²ng phÃ­a dÆ°á»›i" disabled={!editor.can().addRowAfter()} onClick={() => editor.chain().focus().addRowAfter().run()}><AddRowBelowIcon /></Toolbar>
-            <Toolbar title="ThÃªm cá»™t phÃ­a pháº£i" disabled={!editor.can().addColumnAfter()} onClick={() => editor.chain().focus().addColumnAfter().run()}><FormatListNumberedIcon style={{ transform: "rotate(90deg)" }} /></Toolbar>
-            <Toolbar title="XÃ³a báº£ng" disabled={!editor.can().deleteTable()} onClick={() => editor.chain().focus().deleteTable().run()}><DeleteOutlinedIcon /></Toolbar>
+            <Toolbar title="Chèn bảng" onClick={() => editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()}><GridOnIcon /></Toolbar>
+            <Toolbar title="Thêm dòng phía dưới" disabled={!editor.can().addRowAfter()} onClick={() => editor.chain().focus().addRowAfter().run()}><AddRowBelowIcon /></Toolbar>
+            <Toolbar title="Thêm cột phía phải" disabled={!editor.can().addColumnAfter()} onClick={() => editor.chain().focus().addColumnAfter().run()}><FormatListNumberedIcon style={{ transform: "rotate(90deg)" }} /></Toolbar>
+            <Toolbar title="Xóa bảng" disabled={!editor.can().deleteTable()} onClick={() => editor.chain().focus().deleteTable().run()}><DeleteOutlinedIcon /></Toolbar>
           </Box>
 
           <Box
@@ -216,7 +218,7 @@ export default function ContractTemplate({ initialTemplate = "" }) {
             disabled={saving}
             sx={{ borderRadius: "12px", bgcolor: "#2563eb", textTransform: "none", fontWeight: 600 }}
           >
-            LÆ°u máº«u há»£p Ä‘á»“ng
+            Lưu mẫu hợp đồng
           </Button>
         </Box>
       </Paper>
@@ -227,7 +229,7 @@ export default function ContractTemplate({ initialTemplate = "" }) {
             {snack.severity === "success"
               ? <CheckCircleIcon sx={{ fontSize: 52, color: "#059669" }} />
               : <ErrorOutlinedIcon sx={{ fontSize: 52, color: "#e11d48" }} />}
-            <Typography sx={{ fontSize: "1.125rem", fontWeight: 700 }}>{snack.severity === "success" ? "ThÃ nh cÃ´ng" : "Lá»—i"}</Typography>
+            <Typography sx={{ fontSize: "1.125rem", fontWeight: 700 }}>{snack.severity === "success" ? "Thành công" : "Lỗi"}</Typography>
           </Box>
         </DialogTitle>
         <DialogContent sx={{ textAlign: "center", pt: "24px !important", bgcolor: "#ffffff" }}>
