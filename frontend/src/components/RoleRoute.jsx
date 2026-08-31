@@ -12,7 +12,7 @@ export default function RoleRoute({ role, children }) {
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.replace("/login/landlord");
+      router.replace(role === "tenant" ? "/login/tenant" : "/login/landlord");
       return;
     }
     if (user.role !== role) {
