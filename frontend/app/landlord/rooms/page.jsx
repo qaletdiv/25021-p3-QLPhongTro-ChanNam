@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import RoomManagement from "@/src/views/RoomManagement";
 import { getRooms } from "@/src/actions/roomActions";
 import { getBuildings } from "@/src/actions/buildingActions";
@@ -16,3 +17,4 @@ export default async function RoomsPage() {
     redirect("/login/landlord");
   }
 }
+

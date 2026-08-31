@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import AuditLogView from "@/src/views/AuditLogView";
 import { getAuditLogs } from "@/src/actions/auditActions";
 import { redirect } from "next/navigation";
@@ -15,3 +16,4 @@ export default async function AuditPage() {
     redirect("/login/landlord");
   }
 }
+

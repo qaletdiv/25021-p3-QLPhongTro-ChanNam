@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import NotificationManagement from "@/src/views/NotificationManagement";
 import { getNotifications } from "@/src/actions/notificationActions";
 import { getRooms } from "@/src/actions/roomActions";
@@ -22,3 +23,4 @@ export default async function NotificationsPage() {
     redirect("/login/landlord");
   }
 }
+

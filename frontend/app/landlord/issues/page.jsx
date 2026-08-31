@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import IssueManagement from "@/src/views/IssueManagement";
 import { getIssues } from "@/src/actions/issueActions";
 import { redirect } from "next/navigation";
@@ -10,3 +11,4 @@ export default async function IssuesPage() {
     redirect("/login/landlord");
   }
 }
+

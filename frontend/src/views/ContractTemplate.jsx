@@ -31,11 +31,11 @@ import TextAlign from "@tiptap/extension-text-align";
 import { Table, TableRow, TableHeader, TableCell } from "@tiptap/extension-table";
 import contractTemplateApi from "../api/contractTemplateApi";
 
-const variables = [
-  "{{ten_nguoi_thue}}", "{{cccd}}", "{{so_dien_thoai}}", "{{ma_phong}}",
-  "{{gia_thue}}", "{{tien_coc}}", "{{ngay_bat_dau}}", "{{ngay_ket_thuc}}",
-  "{{ngay_thu_tien}}", "{{ma_van_tay}}", "{{nguoi_di_kem}}", "{{vat_dung}}",
-  "{{ngay_hom_nay}}", "{{ten_chu_tro}}", "{{sdt_chu_tro}}",
+  const variables = [
+    "{{ten_nguoi_thue}}", "{{cccd}}", "{{so_dien_thoai}}", "{{ma_phong}}",
+    "{{gia_thue}}", "{{tien_coc}}", "{{ngay_bat_dau}}", "{{ngay_ket_thuc}}",
+    "{{ngay_thu_tien}}", "{{ma_van_tay}}", "{{nguoi_di_kem}}", "{{vat_dung}}",
+    "{{ngay_hom_nay}}", "{{ten_chu_tro}}", "{{sdt_chu_tro}}",
 ];
 
 const Toolbar = ({ title, active, disabled, onClick, children }) => (
@@ -61,13 +61,13 @@ const Toolbar = ({ title, active, disabled, onClick, children }) => (
 export default function ContractTemplate({ initialTemplate = "" }) {
   const [template, setTemplate] = useState(initialTemplate);
 
-  const [loading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [banks, setBanks] = useState([]);
   const [settings, setSettings] = useState({});
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3] }, link: { openOnClick: false } }),
       TextAlign.configure({ types: ["heading", "paragraph", "tableCell"] }),
@@ -109,7 +109,7 @@ export default function ContractTemplate({ initialTemplate = "" }) {
     editor.chain().focus().insertContent(v).run();
   };
 
-  if (!editor || loading) return <CircularProgress />;
+  if (!editor) return <CircularProgress />;
 
   return (
     <Box>

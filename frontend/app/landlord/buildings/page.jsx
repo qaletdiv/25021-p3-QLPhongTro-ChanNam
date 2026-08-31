@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import BuildingManagement from "@/src/views/BuildingManagement";
 import { getBuildings } from "@/src/actions/buildingActions";
 import { redirect } from "next/navigation";
@@ -10,3 +11,4 @@ export default async function BuildingsPage() {
     redirect("/login/landlord");
   }
 }
+

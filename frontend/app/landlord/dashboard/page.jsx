@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import Dashboard from "@/src/views/Dashboard";
 import { getStats, getMonthlyRevenue, getExpiringContracts } from "@/src/actions/dashboardActions";
 import { redirect } from "next/navigation";
@@ -20,3 +21,4 @@ export default async function LandlordDashboardPage() {
     redirect("/login/landlord");
   }
 }
+

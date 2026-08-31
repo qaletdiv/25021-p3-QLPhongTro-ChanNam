@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import AccountManagement from "@/src/views/AccountManagement";
 import { getUsers } from "@/src/actions/adminUserActions";
 import { redirect } from "next/navigation";
@@ -10,3 +11,4 @@ export default async function AccountsPage() {
     redirect("/login/landlord");
   }
 }
+

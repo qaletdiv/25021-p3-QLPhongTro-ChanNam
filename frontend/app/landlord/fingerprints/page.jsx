@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import FingerprintManagement from "@/src/views/FingerprintManagement";
 import { getFingerprintHistory } from "@/src/actions/fingerprintActions";
 import { getBuildings } from "@/src/actions/buildingActions";
@@ -16,3 +17,4 @@ export default async function FingerprintsPage() {
     redirect("/login/landlord");
   }
 }
+

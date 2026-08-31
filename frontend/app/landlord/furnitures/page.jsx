@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import FurnitureManagement from "@/src/views/FurnitureManagement";
 import { getFurnitures } from "@/src/actions/furnitureActions";
 import { redirect } from "next/navigation";
@@ -10,3 +11,4 @@ export default async function FurnituresPage() {
     redirect("/login/landlord");
   }
 }
+

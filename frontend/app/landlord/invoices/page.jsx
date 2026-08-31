@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic'
 import InvoiceManagement from "@/src/views/InvoiceManagement";
 import { getInvoices } from "@/src/actions/invoiceActions";
 import { getSettings } from "@/src/actions/settingActions";
@@ -24,3 +25,4 @@ export default async function InvoicesPage() {
     redirect("/login/landlord");
   }
 }
+
