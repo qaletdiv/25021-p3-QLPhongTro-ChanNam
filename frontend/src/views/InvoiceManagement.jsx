@@ -71,7 +71,7 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
   }, [fetchInvoices]);
 
   const filteredInvoices = invoices.filter((inv) => {
-    if (filterStatus === "unpaid") { if (inv.status !== "pending") return false; }
+    if (filterStatus === "unpaid") { if (!['pending', 'submitted'].includes(inv.status)) return false; }
     else if (filterStatus !== "all" && inv.status !== filterStatus) return false;
     if (buildingFilter !== "all" && String(inv.contract?.room?.building?.id || "") !== buildingFilter) return false;
     if (searchQuery) {
@@ -85,7 +85,7 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
 
   const counts = {
     all: invoices.length,
-    unpaid: invoices.filter(i => i.status === "pending").length,
+    unpaid: invoices.filter(i => ['pending', 'submitted'].includes(i.status)).length,
     submitted: invoices.filter(i => i.status === "submitted").length,
     paid: invoices.filter(i => i.status === "paid").length,
   };
@@ -158,7 +158,7 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, bgcolor: "#f1f5f9", p: 0.5, borderRadius: "12px" }}>
               {[
                 { key: "all", label: "Tất Cả", activeColor: "#2563eb" },
-                { key: "unpaid", label: "Chưa Gửi Chỉ Số", activeColor: "#dc2626" },
+                { key: "unpaid", label: "Chưa Thanh Toán", activeColor: "#dc2626" },
                 { key: "submitted", label: "Đã Gửi Chỉ Số", activeColor: "#d97706" },
                 { key: "paid", label: "Đã Thanh Toán", activeColor: "#059669" },
               ].map((f) => (
