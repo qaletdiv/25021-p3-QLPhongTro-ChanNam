@@ -37,7 +37,7 @@ exports.getStats = async (req, res, next) => {
         const totalDebt = unpaidInvoices.reduce((sum, inv) => sum + Number(inv.total), 0);
 
         const unpaidThisMonth = await Invoice.findAll({
-            where: { status: { [Op.in]: ['pending', 'submitted'] }, month: cMonth },
+            where: { status: 'pending', month: cMonth },
             include: [{ model: Contract, as: "contract", required: true, include: [{ model: Room, as: "room", where: roomWhere, required: true, attributes: [] }] }]
         });
         const unpaidTenants = unpaidThisMonth.length;

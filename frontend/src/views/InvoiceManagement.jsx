@@ -71,7 +71,7 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
   }, [fetchInvoices]);
 
   const filteredInvoices = invoices.filter((inv) => {
-    if (filterStatus === "unpaid") { if (!['pending', 'submitted'].includes(inv.status)) return false; }
+    if (filterStatus === "unpaid") { if (inv.status !== "pending") return false; }
     else if (filterStatus !== "all" && inv.status !== filterStatus) return false;
     if (buildingFilter !== "all" && String(inv.contract?.room?.building?.id || "") !== buildingFilter) return false;
     if (searchQuery) {
@@ -85,7 +85,7 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
 
   const counts = {
     all: invoices.length,
-    unpaid: invoices.filter(i => ['pending', 'submitted'].includes(i.status)).length,
+    unpaid: invoices.filter(i => i.status === "pending").length,
     submitted: invoices.filter(i => i.status === "submitted").length,
     paid: invoices.filter(i => i.status === "paid").length,
   };
