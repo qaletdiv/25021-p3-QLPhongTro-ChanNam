@@ -64,9 +64,11 @@ export default function RoomFormModal({ open, editRoom, form, setForm, buildings
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
             <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng)</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Giá Thuê (VND/Tháng) *</Typography>
               <MoneyField fullWidth size="small" value={form.price}
                 onChange={(v) => set("price", v)}
+                placeholder="5.000.000"
+                required
                 sx={inputSx} />
             </Box>
             <Box>

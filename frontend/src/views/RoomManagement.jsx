@@ -72,8 +72,10 @@ export default function RoomManagement({ initialRooms = [], initialBuildings = [
   const openEdit = (room) => { setEditRoom(room); setForm({ room_number: room.room_number, floor: room.floor, area: room.area, price: room.price, buildingId: room.buildingId || "" }); setOpenCreate(true); };
 
   const handleSave = async () => {
+    if (!form.room_number.trim()) { setSnack({ open: true, message: "Vui lòng nhập số/tên phòng", severity: "warning" }); return; }
+    if (!form.price) { setSnack({ open: true, message: "Vui lòng nhập giá thuê", severity: "warning" }); return; }
     try {
-      const payload = { ...form, buildingId: form.buildingId ? Number(form.buildingId) : null };
+      const payload = { ...form, buildingId: form.buildingId ? Number(form.buildingId) : null, price: Number(form.price) };
       if (editRoom) { await roomApi.update(editRoom.id, payload); }
       else { await roomApi.create(payload); }
       setOpenCreate(false); fetchRooms();
