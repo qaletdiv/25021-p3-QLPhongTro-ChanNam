@@ -28,6 +28,8 @@ function parseSetCookie(sc) {
   return { name, value, options };
 }
 
+// Hàm fetch server-side. Trả về { data, status } luôn (không throw) để tránh
+// SSR crash khi backend lỗi network hoặc trả về 4xx. Các caller tự xử lý status.
 export async function serverFetch(input, init = {}) {
   const cookieStore = await cookies();
   const cookieStr = cookieStore.toString();

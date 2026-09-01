@@ -19,7 +19,7 @@ const roleConfig = {
   tenant: { label: "Người thuê", icon: "👤" },
 };
 
-export default function LoginRegister({ role = "tenant", loginAction }) {
+export default function LoginRegister({ role = "tenant", loginAction, serverError = "" }) {
   const { user, loading, adoptUser } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState(0);
@@ -50,6 +50,10 @@ export default function LoginRegister({ role = "tenant", loginAction }) {
       router.replace(user.role === "landlord" ? "/landlord/dashboard" : "/tenant/dashboard");
     }
   }, [loading, user, router]);
+
+  useEffect(() => {
+    if (serverError) setError(serverError);
+  }, [serverError]);
 
   useEffect(() => {
     if (loginState?.error) setError(loginState.error);
