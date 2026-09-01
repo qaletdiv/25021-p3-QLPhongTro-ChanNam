@@ -10,7 +10,7 @@ import { inputSx } from "../../utils/styles";
 export default function RoomFormModal({ open, editRoom, form, setForm, buildings, onClose, onSave }) {
   if (!open) return null;
 
-  const set = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+  const set = (field) => (e) => setForm({ ...form, [field]: e && e.target ? e.target.value : e });
 
   return (
     <ModalShell open={open} onClose={onClose} headerBg="#0f172a"
