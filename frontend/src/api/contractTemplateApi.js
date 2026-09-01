@@ -1,4 +1,8 @@
-import { getTemplate, saveTemplate, getPdfUrl } from "../actions/contractTemplateActions";
+import { getTemplate, saveTemplate } from "../actions/contractTemplateActions";
+
+export function getPdfUrl(id) {
+  return `/api/contracts/${id}/pdf`;
+}
 
 const contractTemplateApi = {
   getTemplate,

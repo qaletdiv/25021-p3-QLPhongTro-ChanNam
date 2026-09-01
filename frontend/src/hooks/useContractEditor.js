@@ -27,12 +27,24 @@ export default function useContractEditor({ notify, fetchTenants, formState }) {
   };
 
   const handleSaveContract = async () => {
-    if (contractForm.deposit === "") {
-      notify("Vui lòng nhập tiền cọc", "warning");
+    if (!contractForm.tenantId) {
+      notify("Vui lòng chọn khách thuê", "warning");
+      return;
+    }
+    if (!contractForm.startDate) {
+      notify("Vui lòng chọn ngày bắt đầu hợp đồng", "warning");
+      return;
+    }
+    if (!contractForm.endDate) {
+      notify("Vui lòng chọn ngày kết thúc hợp đồng", "warning");
       return;
     }
     if (contractForm.startDate && contractForm.endDate && new Date(contractForm.startDate) >= new Date(contractForm.endDate)) {
       notify("Ngày kết thúc phải sau ngày bắt đầu", "warning");
+      return;
+    }
+    if (!contractForm.tenantPhone) {
+      notify("Khách thuê chưa có số điện thoại, vui lòng cập nhật trước khi tạo hợp đồng", "warning");
       return;
     }
     try {

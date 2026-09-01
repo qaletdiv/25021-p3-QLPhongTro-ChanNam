@@ -156,18 +156,18 @@ export default function ContractModal({
           {/* Contract Dates */}
           <Grid container spacing={1.5}>
             <Grid size={6}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Bắt Đầu Hợp Đồng</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Bắt Đầu Hợp Đồng *</Typography>
               <DateField
-                fullWidth size="small"
+                fullWidth size="small" required
                 value={contractForm.startDate}
                 onChange={(v) => setContractForm({ ...contractForm, startDate: v })}
                 sx={inputSx}
               />
             </Grid>
             <Grid size={6}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Kết Thúc Hợp Đồng</Typography>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Ngày Kết Thúc Hợp Đồng *</Typography>
               <DateField
-                fullWidth size="small"
+                fullWidth size="small" required
                 value={contractForm.endDate}
                 onChange={(v) => setContractForm({ ...contractForm, endDate: v })}
                 sx={inputSx}

@@ -2,10 +2,6 @@
 
 import { serverFetch } from './serverFetch';
 
-export async function getPdfUrl(id) {
-  return `/api/contracts/${id}/pdf`;
-}
-
 export async function getTemplate() {
   return serverFetch('/contracts/template', { method: 'GET' });
 }

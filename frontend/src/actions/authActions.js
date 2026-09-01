@@ -73,10 +73,6 @@ export async function registerFormAction(prevState, formData) {
   }
 }
 
-export async function getPdfUrl(id) {
-  return `/api/contracts/${id}/pdf`;
-}
-
 export async function register(data) {
   return serverFetch('/auth/register', { method: 'POST', body: JSON.stringify(data) });
 }

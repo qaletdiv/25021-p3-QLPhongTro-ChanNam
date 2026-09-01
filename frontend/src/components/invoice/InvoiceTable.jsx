@@ -37,22 +37,29 @@ const ActionButton = ({ label, bgcolor, hover, onClick, disabled }) => (
   </Box>
 );
 
-const PhotoCell = ({ photo, alt, onView }) => (
-  <td style={{ padding: "12px 16px" }}>
-    {photo ? (
+const PhotoCell = ({ photo, alt, onView }) => {
+  const [loaded, setLoaded] = useState(true);
+  if (!photo || !loaded) {
+    return (
+      <td style={{ padding: "12px 16px" }}>
+        <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
+      </td>
+    );
+  }
+  return (
+    <td style={{ padding: "12px 16px" }}>
       <img
         src={photo}
         alt={alt}
         onClick={() => onView(photo, alt)}
+        onError={() => setLoaded(false)}
         style={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", display: "block", cursor: "zoom-in", transition: "transform 0.15s" }}
         onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
         onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
       />
-    ) : (
-      <span style={{ fontSize: "0.6875rem", color: "#94a3b8" }}>—</span>
-    )}
-  </td>
-);
+    </td>
+  );
+};
 
 const PhotoLightbox = ({ photo, alt, onClose }) => (
   <Box

@@ -73,8 +73,10 @@ const StatusBadge = ({ active, ended }) => {
 
 export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, companionStatus = "all" }) {
   const [expandedId, setExpandedId] = useState(null);
+  const [expandedContractTenantId, setExpandedContractTenantId] = useState(null);
 
   const toggleExpand = (tenantId) => setExpandedId((cur) => (cur === tenantId ? null : tenantId));
+  const toggleContracts = (tenantId) => setExpandedContractTenantId((cur) => (cur === tenantId ? null : tenantId));
 
   return (
     <Paper sx={{ borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0" }}>
@@ -218,8 +220,44 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
                       <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>{c.relationship || "-"}</td>
                       <td style={{ padding: "6px 16px" }}></td>
                     </tr>
-                  ))}
-                </Fragment>
+                   ))}
+                 {contracts.length > 1 && expandedContractTenantId !== tenant.id && (
+                   <tr>
+                     <td colSpan={12} style={{ padding: "4px 16px", textAlign: "right" }}>
+                       <IconButton size="small" onClick={() => toggleContracts(tenant.id)} title="Xem thêm hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" }, p: 0.25 }}>
+                         <AddIcon sx={{ fontSize: 14 }} />
+                       </IconButton>
+                       <span style={{ fontSize: "0.6875rem", color: "#94a3b8", fontWeight: 600, cursor: "pointer" }} onClick={() => toggleContracts(tenant.id)}>
+                         + {contracts.length - 1} hợp đồng khác
+                       </span>
+                     </td>
+                   </tr>
+                 )}
+                  {contracts.length > 1 && expandedContractTenantId === tenant.id &&
+                    contracts.slice(1).map((c, idx) => (
+                      <tr key={`contract-${c.id || idx}`} style={{ backgroundColor: "#f8fafc", borderBottom: idx === contracts.slice(1).length - 1 ? "1px solid #e2e8f0" : "1px solid #eef2f7" }}>
+                        <td style={{ padding: "6px 24px", verticalAlign: "middle" }}>
+                          <TreeCell isFirst={idx === 0} isLast={idx === contracts.slice(1).length - 1} />
+                        </td>
+                        <td style={{ padding: "6px 16px", fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>
+                          Phòng {c.room?.room_number || "-"} {c.room?.building?.name && <span style={{ fontSize: "0.625rem", color: "#2563eb" }}>({c.room.building.name})</span>}
+                        </td>
+                        <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>-</td>
+                        <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
+                        <td style={{ padding: "6px 16px", fontWeight: 700, color: "#2563eb" }}>{formatCurrency(c.deposit)}</td>
+                        <td style={{ padding: "6px 16px", color: "#475569" }}>{`${formatDate(c.startDate)} - ${formatDate(c.endDate)}`}</td>
+                        <td style={{ padding: "6px 16px", fontWeight: 600, color: "#0f172a" }}>{formatDuration(c)}</td>
+                        <td style={{ padding: "6px 16px", fontWeight: 600, color: "#0f172a" }}>{c.paymentDay ? `Ngày ${c.paymentDay}` : "-"}</td>
+                        <td style={{ padding: "6px 16px" }}>{c.fingerprintCode ? (<span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>{c.fingerprintCode}</span>) : "-"}</td>
+                        <td style={{ padding: "6px 16px" }}><StatusBadge active={c.status === "active"} ended={c.status === "ended"} /></td>
+                        <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
+                        <td style={{ padding: "6px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
+                          <IconButton size="small" onClick={() => onPrint(c.id)} title="In hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#059669", bgcolor: "#d1fae5" } }}><PrintIcon sx={{ fontSize: 16 }} /></IconButton>
+                        </td>
+                      </tr>
+                    ))
+                  }
+                 </Fragment>
               );
             })}
           </tbody>

@@ -101,6 +101,12 @@ exports.createContract = async (req, res, next) => {
     try {
         const { tenantId, roomId, deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints } = req.body;
 
+        if (!tenantId) return res.status(400).json({ message: "Chưa chọn khách thuê" });
+        if (!roomId) return res.status(400).json({ message: "Chưa chọn phòng" });
+        if (!startDate) return res.status(400).json({ message: "Chưa chọn ngày bắt đầu hợp đồng" });
+        if (!endDate) return res.status(400).json({ message: "Chưa chọn ngày kết thúc hợp đồng" });
+        if (new Date(startDate) >= new Date(endDate)) return res.status(400).json({ message: "Ngày kết thúc phải sau ngày bắt đầu" });
+
         const room = await Room.findByPk(roomId);
         if (!room || !(await isBuildingAccessible(req.user.id, room.buildingId))) return res.status(400).json({ message: "Phòng không hợp lệ" });
         if (room.status !== 'empty') return res.status(400).json({ message: "Phòng không trống" });

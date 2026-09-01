@@ -24,7 +24,7 @@ export default function RoomManagement({ initialRooms = [], initialBuildings = [
   const [openCreate, setOpenCreate] = useState(false);
   const [detailRoom, setDetailRoom] = useState(null);
   const [editRoom, setEditRoom] = useState(null);
-  const [form, setForm] = useState({ room_number: "", floor: 1, area: 25, price: 3000000, buildingId: "" });
+  const [form, setForm] = useState({ room_number: "", floor: 1, area: 25, price: "", buildingId: "" });
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
   const [furnitureEditMode, setFurnitureEditMode] = useState(false);
   const [furnitureEditList, setFurnitureEditList] = useState([]);
@@ -67,7 +67,7 @@ export default function RoomManagement({ initialRooms = [], initialBuildings = [
     empty: rooms.filter(r => r.status === "empty").length,
     rented: rooms.filter(r => r.status === "rented").length,
   };
-  const openAdd = () => { setEditRoom(null); setForm({ room_number: "", floor: 1, area: 25, price: 3000000, buildingId: buildingFilter !== "all" ? buildingFilter : "" }); setOpenCreate(true); };
+  const openAdd = () => { setEditRoom(null); setForm({ room_number: "", floor: 1, area: 25, price: "", buildingId: buildingFilter !== "all" ? buildingFilter : "" }); setOpenCreate(true); };
 
   const openEdit = (room) => { setEditRoom(room); setForm({ room_number: room.room_number, floor: room.floor, area: room.area, price: room.price, buildingId: room.buildingId || "" }); setOpenCreate(true); };
 

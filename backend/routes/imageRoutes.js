@@ -4,6 +4,6 @@ const imageController = require('../controllers/imageController');
 const authenticateToken = require('../middlewares/authenticateToken');
 const authorizeRole = require('../middlewares/authorizeRole');
 
-router.get('/:id', authenticateToken, authorizeRole(['landlord', 'tenant']), imageController.getImage);
+router.get('/{*any}', authenticateToken, authorizeRole(['landlord', 'tenant']), imageController.getImage);
 
 module.exports = router;

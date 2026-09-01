@@ -169,10 +169,12 @@ export default function LoginRegister({ role = "tenant", loginAction, serverErro
                 <Button size="small" startIcon={<AddIcon />} onClick={addCompanion} sx={{ fontSize: "0.75rem" }}>Thêm</Button>
               </Box>
               {companions.map((c, i) => (
-                <Box key={i} sx={{ display: "flex", gap: 1, alignItems: "center", mb: 1 }}>
-                  <TextField size="small" label="Họ tên" value={c.name} onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={{ flex: 2 }} />
-                  <TextField size="small" label="SĐT" value={c.phone} onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ flex: 1.5 }} />
-                  <IconButton size="small" onClick={() => removeCompanion(i)}><DeleteIcon fontSize="small" /></IconButton>
+                <Box key={i} sx={{ display: "flex", flexDirection: "column", gap: 1, p: 2, border: "1px solid #e2e8f0", borderRadius: "12px", mb: 1 }}>
+                  <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
+                    <TextField size="small" label="Họ tên" value={c.name} onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={{ flex: 2 }} />
+                    <TextField size="small" label="SĐT" value={c.phone} onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ flex: 1.5 }} />
+                    <IconButton size="small" onClick={() => removeCompanion(i)}><DeleteIcon fontSize="small" /></IconButton>
+                  </Box>
                 </Box>
               ))}
               <Button fullWidth variant="contained" type="submit" disabled={registerPending} sx={{ mt: 2, py: 1.5, fontSize: "0.8125rem" }}>
