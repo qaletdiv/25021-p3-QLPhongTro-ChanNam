@@ -171,8 +171,10 @@ export default function LoginRegister({ role = "tenant", loginAction, serverErro
               {companions.map((c, i) => (
                 <Box key={i} sx={{ display: "flex", flexDirection: "column", gap: 1, p: 2, border: "1px solid #e2e8f0", borderRadius: "12px", mb: 1 }}>
                   <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
-                    <TextField size="small" label="Họ tên" value={c.name} onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={{ flex: 2 }} />
-                    <TextField size="small" label="SĐT" value={c.phone} onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={{ flex: 1.5 }} />
+                    <TextField size="small" label="Họ tên" value={c.name} onChange={(e) => updateCompanion(i, "name", e.target.value)} fullWidth required />
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 1, alignItems: "flex-end" }}>
+                    <TextField size="small" label="SĐT" value={c.phone} onChange={(e) => updateCompanion(i, "phone", e.target.value)} fullWidth />
                     <IconButton size="small" onClick={() => removeCompanion(i)}><DeleteIcon fontSize="small" /></IconButton>
                   </Box>
                 </Box>
