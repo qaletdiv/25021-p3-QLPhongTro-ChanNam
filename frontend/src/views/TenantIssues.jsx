@@ -54,6 +54,10 @@ export default function TenantIssues({ initialIssues = [], hasRoom = true }) {
   };
 
   const handleCreate = async () => {
+    if (!form.title.trim()) {
+      setSnack({ open: true, message: "Vui lòng nhập tiêu đề", severity: "warning" });
+      return;
+    }
     try {
       await tenantIssueApi.create({ ...form, images });
       setOpenCreate(false);
@@ -190,8 +194,9 @@ export default function TenantIssues({ initialIssues = [], hasRoom = true }) {
         </DialogContent>
         <DialogActions sx={{ p: 2, borderTop: `1px solid ${t.colors.hair}` }}>
           <Button onClick={() => setOpenCreate(false)} sx={{ borderRadius: t.radius.md, textTransform: "none", color: t.colors.muted }}>Hủy</Button>
-          <Button variant="contained" color="success" onClick={handleCreate}
-            sx={{ borderRadius: t.radius.md, textTransform: "none" }}>Gửi</Button>
+           <Button variant="contained" color="success" onClick={handleCreate}
+             disabled={!form.title.trim()}
+             sx={{ borderRadius: t.radius.md, textTransform: "none" }}>Gửi</Button>
         </DialogActions>
       </Dialog>
 
