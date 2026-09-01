@@ -1,4 +1,4 @@
-const CACHE_NAME = "smartrent-v5";
+const CACHE_NAME = "smartrent-v6";
 const APP_PRECACHE = [
   "/icon-192.png",
   "/icon-512.png",
@@ -59,7 +59,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // HTML, RSC payload (?_rsc), và mọi thứ khác -> NETWORK-FIRST
+  // RSC payload (?_rsc) -> NETWORK-ONLY (never cache, always fresh)
+  if (url.searchParams.has("_rsc")) {
+    event.respondWith(fetch(request).catch(() => Response.error()));
+    return;
+  }
+
+  // HTML, và mọi thứ khác -> NETWORK-FIRST
   // (tránh serving trang cũ tham chiếu chunk đã bị xoá sau khi build mới)
   event.respondWith(
     fetch(request)
