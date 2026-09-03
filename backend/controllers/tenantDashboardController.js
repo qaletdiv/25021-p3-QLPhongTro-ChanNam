@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notification, Invoice, Companion } = require("../models");
-const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
+const { findTenantByUser, findActiveContract, findActiveContracts } = require("../utils/tenantHelpers");
 const { monthStr } = require("../utils/dates");
 
 // Lightweight check used by tenant pages (invoices, issues) to decide whether
@@ -36,10 +36,10 @@ exports.getDashboard = async (req, res, next) => {
             invoiceInclude
         ];
 
-        let contract = await findActiveContract(tenant.id, contractInclude);
+        let contracts = await findActiveContracts(tenant.id, contractInclude);
 
-        if (!contract) {
-            contract = await Contract.findOne({
+        if (!contracts || contracts.length === 0) {
+            contracts = await Contract.findAll({
                 where: { status: 'active' },
                 include: [{
                     model: Room, as: "room", include: [buildingInclude]
@@ -48,8 +48,13 @@ exports.getDashboard = async (req, res, next) => {
                     where: { name: req.user.name, phone: req.user.phone }
                 }, furnituresInclude, invoiceInclude]
             });
-            if (contract) tenant = contract.tenant;
+            if (contracts.length > 0) {
+                tenant = contracts[0].tenant;
+                // Ensure the tenant's linked user info is consistent
+            }
         }
+
+        const contract = contracts[0] || null;
 
         let notifications = [];
         let companions = [];
@@ -72,7 +77,7 @@ exports.getDashboard = async (req, res, next) => {
             });
         }
 
-        res.json({ tenant, contract, notifications, companions });
+        res.json({ tenant, contract, contracts, notifications, companions });
     } catch (error) {
         next(error);
     }

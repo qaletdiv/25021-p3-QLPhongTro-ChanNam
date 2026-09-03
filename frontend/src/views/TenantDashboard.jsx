@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Badge, IconButton, Menu, MenuItem, Divider, Typography, Button } from "@mui/material";
+import { Box, Badge, IconButton, Menu, MenuItem, Divider, Typography, Button, Select } from "@mui/material";
 import { useRouter } from "next/navigation";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import ReceiptIcon from "@mui/icons-material/Receipt";
@@ -10,6 +10,7 @@ import MessageDialog from "../components/MessageDialog";
 import TenantOverviewTab from "../components/tenant/TenantOverviewTab";
 import { currentMonthLabel } from "../utils/format";
 import tenantNotificationApi from "../api/tenantNotificationApi";
+import { inputSx } from "../utils/styles";
 
 export default function TenantDashboard({ data, settings, notifInit }) {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
@@ -17,6 +18,9 @@ export default function TenantDashboard({ data, settings, notifInit }) {
   const [notifItems, setNotifItems] = useState(notifInit?.items || []);
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
+
+  const contracts = data?.contracts || [];
+  const [activeContractIdx, setActiveContractIdx] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -53,7 +57,7 @@ export default function TenantDashboard({ data, settings, notifInit }) {
     setNotifCount(0);
   };
 
-  const contract = data?.contract;
+  const contract = contracts.length > 0 ? contracts[activeContractIdx] : data?.contract;
   const hasContract = !!contract;
   const room = contract?.room;
   const tenant = data?.tenant;
@@ -107,6 +111,24 @@ export default function TenantDashboard({ data, settings, notifInit }) {
           ))}
         </Menu>
       </Box>
+
+      {contracts.length > 1 && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 1 }}>
+          <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155" }}>Chọn phòng:</Typography>
+          <Select
+            size="small"
+            value={activeContractIdx}
+            onChange={(e) => setActiveContractIdx(Number(e.target.value))}
+            sx={{ minWidth: 200, ...inputSx }}
+          >
+            {contracts.map((c, idx) => (
+              <MenuItem key={c.id} value={idx}>
+                Phòng {c.room?.room_number || "?"} - {c.room?.building?.name || "N/A"}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+      )}
 
       <TenantOverviewTab
         room={room} tenant={tenant} contract={contract} daysLeft={daysLeft}

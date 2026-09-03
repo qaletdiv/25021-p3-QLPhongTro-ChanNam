@@ -16,22 +16,20 @@ export default function ContractModal({
 }) {
   if (!open) return null;
 
-  // Only tenants who self-registered (có tài khoản -> t.user) AND have no active
-  // room are eligible. Khách chưa đăng ký không được lập hợp đồng.
+  // Only tenants who self-registered (có tài khoản -> t.user) are eligible.
+  // Khách chưa đăng ký không được lập hợp đồng.
   const selectedRoom = emptyRooms.find((r) => r.id === contractForm.roomId);
   const selectedBuildingId = selectedRoom?.buildingId
     ?? (contractForm.selectedBuilding ? Number(contractForm.selectedBuilding) : null)
     ?? (buildingFilter && buildingFilter !== "all" ? Number(buildingFilter) : null);
   const availableTenants = tenants.filter((t) => {
     if (!t.user) return false;
-    const hasActive = (t.contracts || []).some((c) => c.status === "active");
-    if (hasActive) return false;
     if (selectedBuildingId && t.buildingId && t.buildingId !== selectedBuildingId) return false;
     return true;
   });
 
-  const selectedTenant = availableTenants.find((t) => t.id === contractForm.tenantId)
-    || tenants.find((t) => t.id === contractForm.tenantId);
+  const selectedTenant = tenants.find((t) => t.id === contractForm.tenantId)
+    || availableTenants.find((t) => t.id === contractForm.tenantId);
 
   return (
     <ModalShell open={open} onClose={onClose} maxWidth={640}
