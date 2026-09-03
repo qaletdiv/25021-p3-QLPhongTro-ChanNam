@@ -69,12 +69,14 @@ export default function ContractModal({
           {/* Tenant Details */}
           <Grid container spacing={1.5}>
             <Grid size={6}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Khách *</Typography>
-              <TextField
-                fullWidth size="small" placeholder="Nguyễn Văn A"
-                value={selectedTenant ? selectedTenant.name : ""} disabled
-                sx={inputSx}
-              />
+           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Khách *</Typography>
+               <TextField
+                 fullWidth size="small" placeholder="Nguyễn Văn A"
+                 value={contractForm.tenantName || ""}
+                 onChange={(e) => setContractForm({ ...contractForm, tenantName: e.target.value })}
+                 required
+                 sx={inputSx}
+               />
               <Autocomplete
                 fullWidth size="small" disableClearable
                 options={availableTenants}
@@ -95,20 +97,23 @@ export default function ContractModal({
               />
             </Grid>
             <Grid size={6}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
-              <TextField
-                fullWidth size="small" placeholder="0912345678"
-                value={selectedTenant ? selectedTenant.phone : ""} disabled
-                sx={inputSx}
-              />
+               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
+               <TextField
+                 fullWidth size="small" placeholder="0912345678"
+                 value={contractForm.tenantPhone || ""}
+                 onChange={(e) => setContractForm({ ...contractForm, tenantPhone: e.target.value })}
+                 required
+                 sx={inputSx}
+               />
             </Grid>
             <Grid size={6}>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email (Tùy chọn)</Typography>
-              <TextField
-                fullWidth size="small" placeholder="email@gmail.com"
-                value={selectedTenant?.user?.email || ""} disabled
-                sx={inputSx}
-              />
+               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email (Tùy chọn)</Typography>
+               <TextField
+                 fullWidth size="small" placeholder="email@gmail.com"
+                 value={contractForm.tenantEmail || ""}
+                 onChange={(e) => setContractForm({ ...contractForm, tenantEmail: e.target.value })}
+                 sx={inputSx}
+               />
             </Grid>
           </Grid>
 

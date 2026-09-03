@@ -36,7 +36,7 @@ export default function useTenantEditor({ notify, fetchTenants, formState }) {
         const allRooms = roomsRes.data.rooms;
         setEmptyRooms(allRooms.filter(r => r.status === 'empty' || r.id === activeContract.roomId));
 
-        setContractForm(buildContractForm(contract, tenant.id));
+        setContractForm(buildContractForm(contract, tenant.id, tenant));
         setCompanionFingerprints(buildCompanions(contract.companions));
         setEditContractId(contract.id);
         paymentDayManuallyChanged.current = true;

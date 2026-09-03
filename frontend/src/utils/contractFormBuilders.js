@@ -25,9 +25,10 @@ export function buildCompanions(companions) {
     .map(c => ({ id: c.id, name: c.name, phone: c.phone || "", cccd: c.cccd || "", relationship: c.relationship || "", fingerprintCode: c.fingerprintCode || "" }));
 }
 
-export function buildContractForm(contract, tenantId) {
+export function buildContractForm(contract, tenantId, tenant) {
   return {
     tenantId, roomId: contract.roomId,
+    tenantName: tenant?.name || "", tenantPhone: tenant?.phone || "", tenantEmail: tenant?.user?.email || "",
     deposit: contract.deposit,
     price: contract.price,
     startDate: contract.startDate?.split("T")[0] || contract.startDate,

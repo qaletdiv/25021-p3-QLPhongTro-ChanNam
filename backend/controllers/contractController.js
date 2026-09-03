@@ -44,7 +44,7 @@ exports.getContractById = async (req, res, next) => {
 
 exports.updateContract = async (req, res, next) => {
     try {
-        const { deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints, roomId } = req.body;
+        const { deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints, roomId, tenantName, tenantPhone, tenantEmail } = req.body;
 
         const contract = await Contract.findByPk(req.params.id, {
             include: [{ model: Room, as: "room" }]
@@ -59,6 +59,19 @@ exports.updateContract = async (req, res, next) => {
         const oldCompanionFps = Object.fromEntries(oldCompanions.map(c => [c.id, c.fingerprintCode]));
         const tenant = await Tenant.findByPk(contract.tenantId);
         let logRoom = contract.room;
+
+        // Cập nhật thông tin khách thuê nếu được cung cấp
+        if (tenant) {
+            const tenantUpdate = {};
+            if (tenantName) tenantUpdate.name = tenantName;
+            if (tenantPhone) tenantUpdate.phone = tenantPhone;
+            if (Object.keys(tenantUpdate).length > 0) await tenant.update(tenantUpdate);
+            if (tenantEmail && tenant.userId) {
+                const { User } = require("../models");
+                const user = await User.findByPk(tenant.userId);
+                if (user) await user.update({ email: tenantEmail });
+            }
+        }
 
         const updateData = { deposit, price, startDate, endDate, paymentDay, fingerprintCode };
 
@@ -99,7 +112,7 @@ exports.updateContract = async (req, res, next) => {
 
 exports.createContract = async (req, res, next) => {
     try {
-        const { tenantId, roomId, deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints } = req.body;
+        const { tenantId, roomId, deposit, price, startDate, endDate, paymentDay, fingerprintCode, furnitures, companionFingerprints, tenantName, tenantPhone, tenantEmail } = req.body;
 
         if (!tenantId) return res.status(400).json({ message: "Chưa chọn khách thuê" });
         if (!roomId) return res.status(400).json({ message: "Chưa chọn phòng" });
@@ -112,11 +125,24 @@ exports.createContract = async (req, res, next) => {
         if (room.status !== 'empty') return res.status(400).json({ message: "Phòng không trống" });
 
         // Không cho lập hợp đồng với khách thuê của nhà trọ khác.
-        // isTenantAccessible đã bao gồm nhóm khách chưa được gán nhà (hàng đợi onboarding).
+        // isTenantAccessible đã bao gộm nhóm khách chưa được gán nhà (hàng đợi onboarding).
         const tenant = await Tenant.findByPk(tenantId);
         if (!tenant) return res.status(400).json({ message: "Khách thuê không tồn tại" });
         if (!(await isTenantAccessible(req.user.id, tenantId))) {
             return res.status(403).json({ message: "Bạn không có quyền trên khách thuê này" });
+        }
+
+        // Cập nhật thông tin khách thuê nếu được cung cấp
+        if (tenantName || tenantPhone) {
+            const updateData = {};
+            if (tenantName) updateData.name = tenantName;
+            if (tenantPhone) updateData.phone = tenantPhone;
+            await tenant.update(updateData);
+        }
+        if (tenantEmail && tenant.userId) {
+            const { User } = require("../models");
+            const user = await User.findByPk(tenant.userId);
+            if (user) await user.update({ email: tenantEmail });
         }
 
         const contract = await Contract.create({ tenantId, roomId, deposit, price: price ?? room.price, startDate, endDate, paymentDay, fingerprintCode, status: 'active' });
