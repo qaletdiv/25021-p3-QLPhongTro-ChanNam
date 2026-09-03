@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocomplete } from "@mui/material";
+import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocomplete, Select, MenuItem } from "@mui/material";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import ModalShell from "../ui/ModalShell";
 import DateField from "../ui/DateField";
@@ -9,7 +9,7 @@ import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
 
 export default function ContractModal({
-  open, editContractId, tenants, emptyRooms, buildingFilter,
+  open, editContractId, tenants, emptyRooms, buildingFilter, buildings,
   contractForm, setContractForm, companionFingerprints, setCompanionFingerprints,
   furnitureList, selectedFurnitures, setSelectedFurnitures,
   paymentDayManuallyChanged, contractLoading, onClose, onSave,
@@ -20,6 +20,7 @@ export default function ContractModal({
   // room are eligible. Khách chưa đăng ký không được lập hợp đồng.
   const selectedRoom = emptyRooms.find((r) => r.id === contractForm.roomId);
   const selectedBuildingId = selectedRoom?.buildingId
+    ?? (contractForm.selectedBuilding ? Number(contractForm.selectedBuilding) : null)
     ?? (buildingFilter && buildingFilter !== "all" ? Number(buildingFilter) : null);
   const availableTenants = tenants.filter((t) => {
     if (!t.user) return false;
@@ -44,17 +45,36 @@ export default function ContractModal({
       }
       body={
         <Box sx={{ p: 3, overflow: "auto", display: "flex", flexDirection: "column", gap: 2.5 }}>
+          {/* Building Selection */}
+          {buildings && buildings.length > 0 && (
+            <Box>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn Nhà Trọ *</Typography>
+              <Select
+                fullWidth size="small"
+                value={contractForm.selectedBuilding || ""}
+                onChange={(e) => setContractForm({ ...contractForm, selectedBuilding: e.target.value || "", roomId: "" })}
+                displayEmpty
+                renderValue={(val) => val ? buildings.find((b) => String(b.id) === String(val))?.name || "" : "-- Chọn nhà trọ --"}
+                sx={inputSx}
+              >
+                <MenuItem value="">Tất cả nhà trọ</MenuItem>
+                {buildings.map((b) => (
+                  <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
+                ))}
+              </Select>
+            </Box>
+          )}
           {/* Room Selection */}
           <Box>
             <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn Phòng Trống *</Typography>
-            {emptyRooms.length === 0 ? (
+            {emptyRooms.filter((r) => !contractForm.selectedBuilding || String(r.buildingId) === String(contractForm.selectedBuilding)).length === 0 ? (
               <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
                 Không có phòng trống nào khả dụng! Vui lòng tạo thêm phòng mới trong mục quản lý phòng.
               </Box>
             ) : (
               <Autocomplete
                 fullWidth size="small" disableClearable
-                options={emptyRooms}
+                options={emptyRooms.filter((r) => !contractForm.selectedBuilding || String(r.buildingId) === String(contractForm.selectedBuilding))}
                 getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
                 value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
                 onChange={(e, room) => {

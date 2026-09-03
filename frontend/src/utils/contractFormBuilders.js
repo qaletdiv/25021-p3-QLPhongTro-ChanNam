@@ -1,6 +1,6 @@
 export const defaultContractForm = {
   tenantId: "", tenantName: "", tenantPhone: "", tenantEmail: "",
-  roomId: "", deposit: "", price: "", startDate: "", endDate: "",
+  roomId: "", selectedBuilding: "", deposit: "", price: "", startDate: "", endDate: "",
   paymentDay: 5, fingerprintCode: "", furnitures: [],
 };
 
