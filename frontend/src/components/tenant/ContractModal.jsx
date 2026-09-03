@@ -52,12 +52,12 @@ export default function ContractModal({
               <Select
                 fullWidth size="small"
                 value={contractForm.selectedBuilding || ""}
-                onChange={(e) => setContractForm({ ...contractForm, selectedBuilding: e.target.value || "", roomId: "" })}
+                onChange={(e) => setContractForm({ ...contractForm, selectedBuilding: e.target.value, roomId: "" })}
                 displayEmpty
                 renderValue={(val) => val ? buildings.find((b) => String(b.id) === String(val))?.name || "" : "-- Chọn nhà trọ --"}
+                required
                 sx={inputSx}
               >
-                <MenuItem value="">Tất cả nhà trọ</MenuItem>
                 {buildings.map((b) => (
                   <MenuItem key={b.id} value={String(b.id)}>{b.name}</MenuItem>
                 ))}
@@ -67,14 +67,18 @@ export default function ContractModal({
           {/* Room Selection */}
           <Box>
             <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn Phòng Trống *</Typography>
-            {emptyRooms.filter((r) => !contractForm.selectedBuilding || String(r.buildingId) === String(contractForm.selectedBuilding)).length === 0 ? (
+            {!contractForm.selectedBuilding ? (
+              <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
+                Vui lòng chọn nhà trọ trước để xem phòng trống.
+              </Box>
+            ) : emptyRooms.filter((r) => String(r.buildingId) === String(contractForm.selectedBuilding)).length === 0 ? (
               <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
                 Không có phòng trống nào khả dụng! Vui lòng tạo thêm phòng mới trong mục quản lý phòng.
               </Box>
             ) : (
               <Autocomplete
-                fullWidth size="small" disableClearable
-                options={emptyRooms.filter((r) => !contractForm.selectedBuilding || String(r.buildingId) === String(contractForm.selectedBuilding))}
+                fullWidth size="small" disabled={!contractForm.selectedBuilding}
+                options={emptyRooms.filter((r) => String(r.buildingId) === String(contractForm.selectedBuilding))}
                 getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
                 value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
                 onChange={(e, room) => {
@@ -86,17 +90,14 @@ export default function ContractModal({
             )}
           </Box>
 
-          {/* Tenant Details */}
-          <Grid container spacing={1.5}>
-            <Grid size={6}>
-           <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Khách *</Typography>
-               <TextField
-                 fullWidth size="small" placeholder="Nguyễn Văn A"
-                 value={contractForm.tenantName || ""}
-                 onChange={(e) => setContractForm({ ...contractForm, tenantName: e.target.value })}
-                 required
-                 sx={inputSx}
-               />
+          {/* Tenant Selection */}
+          <Box>
+            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn Khách Hàng *</Typography>
+            {availableTenants.length === 0 ? (
+              <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
+                Không có khách hàng nào khả dụng! Vui lòng chọn nhà trọ và phòng trống khác.
+              </Box>
+            ) : (
               <Autocomplete
                 fullWidth size="small" disableClearable
                 options={availableTenants}
@@ -115,25 +116,42 @@ export default function ContractModal({
                 disabled={!!editContractId}
                 renderInput={(params) => <TextField {...params} placeholder="-- Chọn khách --" />}
               />
+            )}
+          </Box>
+
+          {/* Tenant Details (editable after selecting tenant) */}
+          <Grid container spacing={1.5}>
+            <Grid size={6}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Họ & Tên Khách *</Typography>
+              <TextField
+                fullWidth size="small" placeholder="Nguyễn Văn A"
+                value={contractForm.tenantName || ""}
+                onChange={(e) => setContractForm({ ...contractForm, tenantName: e.target.value })}
+                required
+                disabled={!contractForm.tenantId}
+                sx={inputSx}
+              />
             </Grid>
             <Grid size={6}>
-               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
-               <TextField
-                 fullWidth size="small" placeholder="0912345678"
-                 value={contractForm.tenantPhone || ""}
-                 onChange={(e) => setContractForm({ ...contractForm, tenantPhone: e.target.value })}
-                 required
-                 sx={inputSx}
-               />
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Số Điện Thoại *</Typography>
+              <TextField
+                fullWidth size="small" placeholder="0912345678"
+                value={contractForm.tenantPhone || ""}
+                onChange={(e) => setContractForm({ ...contractForm, tenantPhone: e.target.value })}
+                required
+                disabled={!contractForm.tenantId}
+                sx={inputSx}
+              />
             </Grid>
-            <Grid size={6}>
-               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email (Tùy chọn)</Typography>
-               <TextField
-                 fullWidth size="small" placeholder="email@gmail.com"
-                 value={contractForm.tenantEmail || ""}
-                 onChange={(e) => setContractForm({ ...contractForm, tenantEmail: e.target.value })}
-                 sx={inputSx}
-               />
+            <Grid size={12}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Email (Tùy chọn)</Typography>
+              <TextField
+                fullWidth size="small" placeholder="email@gmail.com"
+                value={contractForm.tenantEmail || ""}
+                onChange={(e) => setContractForm({ ...contractForm, tenantEmail: e.target.value })}
+                disabled={!contractForm.tenantId}
+                sx={inputSx}
+              />
             </Grid>
           </Grid>
 
