@@ -14,6 +14,12 @@ export default function ContractModal({
   furnitureList, selectedFurnitures, setSelectedFurnitures,
   paymentDayManuallyChanged, contractLoading, onClose, onSave,
 }) {
+  const [newCompanionName, setNewCompanionName] = useState("");
+  const handleAddCompanion = () => {
+    if (!newCompanionName.trim()) return;
+    setCompanionFingerprints([...companionFingerprints, { id: Date.now().toString(), name: newCompanionName, fingerprintCode: "" }]);
+    setNewCompanionName("");
+  };
   if (!open) return null;
 
   // Only tenants who self-registered (có tài khoản -> t.user) are eligible.
@@ -62,31 +68,27 @@ export default function ContractModal({
               </Select>
             </Box>
           )}
-          {/* Room Selection */}
-          <Box>
-            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn Phòng Trống *</Typography>
-            {!contractForm.selectedBuilding ? (
-              <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
-                Vui lòng chọn nhà trọ trước để xem phòng trống.
-              </Box>
-            ) : emptyRooms.filter((r) => String(r.buildingId) === String(contractForm.selectedBuilding)).length === 0 ? (
-              <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
-                Không có phòng trống nào khả dụng! Vui lòng tạo thêm phòng mới trong mục quản lý phòng.
-              </Box>
-            ) : (
-              <Autocomplete
-                fullWidth size="small" disabled={!contractForm.selectedBuilding}
-                options={emptyRooms.filter((r) => String(r.buildingId) === String(contractForm.selectedBuilding))}
-                getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
-                value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
-                onChange={(e, room) => {
-                  setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room ? contractForm.paymentDay : 5) });
-                }}
-                renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" sx={inputSx} />}
-                sx={inputSx}
-              />
-            )}
-          </Box>
+{/* Room Selection */}
+           <Box>
+             <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn Phòng Trống *</Typography>
+             {editContractId ? (
+               <Autocomplete
+                 fullWidth size="small" disabled={false}
+                 options={emptyRooms}
+                 getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
+                 value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
+                 onChange={(e, room) => {
+                   setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room ? contractForm.paymentDay : 5) });
+                 }}
+                 renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" sx={inputSx} />}
+                 sx={inputSx}
+               />
+             ) : (
+               <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
+                 Vui lòng chọn nhà trọ trước để xem phòng trống.
+               </Box>
+             )}
+           </Box>
 
           {/* Tenant Selection */}
           <Box>
@@ -233,6 +235,32 @@ export default function ContractModal({
                   sx={{ mb: 0.75, ...inputSx }}
                 />
               ))}
+              <Box sx={{ mt: 1, display: "flex", gap: 8 }}>
+                <TextField
+                  fullWidth size="small"
+                  placeholder="Tên người đi kèm"
+                  value={newCompanionName}
+                  onChange={(e) => setNewCompanionName(e.target.value)}
+                  sx={{ flex: 1, ...inputSx }}
+                />
+                <IconButton size="small" onClick={handleAddCompanion} sx={{ ...inputSx, mr: 0.5 }}>
+                  <AddIcon fontSize={16} />
+                </IconButton>
+              </Box>
+            </Box>
+          )}
+          {companionFingerprints.length === 0 && (
+            <Box sx={{ mt: 1, display: "flex", gap: 8 }}>
+              <TextField
+                fullWidth size="small"
+                placeholder="Tên người đi kèm"
+                value={newCompanionName}
+                onChange={(e) => setNewCompanionName(e.target.value)}
+                sx={{ flex: 1, ...inputSx }}
+              />
+              <IconButton size="small" onClick={handleAddCompanion} sx={{ ...inputSx, mr: 0.5 }}>
+                <AddIcon fontSize={16} />
+              </IconButton>
             </Box>
           )}
 

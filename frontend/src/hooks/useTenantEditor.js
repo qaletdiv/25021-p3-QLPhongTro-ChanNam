@@ -17,12 +17,14 @@ export default function useTenantEditor({ notify, fetchTenants, formState }) {
     contractForm, editContractId, selectedFurnitures, companionFingerprints,
   } = formState;
 
-  const openEdit = async (tenant) => {
+  const openEdit = async (tenant, contractId) => {
     setEditTenantId(tenant.id);
     // Mật khẩu không được đọc về từ server (chỉ lưu hash), để trống = không đổi.
     setTenantForm({ name: tenant.name, phone: tenant.phone, cccd: tenant.cccd || "", password: "" });
 
-    const activeContract = tenant.contracts?.find((c) => c.status === "active");
+    const activeContract = contractId
+      ? tenant.contracts?.find((c) => c.id === contractId)
+      : tenant.contracts?.find((c) => c.status === "active");
     if (activeContract) {      try {
         const [furnRes, contractRes, roomsRes] = await Promise.all([
           furnitureApi.getAll(),

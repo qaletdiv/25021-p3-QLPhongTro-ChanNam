@@ -101,6 +101,8 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
                 return true;
               });
               const activeCompanions = (tenant.companions || []).filter((c) => c.status !== "ended");
+              // Show expand/collapse button only if there are companions
+              const hasCompanions = companions.length > 0;
               return (
                 <Fragment key={tenant.id}>
                 <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
@@ -167,7 +169,7 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
                   </td>
                   <td style={{ padding: "12px 16px", color: "#94a3b8" }}>-</td>
                   <td style={{ padding: "12px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
-                    <IconButton size="small" onClick={() => onEdit(tenant)} title="Sửa" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" } }}>
+                    <IconButton size="small" onClick={() => onEdit(tenant, contract?.id)} title="Sửa" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" } }}>
                       <EditIcon sx={{ fontSize: 16 }} />
                     </IconButton>
                     {active && (
