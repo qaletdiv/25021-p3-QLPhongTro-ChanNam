@@ -246,7 +246,7 @@ export default function ContractModal({
                   sx={{ flex: 1, ...inputSx }}
                 />
                 <IconButton size="small" onClick={handleAddCompanion} sx={{ ...inputSx, mr: 0.5 }}>
-                  <AddIcon fontSize={16} />
+                  <AddIcon fontSize="small" />
                 </IconButton>
               </Box>
             </Box>
@@ -261,7 +261,7 @@ export default function ContractModal({
                 sx={{ flex: 1, ...inputSx }}
               />
               <IconButton size="small" onClick={handleAddCompanion} sx={{ ...inputSx, mr: 0.5 }}>
-                <AddIcon fontSize={16} />
+                <AddIcon fontSize="small" />
               </IconButton>
             </Box>
           )}
