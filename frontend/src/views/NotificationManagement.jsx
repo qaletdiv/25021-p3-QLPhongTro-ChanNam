@@ -13,6 +13,7 @@ import notificationApi from "../api/notificationApi";
 import roomApi from "../api/roomApi";
 import settingApi from "../api/settingApi";
 import { resolveNotificationTemplate } from "../utils/notificationTemplate";
+import { formatCurrency } from "../utils/format";
 
 const VARIABLES = ["TENKHACH", "MAPHONG", "TONG_TIEN", "HAN_THANH_TOAN"];
 const AUTO_VARIABLES = ["TENKHACH", "MAPHONG", "TONG_TIEN", "THANG", "HAN_THANH_TOAN"];
@@ -98,17 +99,21 @@ export default function NotificationManagement({ initialNotifications = [], init
       return `${mm}/${dt.getFullYear()}`;
     })();
     const roomIds = parseRoomIds(log);
-    if (roomIds.length === 0) return resolveNotificationTemplate(log.content, { THANG: monthStr });
+    if (roomIds.length === 0) {
+      const formatted = resolveNotificationTemplate(log.content, { THANG: monthStr });
+      return formatted;
+    }
     return roomIds.map((id) => {
       const room = rooms.find((r) => String(r.id) === String(id));
       const activeContract = room?.contracts?.find((c) => c.status === "active");
-      return resolveNotificationTemplate(log.content, {
+      const formatted = resolveNotificationTemplate(log.content, {
         TENKHACH: activeContract?.tenant?.name || "",
         MAPHONG: room?.room_number || "",
-        TONG_TIEN: room?.price != null ? String(room.price) : "",
+        TONG_TIEN: room?.price != null ? formatCurrency(room.price) : "",
         THANG: monthStr,
         HAN_THANH_TOAN: activeContract?.paymentDay ? String(activeContract.paymentDay + 5) : "",
       });
+      return formatted;
     }).join("\n\n─────\n\n");
   };
 

@@ -2,8 +2,6 @@ import LoginRegister from "@/src/views/LoginRegister";
 import { loginFormAction } from "@/src/actions/authActions";
 import { LoginErrorBoundary } from "@/src/components/LoginErrorBoundary";
 
-export const dynamic = 'force-dynamic';
-
 export default async function LoginRolePage({ params }) {
   const { role } = await params;
   return (

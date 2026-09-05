@@ -1,5 +1,4 @@
-﻿export const dynamic = 'force-dynamic'
-import TenantManagement from "@/src/views/TenantManagement";
+﻿import TenantManagement from "@/src/views/TenantManagement";
 import { getTenants } from "@/src/actions/tenantActions";
 import { getBuildings } from "@/src/actions/buildingActions";
 import { redirect } from "next/navigation";
