@@ -71,7 +71,7 @@ export default function TenantEditModal({
                 <Autocomplete
                   fullWidth size="small" disableClearable
                   options={emptyRooms}
-                  getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Giá: ${formatCurrency(r.price)}/tháng`}
+                  getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - Nhà ${r.building?.name || "?"} - Giá: ${formatCurrency(r.price)}/tháng`}
                   value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
                   onChange={(e, room) => {
                     setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price });
