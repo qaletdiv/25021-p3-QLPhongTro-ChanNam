@@ -169,7 +169,7 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
                   </td>
                   <td style={{ padding: "12px 16px", color: "#94a3b8" }}>-</td>
                   <td style={{ padding: "12px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
-                    <IconButton size="small" onClick={() => onEdit(tenant, contract?.id)} title="Sửa" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" } }}>
+                    <IconButton size="small" onClick={() => onEdit(tenant, displayContract?.id)} title="Sửa" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" } }}>
                       <EditIcon sx={{ fontSize: 16 }} />
                     </IconButton>
                     {active && (
