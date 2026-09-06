@@ -73,10 +73,13 @@ const StatusBadge = ({ active, ended }) => {
 
 export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, companionStatus = "all" }) {
   const [expandedId, setExpandedId] = useState(null);
-  const [expandedContractTenantId, setExpandedContractTenantId] = useState(null);
 
   const toggleExpand = (tenantId) => setExpandedId((cur) => (cur === tenantId ? null : tenantId));
-  const toggleContracts = (tenantId) => setExpandedContractTenantId((cur) => (cur === tenantId ? null : tenantId));
+
+  const flatRows = tenants.flatMap((tenant) => {
+    const contracts = [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+    return contracts.map((contract) => ({ tenant, contract }));
+  });
 
   return (
     <Paper sx={{ borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0" }}>
@@ -90,176 +93,138 @@ export default function TenantTable({ tenants, onEdit, onCheckout, onPrint, comp
             </tr>
           </thead>
           <tbody style={{ borderBottom: "1px solid #f1f5f9" }}>
-            {tenants.map((tenant) => {
-              const contracts = [...(tenant.contracts || [])].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
-              const active = contracts.find((c) => c.status === "active");
-              const ended = !active && contracts.some((c) => c.status === "ended");
-              const displayContract = active || contracts[0];
+            {flatRows.map(({ tenant, contract }, idx) => {
+              const active = contract.status === "active";
+              const ended = contract.status === "ended";
               const companions = (tenant.companions || []).filter((c) => {
                 if (companionStatus === "active") return c.status !== "ended";
                 if (companionStatus === "ended") return c.status === "ended";
                 return true;
               });
               const activeCompanions = (tenant.companions || []).filter((c) => c.status !== "ended");
-              // Show expand/collapse button only if there are companions
               const hasCompanions = companions.length > 0;
               return (
-                <Fragment key={tenant.id}>
-                <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
-                >
-                  <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>
-                    Phòng {displayContract?.room?.room_number || "-"}
-                    {(displayContract?.room?.building?.name || tenant.building?.name) && (
-                      <div style={{ fontSize: "0.625rem", color: "#2563eb", fontWeight: 600 }}>{displayContract?.room?.building?.name || tenant.building?.name}</div>
-                    )}
-                  </td>
-                  <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      {companions.length > 0 && (
-                        <IconButton size="small" onClick={() => toggleExpand(tenant.id)}
-                          title={expandedId === tenant.id ? "Thu gọn người đi kèm" : "Xem người đi kèm"}
-                          sx={{ color: "#2563eb", bgcolor: "#eff6ff", "&:hover": { bgcolor: "#dbeafe" }, p: 0.25 }}>
-                          {expandedId === tenant.id ? <RemoveIcon sx={{ fontSize: 14 }} /> : <AddIcon sx={{ fontSize: 14 }} />}
+                <Fragment key={`${tenant.id}-${contract.id}`}>
+                  <tr style={{ borderBottom: "1px solid #f1f5f9", transition: "background 0.15s" }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                  >
+                    <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>
+                      Phòng {contract?.room?.room_number || "-"}
+                      {contract?.room?.building?.name && (
+                        <div style={{ fontSize: "0.625rem", color: "#2563eb", fontWeight: 600 }}>{contract.room.building.name}</div>
+                      )}
+                    </td>
+                    <td style={{ padding: "12px 16px", fontWeight: 700, color: "#0f172a" }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                        {hasCompanions && (
+                          <IconButton size="small" onClick={() => toggleExpand(tenant.id)}
+                            title={expandedId === tenant.id ? "Thu gọn người đi kèm" : "Xem người đi kèm"}
+                            sx={{ color: "#2563eb", bgcolor: "#eff6ff", "&:hover": { bgcolor: "#dbeafe" }, p: 0.25 }}>
+                            {expandedId === tenant.id ? <RemoveIcon sx={{ fontSize: 14 }} /> : <AddIcon sx={{ fontSize: 14 }} />}
+                          </IconButton>
+                        )}
+                        <span style={{ fontWeight: 700, color: "#0f172a" }}>{tenant.name}</span>
+                        {(activeCompanions.length) > 0 && (
+                          <Box component="span" sx={{ color: "#2563eb", fontSize: "0.6875rem", fontWeight: 700 }}>({1 + (activeCompanions.length)} người)</Box>
+                        )}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#64748b", fontWeight: 600 }}>
+                      {tenant.phone || "-"}
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      {tenant.telegramChatId ? (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "9999px", backgroundColor: "#e0f2fe", color: "#075985", border: "1px solid #bae6fd" }}>
+                          <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#0284c7", display: "inline-block" }} />
+                          Đã liên kết
+                        </span>
+                      ) : (
+                        <span style={{ padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 600, borderRadius: "9999px", backgroundColor: "#f1f5f9", color: "#94a3b8", border: "1px solid #e2e8f0" }}>
+                          Chưa liên kết
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ padding: "12px 16px", fontWeight: 700, color: "#2563eb" }}>
+                      {contract ? formatCurrency(contract.deposit) : "-"}
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#475569" }}>
+                      {contract ? `${formatDate(contract.startDate)} - ${formatDate(contract.endDate)}` : "-"}
+                    </td>
+                    <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f172a" }}>
+                      {formatDuration(contract)}
+                    </td>
+                    <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f172a" }}>
+                      {contract ? `Ngày ${contract.paymentDay}` : "-"}
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      {contract?.fingerprintCode ? (
+                        <span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
+                          {contract.fingerprintCode}
+                        </span>
+                      ) : "-"}
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <StatusBadge active={!!active} ended={!!ended} />
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#94a3b8" }}>-</td>
+                    <td style={{ padding: "12px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
+                      <IconButton size="small" onClick={() => onEdit(tenant, contract?.id)} title="Sửa" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" } }}>
+                        <EditIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                      {active && (
+                        <IconButton size="small" onClick={() => onCheckout(tenant)} title="Trả phòng" sx={{ color: "#64748b", "&:hover": { color: "#e11d48", bgcolor: "#ffe4e6" } }}>
+                          <ExitToAppIcon sx={{ fontSize: 16 }} />
                         </IconButton>
                       )}
-                      <span style={{ fontWeight: 700, color: "#0f172a" }}>{tenant.name}</span>
-                      {(activeCompanions.length) > 0 && (
-                        <Box component="span" sx={{ color: "#2563eb", fontSize: "0.6875rem", fontWeight: 700 }}>({1 + (activeCompanions.length)} người)</Box>
+                      {contract && (
+                        <IconButton size="small" onClick={() => onPrint(contract.id)} title="In hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#059669", bgcolor: "#d1fae5" } }}>
+                          <PrintIcon sx={{ fontSize: 16 }} />
+                        </IconButton>
                       )}
-                    </span>
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#64748b", fontWeight: 600 }}>
-                    {tenant.phone || "-"}
-                  </td>
-                  <td style={{ padding: "12px 16px" }}>
-                    {tenant.telegramChatId ? (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 700, borderRadius: "9999px", backgroundColor: "#e0f2fe", color: "#075985", border: "1px solid #bae6fd" }}>
-                        <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "#0284c7", display: "inline-block" }} />
-                        Đã liên kết
-                      </span>
-                    ) : (
-                      <span style={{ padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 600, borderRadius: "9999px", backgroundColor: "#f1f5f9", color: "#94a3b8", border: "1px solid #e2e8f0" }}>
-                        Chưa liên kết
-                      </span>
-                    )}
-                  </td>
-                  <td style={{ padding: "12px 16px", fontWeight: 700, color: "#2563eb" }}>
-                    {displayContract ? formatCurrency(displayContract.deposit) : "-"}
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#475569" }}>
-                    {displayContract ? `${formatDate(displayContract.startDate)} - ${formatDate(displayContract.endDate)}` : "-"}
-                  </td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f172a" }}>
-                    {formatDuration(displayContract)}
-                  </td>
-                  <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f172a" }}>
-                    {displayContract ? `Ngày ${displayContract.paymentDay}` : "-"}
-                  </td>
-                  <td style={{ padding: "12px 16px" }}>
-                    {displayContract?.fingerprintCode ? (
-                      <span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
-                        {displayContract.fingerprintCode}
-                      </span>
-                    ) : "-"}
-                  </td>
-                  <td style={{ padding: "12px 16px" }}>
-                    <StatusBadge active={!!active} ended={ended} />
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#94a3b8" }}>-</td>
-                  <td style={{ padding: "12px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
-                    <IconButton size="small" onClick={() => onEdit(tenant, displayContract?.id)} title="Sửa" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" } }}>
-                      <EditIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                    {active && (
-                      <IconButton size="small" onClick={() => onCheckout(tenant)} title="Trả phòng" sx={{ color: "#64748b", "&:hover": { color: "#e11d48", bgcolor: "#ffe4e6" } }}>
-                        <ExitToAppIcon sx={{ fontSize: 16 }} />
-                      </IconButton>
-                    )}
-                    {displayContract && (
-                      <IconButton size="small" onClick={() => onPrint(displayContract.id)} title="In hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#059669", bgcolor: "#d1fae5" } }}>
-                        <PrintIcon sx={{ fontSize: 16 }} />
-                      </IconButton>
-                    )}
-                  </td>
-                </tr>
-                {expandedId === tenant.id &&
-                  companions.map((c, idx) => (
-                    <tr key={c.id || idx} style={{ backgroundColor: "#f8fafc", borderBottom: idx === companions.length - 1 ? "1px solid #e2e8f0" : "1px solid #eef2f7" }}>
-                      <td style={{ padding: "6px 16px", verticalAlign: "middle" }}>
-                        <TreeCell isFirst={idx === 0} isLast={idx === companions.length - 1} />
-                      </td>
-                      <td style={{ padding: "6px 16px", fontWeight: 700, color: "#0f172a" }}>
-                        {c.name}
-                      </td>
-                      <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>{c.phone || "-"}</td>
-                      <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
-                      <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
-                      <td style={{ padding: "6px 16px", color: "#475569" }}>
-                        {displayContract ? `${formatDate(displayContract.startDate)} - ${formatDate(displayContract.endDate)}` : "-"}
-                      </td>
-                      <td style={{ padding: "6px 16px", color: "#0f172a", fontWeight: 600 }}>
-                        {formatCompanionDuration(c)}
-                      </td>
-                      <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
-                      <td style={{ padding: "6px 16px" }}>
-                        {c.fingerprintCode ? (
-                          <span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
-                            {c.fingerprintCode}
-                          </span>
-                        ) : "-"}
-                      </td>
-                      <td style={{ padding: "6px 16px" }}>
-                        {c.status === "ended" ? (
-                          <span style={{ padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 600, borderRadius: "9999px", backgroundColor: "#f1f5f9", color: "#64748b", border: "1px solid #e2e8f0" }}>
-                            Hết Thuê
-                          </span>
-                        ) : (
-                          <StatusBadge active={!!active} ended={ended} />
-                        )}
-                      </td>
-                      <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>{c.relationship || "-"}</td>
-                      <td style={{ padding: "6px 16px" }}></td>
-                    </tr>
-                   ))}
-                 {contracts.length > 1 && expandedContractTenantId !== tenant.id && (
-                   <tr>
-                     <td colSpan={12} style={{ padding: "4px 16px", textAlign: "right" }}>
-                       <IconButton size="small" onClick={() => toggleContracts(tenant.id)} title="Xem thêm hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#2563eb", bgcolor: "#eff6ff" }, p: 0.25 }}>
-                         <AddIcon sx={{ fontSize: 14 }} />
-                       </IconButton>
-                       <span style={{ fontSize: "0.6875rem", color: "#94a3b8", fontWeight: 600, cursor: "pointer" }} onClick={() => toggleContracts(tenant.id)}>
-                         + {contracts.length - 1} hợp đồng khác
-                       </span>
-                     </td>
-                   </tr>
-                 )}
-                  {contracts.length > 1 && expandedContractTenantId === tenant.id &&
-                    contracts.slice(1).map((c, idx) => (
-                      <tr key={`contract-${c.id || idx}`} style={{ backgroundColor: "#f8fafc", borderBottom: idx === contracts.slice(1).length - 1 ? "1px solid #e2e8f0" : "1px solid #eef2f7" }}>
-                        <td style={{ padding: "6px 24px", verticalAlign: "middle" }}>
-                          <TreeCell isFirst={idx === 0} isLast={idx === contracts.slice(1).length - 1} />
+                    </td>
+                  </tr>
+                  {expandedId === tenant.id &&
+                    hasCompanions &&
+                    companions.map((c, idx) => (
+                      <tr key={c.id || idx} style={{ backgroundColor: "#f8fafc", borderBottom: idx === companions.length - 1 ? "1px solid #e2e8f0" : "1px solid #eef2f7" }}>
+                        <td style={{ padding: "6px 16px", verticalAlign: "middle" }}>
+                          <TreeCell isFirst={idx === 0} isLast={idx === companions.length - 1} />
                         </td>
-                        <td style={{ padding: "6px 16px", fontWeight: 700, color: "#0f172a", fontSize: "0.8125rem" }}>
-                          Phòng {c.room?.room_number || "-"} {c.room?.building?.name && <span style={{ fontSize: "0.625rem", color: "#2563eb" }}>({c.room.building.name})</span>}
+                        <td style={{ padding: "6px 16px", fontWeight: 700, color: "#0f172a" }}>
+                          {c.name}
                         </td>
-                        <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>-</td>
+                        <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>{c.phone || "-"}</td>
                         <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 700, color: "#2563eb" }}>{formatCurrency(c.deposit)}</td>
-                        <td style={{ padding: "6px 16px", color: "#475569" }}>{`${formatDate(c.startDate)} - ${formatDate(c.endDate)}`}</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600, color: "#0f172a" }}>{formatDuration(c)}</td>
-                        <td style={{ padding: "6px 16px", fontWeight: 600, color: "#0f172a" }}>{c.paymentDay ? `Ngày ${c.paymentDay}` : "-"}</td>
-                        <td style={{ padding: "6px 16px" }}>{c.fingerprintCode ? (<span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>{c.fingerprintCode}</span>) : "-"}</td>
-                        <td style={{ padding: "6px 16px" }}><StatusBadge active={c.status === "active"} ended={c.status === "ended"} /></td>
                         <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
-                        <td style={{ padding: "6px 16px", textAlign: "right", whiteSpace: "nowrap" }}>
-                          <IconButton size="small" onClick={() => onPrint(c.id)} title="In hợp đồng" sx={{ color: "#64748b", "&:hover": { color: "#059669", bgcolor: "#d1fae5" } }}><PrintIcon sx={{ fontSize: 16 }} /></IconButton>
+                        <td style={{ padding: "6px 16px", color: "#475569" }}>
+                          {contract ? `${formatDate(contract.startDate)} - ${formatDate(contract.endDate)}` : "-"}
                         </td>
+                        <td style={{ padding: "6px 16px", color: "#0f172a", fontWeight: 600 }}>
+                          {formatCompanionDuration(c)}
+                        </td>
+                        <td style={{ padding: "6px 16px", color: "#94a3b8" }}>-</td>
+                        <td style={{ padding: "6px 16px" }}>
+                          {c.fingerprintCode ? (
+                            <span style={{ backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #e2e8f0", padding: "4px 10px", borderRadius: "8px", fontSize: "0.6875rem", fontWeight: 700 }}>
+                              {c.fingerprintCode}
+                            </span>
+                          ) : "-"}
+                        </td>
+                        <td style={{ padding: "6px 16px" }}>
+                          {c.status === "ended" ? (
+                            <span style={{ padding: "3px 10px", fontSize: "0.6875rem", fontWeight: 600, borderRadius: "9999px", backgroundColor: "#f1f5f9", color: "#64748b", border: "1px solid #e2e8f0" }}>
+                              Hết Thuê
+                            </span>
+                          ) : (
+                            <StatusBadge active={!!active} ended={!!ended} />
+                          )}
+                        </td>
+                        <td style={{ padding: "6px 16px", color: "#64748b", fontWeight: 600 }}>{c.relationship || "-"}</td>
+                        <td style={{ padding: "6px 16px" }}></td>
                       </tr>
-                    ))
-                  }
-                 </Fragment>
+                    ))}
+                </Fragment>
               );
             })}
           </tbody>

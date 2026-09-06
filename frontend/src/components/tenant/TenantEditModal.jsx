@@ -1,8 +1,10 @@
 "use client";
 
-import { Box, Typography, TextField, CircularProgress, Grid, Autocomplete, Chip, InputAdornment, IconButton } from "@mui/material";
+import { Box, Typography, TextField, CircularProgress, Grid, Autocomplete, Chip, InputAdornment, IconButton, Button } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import ModalShell from "../ui/ModalShell";
 import DateField from "../ui/DateField";
 import MoneyField from "../ui/MoneyField";
@@ -24,6 +26,18 @@ export default function TenantEditModal({
   const updateCompanion = (i, field, value) => {
     const updated = [...companionFingerprints];
     updated[i] = { ...updated[i], [field]: value };
+    setCompanionFingerprints(updated);
+  };
+
+  const addCompanion = () => {
+    setCompanionFingerprints([
+      ...companionFingerprints,
+      { name: "", phone: "", cccd: "", relationship: "", fingerprintCode: "" },
+    ]);
+  };
+
+  const removeCompanion = (i) => {
+    const updated = companionFingerprints.filter((_, idx) => idx !== i);
     setCompanionFingerprints(updated);
   };
 
@@ -107,13 +121,32 @@ export default function TenantEditModal({
               </Grid>
             </Grid>
 
-            {companionFingerprints.length > 0 && (
-              <Box>
-                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+                <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>
                   Người đi kèm ({companionFingerprints.length})
                 </Typography>
-                {companionFingerprints.map((c, i) => (
-                  <Box key={c.id} sx={{ mb: 1.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
+                <Button size="small" startIcon={<AddIcon sx={{ fontSize: 16 }} />} onClick={addCompanion}
+                  sx={{ textTransform: "none", fontSize: "0.75rem", fontWeight: 700, color: "#2563eb", bgcolor: "#eff6ff", "&:hover": { bgcolor: "#dbeafe" }, borderRadius: "8px" }}>
+                  Thêm người đi kèm
+                </Button>
+              </Box>
+              {companionFingerprints.length === 0 ? (
+                <Box sx={{ p: 1.5, bgcolor: "#f8fafc", color: "#94a3b8", borderRadius: "12px", border: "1px dashed #cbd5e1", fontSize: "0.75rem", textAlign: "center", fontWeight: 600 }}>
+                  Chưa có người đi kèm. Bấm "Thêm người đi kèm" để thêm.
+                </Box>
+              ) : (
+                companionFingerprints.map((c, i) => (
+                  <Box key={c.id || `new-${i}`} sx={{ mb: 1.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#475569" }}>
+                        Người đi kèm #{i + 1}
+                      </Typography>
+                      <IconButton size="small" onClick={() => removeCompanion(i)} title="Xóa"
+                        sx={{ color: "#94a3b8", "&:hover": { color: "#e11d48", bgcolor: "#ffe4e6" } }}>
+                        <DeleteIcon sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Box>
                     <TextField fullWidth size="small" label="Họ tên" value={c.name || ""} required
                       onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={inputSx} />
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
@@ -129,9 +162,9 @@ export default function TenantEditModal({
                         onChange={(e) => updateCompanion(i, "fingerprintCode", e.target.value)} sx={inputSx} />
                     </Box>
                   </Box>
-                ))}
-              </Box>
-            )}
+                ))
+              )}
+            </Box>
 
             {furnitureList.length > 0 && (
               <Box>

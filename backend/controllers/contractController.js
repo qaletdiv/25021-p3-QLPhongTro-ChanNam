@@ -87,6 +87,42 @@ exports.updateContract = async (req, res, next) => {
 
         await contract.update(updateData);
 
+        if (companionFingerprints) {
+            const existingCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId, status: { [Op.ne]: 'ended' } } });
+            const incomingIds = companionFingerprints.filter(c => c.id).map(c => Number(c.id));
+            const toEnd = existingCompanions.filter(c => !incomingIds.includes(c.id));
+            for (const c of toEnd) {
+                await c.update({ status: 'ended', endedAt: new Date() });
+                if (c.fingerprintCode) {
+                    await logFingerprintRow({
+                        fingerprintCode: c.fingerprintCode, ownerType: 'companion', ownerId: c.id,
+                        ownerName: c.name, tenantId: contract.tenantId,
+                        roomId: logRoom.id, buildingId: logRoom.buildingId, landlordId: req.user.id,
+                        action: 'removed'
+                    });
+                }
+            }
+            const newOnes = companionFingerprints.filter(c => !c.id);
+            for (const nc of newOnes) {
+                const created = await Companion.create({
+                    tenantId: contract.tenantId,
+                    name: nc.name,
+                    phone: nc.phone || null,
+                    cccd: nc.cccd || null,
+                    relationship: nc.relationship || null,
+                    fingerprintCode: nc.fingerprintCode || null,
+                });
+                if (nc.fingerprintCode) {
+                    await logFingerprintRow({
+                        fingerprintCode: nc.fingerprintCode, ownerType: 'companion', ownerId: created.id,
+                        ownerName: nc.name, tenantId: contract.tenantId,
+                        roomId: logRoom.id, buildingId: logRoom.buildingId, landlordId: req.user.id,
+                        action: 'assigned'
+                    });
+                }
+            }
+        }
+
         await updateCompanionDetails(companionFingerprints);
 
         await logFingerprintReassign({
