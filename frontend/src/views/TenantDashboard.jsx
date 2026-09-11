@@ -119,11 +119,13 @@ export default function TenantDashboard({ data, settings, notifInit }) {
             size="small"
             value={activeContractIdx}
             onChange={(e) => setActiveContractIdx(Number(e.target.value))}
-            sx={{ minWidth: 200, ...inputSx }}
+            sx={{ minWidth: 180, ...inputSx }}
           >
             {contracts.map((c, idx) => (
               <MenuItem key={c.id} value={idx}>
-                Phòng {c.room?.room_number || "?"} - {c.room?.building?.name || "N/A"}
+                {c.room?.building?.name
+                  ? `${c.room.building.name} - Phòng ${c.room.room_number || "?"}`
+                  : `Phòng ${c.room?.room_number || "?"}`}
               </MenuItem>
             ))}
           </Select>
