@@ -88,7 +88,12 @@ exports.getUtilityUsage = async (req, res, next) => {
         const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
-        const contract = await findActiveContract(tenant.id);
+        const contractId = req.query.contractId || await findActiveContract(tenant.id);
+        if (!contractId) return res.json({ year: null, chartData: [] });
+
+        const contract = await Contract.findByPk(contractId, {
+            include: [{ model: Room, as: "room", include: [buildingInclude] }]
+        });
         if (!contract) return res.json({ year: null, chartData: [] });
 
         const start = new Date(contract.startDate);

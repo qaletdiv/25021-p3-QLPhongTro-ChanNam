@@ -69,6 +69,7 @@ export default function TenantDashboard({ data, settings, notifInit }) {
   const roomPrice = settings ? Number(settings.roomPrice || 0) : 0;
   const latestInvoice = contract?.invoices?.[0] || null;
   const calcTotal = latestInvoice ? Number(latestInvoice.total) || 0 : (hasContract ? roomPrice + serviceFee : 0);
+  const activeContractId = contract?.id;  // <-- Thêm dòng này
 
   const kindIcon = (kind) => kind === "invoice"
     ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />
@@ -141,6 +142,7 @@ export default function TenantDashboard({ data, settings, notifInit }) {
         roomPrice={roomPrice}
         hasContract={hasContract}
         companions={data?.companions || []}
+        contractId={activeContractId}  // <-- Thêm props này
       />
 
       <MessageDialog open={snack.open} severity={snack.severity} message={snack.message} onClose={() => setSnack({ ...snack, open: false })} />

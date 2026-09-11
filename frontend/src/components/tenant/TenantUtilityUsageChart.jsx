@@ -22,19 +22,19 @@ function ChartTooltip({ active, payload }) {
   );
 }
 
-export default function TenantUtilityUsageChart() {
+export default function TenantUtilityUsageChart({ contractId }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
-    tenantDashboardApi.getUtilityUsage()
+    tenantDashboardApi.getUtilityUsage({ contractId })
       .then((res) => { if (active) setData(res.data.chartData || []); })
       .catch(() => { if (active) setError("Không tải được dữ liệu điện nước. Vui lòng quay lại sau."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, []);
+  }, [contractId]);
 
   return (
     <Box className="reveal" sx={{ p: 3, borderRadius: t.radius.lg, border: `1px solid ${t.colors.hair}`, bgcolor: t.colors.surface, boxShadow: t.shadow.sm }}>
