@@ -29,7 +29,7 @@ export default function TenantUtilityUsageChart({ contractId }) {
 
   useEffect(() => {
     let active = true;
-    tenantDashboardApi.getUtilityUsage({ contractId })
+    tenantDashboardApi.getUtilityUsage(contractId)
       .then((res) => { if (active) setData(res.data.chartData || []); })
       .catch(() => { if (active) setError("Không tải được dữ liệu điện nước. Vui lòng quay lại sau."); })
       .finally(() => { if (active) setLoading(false); });

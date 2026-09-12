@@ -38,7 +38,7 @@ const MeterBox = ({ icon, title, unit, oldValue, photo, photoLabel, value, setVa
       </Button>
       <TextField fullWidth size="small" type="number" value={value} required
         onChange={(e) => setValue(Math.max(0, Number(e.target.value) || 0))}
-        inputProps={{ min: 0, step: 1 }}
+        slotProps={{ input: { inputProps: { min: 0, step: 1 } } }}
         placeholder={unit}
         sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 700 } }} />
     </Box>
