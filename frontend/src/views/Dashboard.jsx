@@ -116,8 +116,8 @@ export default function Dashboard({ stats, revenue, expiring }) {
               Không có thông báo nào.
             </Box>
           )}
-          {notifItems.map((item, idx) => (
-            <Box key={item.kind}>
+{notifItems.map((item, idx) => (
+  <Box key={item.targetId || item.kind || idx}>
               {idx > 0 && <Divider />}
               <MenuItem onClick={() => handleNotifClick(item.link)}
                 sx={{ py: 1.25, alignItems: "flex-start", gap: 1.25, whiteSpace: "normal" }}>
