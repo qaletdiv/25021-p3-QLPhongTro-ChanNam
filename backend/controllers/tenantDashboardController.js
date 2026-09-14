@@ -16,6 +16,8 @@ exports.getActiveContract = async (req, res, next) => {
   }
 };
 
+const buildingInclude = { model: Building, as: "building", attributes: ["id", "name", "address"] };
+
 exports.getDashboard = async (req, res, next) => {
     try {
         let tenant = await findTenantByUser(req.user.id);
@@ -25,8 +27,6 @@ exports.getDashboard = async (req, res, next) => {
             model: ContractFurniture, as: "contractFurnitures",
             include: [{ model: Furniture, as: "furniture" }]
         };
-
-        const buildingInclude = { model: Building, as: "building", attributes: ["id", "name", "address"] };
 
         const invoiceInclude = { model: Invoice, as: "invoices", required: false, order: [['createdAt', 'DESC']] };
 
