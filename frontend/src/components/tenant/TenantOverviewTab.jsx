@@ -170,7 +170,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
       </Box>
 
       {/* Utility usage chart */}
-      <TenantUtilityUsageChart />
+      <TenantUtilityUsageChart contractId={contract?.id} />
 
       {/* Notifications */}
       <Box className="reveal" sx={{ p: 3, borderRadius: t.radius.lg, border: `1px solid ${t.colors.hair}`, bgcolor: t.colors.surface, boxShadow: t.shadow.sm }}>
