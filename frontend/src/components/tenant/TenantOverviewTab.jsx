@@ -194,7 +194,7 @@ export default function TenantOverviewTab({ room, tenant, contract, daysLeft, no
                   <Typography sx={{ fontWeight: 700, color: t.colors.ink, fontSize: "0.75rem" }}>{n.title}</Typography>
                   <Typography sx={{ fontSize: "0.625rem", color: "#94a3b8", fontWeight: 500 }}>{n.createdAt ? formatDate(n.createdAt) : ""}</Typography>
                 </Box>
-                <Typography sx={{ fontSize: "0.6875rem", color: t.colors.muted, lineHeight: 1.6 }}>{n.content}</Typography>
+                <Typography sx={{ fontSize: "0.6875rem", color: t.colors.muted, lineHeight: 1.6 }}>{resolveContent(n.content)}</Typography>
               </Box>
             ))}
           </Box>
