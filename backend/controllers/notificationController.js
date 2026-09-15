@@ -55,53 +55,115 @@ exports.createNotification = async (req, res, next) => {
             });
         }
 
-        const notification = await Notification.create({
-            title, content, targetType,
-            targetRoomIds: targetRoomIds ? JSON.stringify(targetRoomIds.map(String)) : null,
-            sentAt: new Date(),
-            recipientCount: activeContracts.length,
-            status: 'sent',
-            landlordId: req.user.id
-        });
-
-        let delivered = 0;
-        let pushDelivered = 0;
+        const notifications = [];
+        const deliveredMap = {};
         const pushedUserIds = new Set();
-        for (const contract of activeContracts) {
-            const chatId = contract.tenant ? contract.tenant.telegramChatId : null;
-            if (chatId) {
-                const buildingId = contract.room ? contract.room.buildingId : null;
-                const text = telegram.formatMessage(content, {
-                    tenantName: contract.tenant.name,
-                    roomNumber: contract.room ? contract.room.room_number : "",
-                    totalAmount: contract.price != null ? contract.price : "",
-                    dueDate: contract.paymentDay ? `ngay ${contract.paymentDay}` : ""
+
+        if (targetType === 'specific_rooms' && targetRoomIds && targetRoomIds.length > 0) {
+            const roomContracts = {};
+            for (const contract of activeContracts) {
+                const rid = contract.roomId;
+                if (!roomContracts[rid]) roomContracts[rid] = [];
+                roomContracts[rid].push(contract);
+            }
+            for (const rid of Object.keys(roomContracts)) {
+                const roomContractsForRoom = roomContracts[rid];
+                const roomNumber = roomContractsForRoom[0]?.room?.room_number || "";
+                const resolvedContent = content.replace(/\{\{\s*MAPHONG\s*\}\}/g, roomNumber);
+                const resolvedTitle = title.replace(/\{\{\s*MAPHONG\s*\}\}/g, roomNumber);
+                const notif = await Notification.create({
+                    title: resolvedTitle, content: resolvedContent, targetType,
+                    targetRoomIds: JSON.stringify([String(rid)]),
+                    sentAt: new Date(),
+                    recipientCount: roomContractsForRoom.length,
+                    status: 'sent',
+                    landlordId: req.user.id
                 });
-                try {
-                    await telegram.sendMessage({ landlordId: req.user.id, buildingId, chatId, text });
-                    delivered += 1;
-                } catch (e) {
-                    console.error("Telegram send failed:", e.message);
+                notifications.push(notif);
+                deliveredMap[rid] = { delivered: 0, pushDelivered: 0 };
+                for (const contract of roomContractsForRoom) {
+                    const chatId = contract.tenant ? contract.tenant.telegramChatId : null;
+                    if (chatId) {
+                        const buildingId = contract.room ? contract.room.buildingId : null;
+                        const text = telegram.formatMessage(resolvedContent, {
+                            tenantName: contract.tenant.name,
+                            roomNumber,
+                            totalAmount: contract.price != null ? contract.price : "",
+                            dueDate: contract.paymentDay ? `ngay ${contract.paymentDay}` : ""
+                        });
+                        try {
+                            await telegram.sendMessage({ landlordId: req.user.id, buildingId, chatId, text });
+                            deliveredMap[rid].delivered += 1;
+                        } catch (e) {
+                            console.error("Telegram send failed:", e.message);
+                        }
+                    }
+                    if (contract.tenant && contract.tenant.userId && !pushedUserIds.has(contract.tenant.userId)) {
+                        pushedUserIds.add(contract.tenant.userId);
+                        try {
+                            const res2 = await push.sendToUser(contract.tenant.userId, {
+                                title: `Thông báo: ${resolvedTitle}`,
+                                body: resolvedContent.slice(0, 140),
+                                url: "/tenant/dashboard",
+                                roomNumber
+                            });
+                            deliveredMap[rid].pushDelivered += res2.delivered;
+                        } catch (e) {
+                            console.error("Push send failed:", e.message);
+                        }
+                    }
                 }
             }
-            // Web Push to the tenant's app subscription (one push per user across rooms).
-            if (contract.tenant && contract.tenant.userId && !pushedUserIds.has(contract.tenant.userId)) {
-                pushedUserIds.add(contract.tenant.userId);
-                try {
-                    const res2 = await push.sendToUser(contract.tenant.userId, {
-                        title: `Thông báo: ${title}`,
-                        body: content.slice(0, 140),
-                        url: "/tenant/dashboard",
-                        roomNumber: contract.room ? contract.room.room_number : ""
+        } else {
+            const notif = await Notification.create({
+                title, content, targetType,
+                targetRoomIds: targetRoomIds ? JSON.stringify(targetRoomIds.map(String)) : null,
+                sentAt: new Date(),
+                recipientCount: activeContracts.length,
+                status: 'sent',
+                landlordId: req.user.id
+            });
+            notifications.push(notif);
+            deliveredMap['all'] = { delivered: 0, pushDelivered: 0 };
+            for (const contract of activeContracts) {
+                const chatId = contract.tenant ? contract.tenant.telegramChatId : null;
+                if (chatId) {
+                    const buildingId = contract.room ? contract.room.buildingId : null;
+                    const roomNumber = contract.room ? contract.room.room_number : "";
+                    const text = telegram.formatMessage(content, {
+                        tenantName: contract.tenant.name,
+                        roomNumber,
+                        totalAmount: contract.price != null ? contract.price : "",
+                        dueDate: contract.paymentDay ? `ngay ${contract.paymentDay}` : ""
                     });
-                    pushDelivered += res2.delivered;
-                } catch (e) {
-                    console.error("Push send failed:", e.message);
+                    try {
+                        await telegram.sendMessage({ landlordId: req.user.id, buildingId, chatId, text });
+                        deliveredMap['all'].delivered += 1;
+                    } catch (e) {
+                        console.error("Telegram send failed:", e.message);
+                    }
+                }
+                if (contract.tenant && contract.tenant.userId && !pushedUserIds.has(contract.tenant.userId)) {
+                    pushedUserIds.add(contract.tenant.userId);
+                    try {
+                        const res2 = await push.sendToUser(contract.tenant.userId, {
+                            title: `Thông báo: ${title}`,
+                            body: content.slice(0, 140),
+                            url: "/tenant/dashboard",
+                            roomNumber: contract.room ? contract.room.room_number : ""
+                        });
+                        deliveredMap['all'].pushDelivered += res2.delivered;
+                    } catch (e) {
+                        console.error("Push send failed:", e.message);
+                    }
                 }
             }
         }
 
-        res.status(201).json({ message: "Tạo thông báo thành công", notification, delivered, pushDelivered });
+        const totalDelivered = Object.values(deliveredMap).reduce((s, d) => s + d.delivered, 0);
+        const totalPush = Object.values(deliveredMap).reduce((s, d) => s + d.pushDelivered, 0);
+
+        res.status(201).json({ message: "Tạo thông báo thành công", notifications, delivered: totalDelivered, pushDelivered: totalPush });
     } catch (error) {
         next(error);
     }
