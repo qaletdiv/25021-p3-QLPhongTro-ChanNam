@@ -8,9 +8,10 @@ const isAuthError = (reason) => {
   return status === 401 || status === 403;
 };
 
-export default async function TenantInvoicesPage() {
+export default async function TenantInvoicesPage({ searchParams }) {
+  const { contractId } = await searchParams;
   const results = await Promise.allSettled([
-    getTenantInvoices(),
+    getTenantInvoices(contractId),
     getTenantInvoiceSettings(),
     getTenantActiveContract(),
   ]);
@@ -28,6 +29,7 @@ export default async function TenantInvoicesPage() {
       initialInvoices={invRes?.data?.invoices || []}
       initialSettings={setRes?.data || null}
       hasRoom={hasRoom}
+      contractId={contractId}
     />
   );
 }

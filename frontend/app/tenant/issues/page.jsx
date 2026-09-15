@@ -8,8 +8,9 @@ const isAuthError = (reason) => {
   return status === 401 || status === 403;
 };
 
-export default async function TenantIssuesPage() {
-  const results = await Promise.allSettled([getTenantIssues(), getTenantActiveContract()]);
+export default async function TenantIssuesPage({ searchParams }) {
+  const { contractId } = await searchParams;
+  const results = await Promise.allSettled([getTenantIssues(contractId), getTenantActiveContract()]);
   if (results.some((r) => r.status === "rejected" && isAuthError(r.reason))) {
     redirect("/login/tenant");
   }

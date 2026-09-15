@@ -1,7 +1,8 @@
 const { Invoice, Contract, Room, Building } = require("../models");
 const storage = require("../services/storage/storage.service");
 const { getResolvedSettings } = require("../utils/settings");
-const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
+const { findTenantByUser } = require("../utils/tenantHelpers");
+const { resolveContract } = require("../utils/tenantHelpers");
 const { monthStr, nextMonthOf } = require("../utils/dates");
 const telegram = require("../utils/telegram");
 
@@ -12,10 +13,14 @@ exports.getInvoices = async (req, res, next) => {
         const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
+        const contractWhere = { tenantId: tenant.id };
+        const contractId = req.query.contractId;
+        if (contractId) contractWhere.id = contractId;
+
         const invoices = await Invoice.findAll({
             include: [{
                 model: Contract, as: "contract", required: true,
-                where: { tenantId: tenant.id }
+                where: contractWhere
             }],
             order: [['createdAt', 'DESC']]
         });
@@ -31,7 +36,7 @@ exports.getSettings = async (req, res, next) => {
         const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
-        const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room", include: [{ model: Building, as: "building", attributes: ["id", "name", "address"] }] }]);
+         const contract = await resolveContract(tenant.id, req.query.contractId, [{ model: Room, as: "room", include: [{ model: Building, as: "building", attributes: ["id", "name", "address"] }] }]);
         if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
         const settings = await getResolvedSettings(contract.room.landlordId, contract.room.buildingId);
@@ -60,7 +65,7 @@ exports.saveInitialReadings = async (req, res, next) => {
         const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
-        const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room" }]);
+        const contract = await resolveContract(tenant.id, req.query.contractId, [{ model: Room, as: "room" }]);
         if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
         const [elecRes, waterRes] = await Promise.all([
@@ -133,7 +138,7 @@ exports.submitMeter = async (req, res, next) => {
         const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
-        const contract = await findActiveContract(tenant.id, [{ model: Room, as: "room" }]);
+        const contract = await resolveContract(tenant.id, req.query.contractId, [{ model: Room, as: "room" }]);
         if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
         const lastInvoice = await Invoice.findOne({

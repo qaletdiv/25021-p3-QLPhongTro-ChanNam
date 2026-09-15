@@ -13,7 +13,7 @@ import { resizeImage } from "../utils/image";
 import { nextMonthLabel, nextMonthOf, formatCurrency } from "../utils/format";
 import { tokens as t } from "../design/tokens";
 
-export default function TenantInvoices({ initialInvoices = [], initialSettings = null, hasRoom = true }) {
+export default function TenantInvoices({ initialInvoices = [], initialSettings = null, hasRoom = true, contractId }) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [settings, setSettings] = useState(initialSettings);
   const [loading, setLoading] = useState(false);
@@ -31,8 +31,8 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
   const loadData = useCallback(() => {
     setLoading(true);
     return Promise.all([
-      tenantInvoiceApi.getInvoices(),
-      tenantInvoiceApi.getInvoiceSettings(),
+      tenantInvoiceApi.getInvoices(contractId),
+      tenantInvoiceApi.getInvoiceSettings(contractId),
     ])
       .then(([invRes, setRes]) => {
         setInvoices(invRes.data.invoices);
@@ -121,7 +121,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
         water: waterVal,
         electricityPhoto: elecPhoto,
         waterPhoto: waterPhoto,
-      });
+      }, contractId);
       setSubmitSuccess("Đã gửi chỉ số thành công! Hóa đơn đã được chốt.");
       setElecPhoto("");
       setWaterPhoto("");
@@ -134,7 +134,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
   };
 
   const handleSaveInitial = async (payload) => {
-    await tenantInvoiceApi.saveInitialReadings(payload);
+    await tenantInvoiceApi.saveInitialReadings(payload, contractId);
     setSnack({ open: true, message: "Đã lưu chỉ số ban đầu thành công", severity: "success" });
     await loadData();
   };

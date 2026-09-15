@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { Tenant, Contract, Room, Building, ContractFurniture, Furniture, Notification, Invoice, Companion } = require("../models");
-const { findTenantByUser, findActiveContract, findActiveContracts } = require("../utils/tenantHelpers");
+const { findTenantByUser, findActiveContract, findActiveContracts, resolveContract } = require("../utils/tenantHelpers");
 const { monthStr } = require("../utils/dates");
 
 // Lightweight check used by tenant pages (invoices, issues) to decide whether
@@ -88,19 +88,7 @@ exports.getUtilityUsage = async (req, res, next) => {
         const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
-        const requestedContractId = req.query.contractId;
-        let contract = null;
-
-        if (requestedContractId) {
-            contract = await Contract.findByPk(requestedContractId, {
-                include: [{ model: Room, as: "room", include: [buildingInclude] }]
-            });
-        } else {
-            // Fallback: use first active contract
-            const activeContract = await findActiveContract(tenant.id, [{ model: Room, as: "room", include: [buildingInclude] }]);
-            contract = activeContract;
-        }
-
+        const contract = await resolveContract(tenant.id, req.query.contractId, [{ model: Room, as: "room", include: [buildingInclude] }]);
         if (!contract) return res.json({ year: null, chartData: [] });
 
         const start = new Date(contract.startDate);

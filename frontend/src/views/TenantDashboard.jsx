@@ -22,6 +22,23 @@ export default function TenantDashboard({ data, settings, notifInit }) {
   const contracts = data?.contracts || [];
   const [activeContractIdx, setActiveContractIdx] = useState(0);
 
+  const contract = contracts.length > 0 ? contracts[activeContractIdx] : data?.contract;
+  const hasContract = !!contract;
+  const room = contract?.room;
+  const tenant = data?.tenant;
+  const notifications = data?.notifications || [];
+  const daysLeft = contract ? Math.max(0, Math.ceil((new Date(contract.endDate) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
+  const s = settings?.settings || {};
+  const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
+  const roomPrice = settings ? Number(settings.roomPrice || 0) : 0;
+  const latestInvoice = contract?.invoices?.[0] || null;
+  const calcTotal = latestInvoice ? Number(latestInvoice.total) || 0 : (hasContract ? roomPrice + serviceFee : 0);
+  const activeContractId = contract?.id;
+
+  useEffect(() => {
+    if (activeContractId) localStorage.setItem("selectedContractId", activeContractId);
+  }, [activeContractId]);
+
   useEffect(() => {
     let active = true;
     const loadNotifs = () => {
@@ -56,20 +73,6 @@ export default function TenantDashboard({ data, settings, notifInit }) {
     setNotifItems((prev) => prev.map((i) => ({ ...i, read: true })));
     setNotifCount(0);
   };
-
-  const contract = contracts.length > 0 ? contracts[activeContractIdx] : data?.contract;
-  const hasContract = !!contract;
-  const room = contract?.room;
-  const tenant = data?.tenant;
-  const notifications = data?.notifications || [];
-  const daysLeft = contract ? Math.max(0, Math.ceil((new Date(contract.endDate) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
-  const s = settings?.settings || {};
-  const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;
-  // No fake default price when there is no active contract/room.
-  const roomPrice = settings ? Number(settings.roomPrice || 0) : 0;
-  const latestInvoice = contract?.invoices?.[0] || null;
-  const calcTotal = latestInvoice ? Number(latestInvoice.total) || 0 : (hasContract ? roomPrice + serviceFee : 0);
-  const activeContractId = contract?.id;  // <-- Thêm dòng này
 
   const kindIcon = (kind) => kind === "invoice"
     ? <ReceiptIcon sx={{ fontSize: 18, color: "#2563eb" }} />

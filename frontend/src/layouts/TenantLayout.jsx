@@ -21,8 +21,8 @@ const drawerWidth = 260;
 
 const menuItems = [
   { label: "Trang chủ", icon: <HomeIcon />, path: "/tenant/dashboard" },
-  { label: "Hóa đơn", icon: <ReceiptIcon />, path: "/tenant/invoices" },
-  { label: "Báo hỏng", icon: <BuildIcon />, path: "/tenant/issues" },
+  { label: "Hóa đơn", icon: <ReceiptIcon />, path: "/tenant/invoices", hasContractId: true },
+  { label: "Báo hỏng", icon: <BuildIcon />, path: "/tenant/issues", hasContractId: true },
   { label: "Hồ sơ", icon: <PersonIcon />, path: "/tenant/profile" },
 ];
 
@@ -67,7 +67,15 @@ export default function TenantLayout({ children }) {
           return (
             <ListItemButton
               key={item.path} selected={selected}
-              onClick={() => { router.push(item.path); if (isMobile) setMobileOpen(false); }}
+              onClick={() => {
+                let target = item.path;
+                if (item.hasContractId) {
+                  const cid = localStorage.getItem("selectedContractId");
+                  if (cid) target += `?contractId=${cid}`;
+                }
+                router.push(target);
+                if (isMobile) setMobileOpen(false);
+              }}
               sx={{
                 borderRadius: t.radius.md, mb: 0.25, px: 1.5, py: 0.8,
                 "&.Mui-selected": { bgcolor: t.colors.accentSoft, "& .MuiListItemIcon-root": { color: t.colors.accent }, "& .MuiListItemText-primary": { color: t.colors.accent, fontWeight: 700 }, borderLeft: `3px solid ${t.colors.accent}` },

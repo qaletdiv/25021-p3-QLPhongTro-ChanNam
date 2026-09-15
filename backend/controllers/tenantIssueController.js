@@ -1,4 +1,4 @@
-const { Issue, Room } = require("../models");
+const { Issue, Room, Contract } = require("../models");
 const storage = require("../services/storage/storage.service");
 const { findTenantByUser, findActiveContract } = require("../utils/tenantHelpers");
 const telegram = require("../utils/telegram");
@@ -11,8 +11,15 @@ exports.getIssues = async (req, res, next) => {
         const tenant = await findTenantByUser(req.user.id);
         if (!tenant) return res.status(404).json({ message: "Không tìm thấy thông tin khách thuê" });
 
+        const where = { tenantId: tenant.id };
+        const contractId = req.query.contractId;
+        if (contractId) {
+            const contract = await Contract.findByPk(contractId, { attributes: ["roomId"] });
+            if (contract) where.roomId = contract.roomId;
+        }
+
         const issues = await Issue.findAll({
-            where: { tenantId: tenant.id },
+            where,
             include: [{ model: Room, as: "room", attributes: ["room_number"] }],
             order: [['createdAt', 'DESC']]
         });
