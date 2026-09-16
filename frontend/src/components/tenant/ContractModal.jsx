@@ -30,6 +30,11 @@ export default function ContractModal({
   const selectedBuildingId = selectedRoom?.buildingId
     ?? (contractForm.selectedBuilding ? Number(contractForm.selectedBuilding) : null)
     ?? (buildingFilter && buildingFilter !== "all" ? Number(buildingFilter) : null);
+  
+  const filteredRooms = selectedBuildingId
+    ? emptyRooms.filter((r) => r.buildingId === selectedBuildingId)
+    : emptyRooms;
+
   const availableTenants = tenants.filter((t) => {
     if (!t.user) return false;
     if (selectedBuildingId && t.buildingId && t.buildingId !== selectedBuildingId) return false;
@@ -73,22 +78,21 @@ export default function ContractModal({
 {/* Room Selection */}
            <Box>
              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", mb: 0.75 }}>Chọn Phòng Trống *</Typography>
-             {editContractId ? (
-               <Autocomplete
-                 fullWidth size="small" disabled={false}
-                 options={emptyRooms}
-                  getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - ${r.building?.name || "?"} - Giá: ${formatCurrency(r.price)}/tháng`}
-                 value={emptyRooms.find((r) => r.id === contractForm.roomId) || null}
-                 onChange={(e, room) => {
-                   setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room ? contractForm.paymentDay : 5) });
-                 }}
-                 renderInput={(params) => <TextField {...params} placeholder="-- Chọn phòng --" sx={inputSx} />}
-                 sx={inputSx}
-               />
-             ) : (
-               <Box sx={{ p: 2, bgcolor: "#fffbeb", color: "#92400e", borderRadius: "12px", border: "1px solid #fde68a", fontSize: "0.75rem", fontWeight: 700 }}>
-                 Vui lòng chọn nhà trọ trước để xem phòng trống.
-               </Box>
+             <Autocomplete
+               fullWidth size="small"
+               options={filteredRooms}
+               getOptionLabel={(r) => `Phòng ${r.room_number} - Tầng ${r.floor || "?"} (${r.area || "?"}m²) - ${r.building?.name || "?"} - Giá: ${formatCurrency(r.price)}/tháng`}
+               value={filteredRooms.find((r) => r.id === contractForm.roomId) || null}
+               onChange={(e, room) => {
+                 setContractForm({ ...contractForm, roomId: room ? room.id : "", deposit: room ? String(room.price) : contractForm.deposit, price: room ? String(room.price) : contractForm.price, paymentDay: paymentDayManuallyChanged.current ? contractForm.paymentDay : (room ? contractForm.paymentDay : 5) });
+               }}
+               renderInput={(params) => <TextField {...params} placeholder={filteredRooms.length === 0 ? "Không có phòng trống" : "-- Chọn phòng --"} sx={inputSx} />}
+               sx={inputSx}
+             />
+             {filteredRooms.length === 0 && (
+               <Typography sx={{ fontSize: "0.6875rem", color: "#92400e", mt: 0.5 }}>
+                 {selectedBuildingId ? "Không có phòng trống nào trong nhà trọ này." : "Hiện tại không có phòng trống nào khả dụng."}
+               </Typography>
              )}
            </Box>
 
