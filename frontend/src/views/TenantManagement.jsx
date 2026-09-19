@@ -57,7 +57,26 @@ export default function TenantManagement({ initialTenants = [], initialBuildings
           companionStatus={list.companionStatus}
           onEdit={tenantEditor.openEdit}
           onCheckout={checkout.openCheckoutConfirm}
-          onPrint={(id) => window.open(contractTemplateApi.getPdfUrl(id), "_blank")}
+          onPrint={(id) => {
+    fetch(contractTemplateApi.getPdfUrl(id))
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to generate PDF");
+        return response.blob();
+      })
+      .then((pdfBlob) => {
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `hop_dong_${id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Print error:", error);
+      });
+  }}
         />
       )}
 

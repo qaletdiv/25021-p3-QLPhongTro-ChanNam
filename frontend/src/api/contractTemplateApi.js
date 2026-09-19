@@ -1,7 +1,7 @@
 import { getTemplate, saveTemplate } from "../actions/contractTemplateActions";
 
 export function getPdfUrl(id) {
-  return `/api/contracts/${id}/pdf`;
+  return `/print/contract/${id}/pdf`;
 }
 
 const contractTemplateApi = {
