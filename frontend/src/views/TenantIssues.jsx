@@ -14,6 +14,7 @@ import TenantPageHeader from "../components/tenant/TenantPageHeader";
 import NoRoomNotice from "../components/tenant/NoRoomNotice";
 import tenantIssueApi from "../api/tenantIssueApi";
 import { resizeImage } from "../utils/image";
+import { resolveImageSrc } from "../utils/imageUrl";
 import { tokens as t } from "../design/tokens";
 
 const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
@@ -123,9 +124,9 @@ export default function TenantIssues({ initialIssues = [], hasRoom = true }) {
                   {issueImages.length > 0 ? (
                     <Box sx={{ display: "flex", gap: 0.75 }}>
                       {issueImages.slice(0, 3).map((img, idx) => (
-                        <Box key={idx} component="img" src={img} alt=""
+                        <Box key={idx} component="img" src={resolveImageSrc(img)} alt=""
                           sx={{ width: 44, height: 44, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", cursor: "zoom-in" }}
-                          onClick={() => window.open(img, "_blank")} />
+                          onClick={() => window.open(resolveImageSrc(img), "_blank")} />
                       ))}
                       {issueImages.length > 3 && (
                         <Typography sx={{ fontSize: "0.625rem", color: "#64748b", alignSelf: "center" }}>+{issueImages.length - 3}</Typography>

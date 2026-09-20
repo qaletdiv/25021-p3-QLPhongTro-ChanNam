@@ -4,12 +4,13 @@ import { Box, Typography, TextField, Paper, Button } from "@mui/material";
 import { VietQR } from "@viet-qr/react";
 import { formatCurrency } from "../../utils/format";
 import { resolveBankInfo } from "../../utils/vietqr";
+import { resolveImageSrc } from "../../utils/imageUrl";
 import { tokens as t } from "../../design/tokens";
 
 const PhotoPreview = ({ photo, label }) => (
   <Box sx={{ mt: 1.5, border: "1.5px dashed", borderColor: photo ? t.colors.accentHair : t.colors.hair, borderRadius: t.radius.md, p: 1, bgcolor: photo ? t.colors.accentSoft : "#fff", height: 200, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
     {photo ? (
-      <img src={photo} alt={label} style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 8 }} />
+      <img src={resolveImageSrc(photo)} alt={label} style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 8 }} />
     ) : (
       <Box sx={{ textAlign: "center", color: "#94a3b8" }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ margin: "0 auto 6px", display: "block" }}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>

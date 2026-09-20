@@ -8,6 +8,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import MessageDialog from "../components/MessageDialog";
 import issueApi from "../api/issueApi";
+import { resolveImageSrc } from "../utils/imageUrl";
 
 const statusLabel = { pending: "Chờ xử lý", resolved: "Đã xử lý" };
 
@@ -88,9 +89,9 @@ export default function IssueManagement({ initialIssues = [] }) {
                     {images.length > 0 ? (
                       <Box sx={{ display: "flex", gap: 0.75 }}>
                         {images.slice(0, 3).map((img, idx) => (
-                          <Box key={idx} component="img" src={img} alt=""
+                          <Box key={idx} component="img" src={resolveImageSrc(img)} alt=""
                             sx={{ width: 44, height: 44, objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0", cursor: "zoom-in" }}
-                            onClick={() => window.open(img, "_blank")} />
+                            onClick={() => window.open(resolveImageSrc(img), "_blank")} />
                         ))}
                       </Box>
                     ) : "-"}
