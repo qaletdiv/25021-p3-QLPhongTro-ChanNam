@@ -16,7 +16,9 @@ const registerSchema = z.object({
 });
 
 function firstError(parsed) {
-  return parsed.error.errors[0]?.message || 'Dữ liệu không hợp lệ';
+  // Zod v4 renamed `error.errors` -> `error.issues`; support both for safety.
+  const issues = parsed.error?.issues || parsed.error?.errors || [];
+  return issues[0]?.message || 'Dữ liệu không hợp lệ';
 }
 
 export async function loginFormAction(prevState, formData) {
