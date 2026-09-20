@@ -9,6 +9,7 @@ import DateField from "../ui/DateField";
 import MoneyField from "../ui/MoneyField";
 import { formatCurrency } from "../../utils/format";
 import { inputSx } from "../../utils/styles";
+import { buildCompanions } from "../../utils/contractFormBuilders";
 
 export default function ContractModal({
   open, editContractId, tenants, emptyRooms, buildingFilter, buildings,
@@ -19,7 +20,9 @@ export default function ContractModal({
   const [newCompanionName, setNewCompanionName] = useState("");
   const handleAddCompanion = () => {
     if (!newCompanionName.trim()) return;
-    setCompanionFingerprints([...companionFingerprints, { id: Date.now().toString(), name: newCompanionName, fingerprintCode: "" }]);
+    // Không gán id giả: người đi kèm chưa lưu phải để trống id để backend
+    // tạo bản ghi mới (id giả sẽ khiến backend update no-op và làm mất dữ liệu).
+    setCompanionFingerprints([...companionFingerprints, { name: newCompanionName, phone: "", cccd: "", relationship: "", fingerprintCode: "" }]);
     setNewCompanionName("");
   };
   if (!open) return null;
@@ -117,7 +120,7 @@ export default function ContractModal({
                     tenantPhone: t ? t.phone : "",
                     tenantEmail: t ? (t.user?.email || "") : "",
                   });
-                  setCompanionFingerprints(t?.companions?.map(c => ({ id: c.id, name: c.name, fingerprintCode: "" })) || []);
+                  setCompanionFingerprints(buildCompanions(t?.companions));
                 }}
                 disabled={!!editContractId}
                 renderInput={(params) => <TextField {...params} placeholder="-- Chọn khách --" />}
@@ -230,7 +233,7 @@ export default function ContractModal({
               <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>Mã Số Vân Tay Người Đi Kèm</Typography>
               {companionFingerprints.map((c, i) => (
                 <TextField
-                  key={c.id} fullWidth size="small"
+                  key={c.id || `new-${i}`} fullWidth size="small"
                   label={c.name}
                   value={c.fingerprintCode}
                   onChange={(e) => {

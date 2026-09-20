@@ -3,7 +3,7 @@ const storage = require("../services/storage/storage.service");
 const { getResolvedSettings } = require("../utils/settings");
 const { findTenantByUser } = require("../utils/tenantHelpers");
 const { resolveContract } = require("../utils/tenantHelpers");
-const { monthStr, nextMonthOf } = require("../utils/dates");
+const { monthStr, nextMonthOf, isFutureMonth } = require("../utils/dates");
 const telegram = require("../utils/telegram");
 
 const FRONTEND_URL = process.env.FRONTEND_URL;
@@ -149,6 +149,11 @@ exports.submitMeter = async (req, res, next) => {
         const month = lastInvoice
             ? nextMonthOf(lastInvoice.month)
             : monthStr(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+        // Không cho chốt hóa đơn vượt quá tháng hiện tại: chặn tình trạng gửi
+        // liên tục làm nhảy tháng tương lai (10, 11, 12...) và làm sai chỉ số nước/điện.
+        if (isFutureMonth(month)) {
+            return res.status(400).json({ message: "Không thể chốt hóa đơn cho tháng chưa tới." });
+        }
         const existing = await Invoice.findOne({ where: { contractId: contract.id, month } });
         if (existing) {
             return res.status(400).json({ message: "Hóa đơn tháng này đã tồn tại" });

@@ -8,19 +8,27 @@ import SearchIcon from "@mui/icons-material/Search";
 import MessageDialog from "../components/MessageDialog";
 import InvoiceTable from "../components/invoice/InvoiceTable";
 import PrintableInvoiceModal from "../components/invoice/PrintableInvoiceModal";
-import { currentMonthLabel } from "../utils/format";
 import invoiceApi from "../api/invoiceApi";
 import settingApi from "../api/settingApi";
 import buildingApi from "../api/buildingApi";
 
-const monthOptions = () => {
-  const options = [];
+const monthOptions = (invoices = []) => {
+  const set = new Set();
+  // 12 tháng gần nhất (bao gồm cả tháng tương lai gần nếu có dữ liệu)
   const d = new Date();
-  for (let i = 5; i >= 0; i--) {
+  for (let i = 0; i < 12; i++) {
     const m = new Date(d.getFullYear(), d.getMonth() - i, 1);
-    options.push(`${String(m.getMonth() + 1).padStart(2, "0")}/${m.getFullYear()}`);
+    set.add(`${String(m.getMonth() + 1).padStart(2, "0")}/${m.getFullYear()}`);
   }
-  return options;
+  // Bổ sung mọi tháng thực tế có trong dữ liệu (v.d. 10, 11, 12 do user submit)
+  for (const inv of invoices) {
+    if (inv?.month) set.add(inv.month);
+  }
+  return [...set].sort((a, b) => {
+    const [am, ay] = a.split("/").map(Number);
+    const [bm, by] = b.split("/").map(Number);
+    return (by * 12 + bm) - (ay * 12 + am);
+  });
 };
 
 export default function InvoiceManagement({ initialInvoices = [], initialBuildings = [], initialSettings = {} }) {
@@ -37,7 +45,7 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
     const s = sp.get("status");
     if (["all", "unpaid", "submitted", "paid"].includes(s)) setFilterStatus(s);
   }, []);
-  const [monthFilter, setMonthFilter] = useState(currentMonthLabel());
+  const [monthFilter, setMonthFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
 
@@ -49,7 +57,7 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
     // Không dùng Promise.all (fail-fast): nếu /settings hay /buildings lỗi cũng
     // không được làm mất danh sách hóa đơn đã tải được.
     const [invRes, setRes, bRes] = await Promise.allSettled([
-      invoiceApi.getAll({ month: monthFilter }),
+      invoiceApi.getAll(),
       settingApi.getAll(),
       buildingApi.getAll()
     ]);
@@ -61,9 +69,9 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
     if (setRes.status === "fulfilled") setSettings(setRes.value.data);
     if (bRes.status === "fulfilled") setBuildings(bRes.value.data.buildings || []);
     setLoading(false);
-  }, [monthFilter]);
+  }, []);
 
-  // Dữ liệu ban đầu được fetch server-side; chỉ refetch khi đổi tháng lọc
+  // Dữ liệu ban đầu được fetch server-side; chỉ refetch khi cần (mark paid, ...)
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) { mounted.current = true; return; }
@@ -73,6 +81,8 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
   const filteredInvoices = invoices.filter((inv) => {
     if (filterStatus === "unpaid") { if (inv.status !== "pending") return false; }
     else if (filterStatus !== "all" && inv.status !== filterStatus) return false;
+    // Lọc tháng ở client để dropdown luôn thấy đủ mọi tháng có dữ liệu
+    if (monthFilter !== "all" && inv.month !== monthFilter) return false;
     if (buildingFilter !== "all" && String(inv.contract?.room?.building?.id || "") !== buildingFilter) return false;
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -146,9 +156,10 @@ export default function InvoiceManagement({ initialInvoices = [], initialBuildin
               slotProps={{ input: { startAdornment: (<InputAdornment position="start"><CalendarMonthIcon sx={{ fontSize: 18, color: "#64748b" }} /></InputAdornment>) } }}
               sx={{ "& .MuiSelect-select": { py: 1.1, fontSize: "0.75rem", fontWeight: 600 } }}
             >
-              {monthOptions().map((m) => (
+              {monthOptions(invoices).map((m) => (
                 <MenuItem key={m} value={m}>Tháng {m}</MenuItem>
               ))}
+              <MenuItem value="all">Tất cả các tháng</MenuItem>
             </TextField>
           </Box>
 

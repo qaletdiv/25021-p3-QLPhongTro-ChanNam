@@ -30,3 +30,18 @@ export const nextMonthOf = (month) => {
   const year = mm === 12 ? yyyy + 1 : yyyy;
   return `${String(m).padStart(2, "0")}/${year}`;
 };
+
+// Chỉ số tháng tuyệt đối để so sánh (năm*12 + (tháng-1)).
+export const monthIndex = (month) => {
+  const [mm, yyyy] = String(month).split("/").map(Number);
+  if (!mm || !yyyy) return NaN;
+  return yyyy * 12 + (mm - 1);
+};
+
+// true nếu `month` nằm sau tháng hiện tại.
+export const isFutureMonth = (month) => {
+  const mIdx = monthIndex(month);
+  const refIdx = monthIndex(currentMonthLabel());
+  if (Number.isNaN(mIdx) || Number.isNaN(refIdx)) return false;
+  return mIdx > refIdx;
+};

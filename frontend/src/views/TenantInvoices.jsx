@@ -10,7 +10,7 @@ import TenantPageHeader from "../components/tenant/TenantPageHeader";
 import NoRoomNotice from "../components/tenant/NoRoomNotice";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
-import { nextMonthLabel, nextMonthOf, formatCurrency } from "../utils/format";
+import { nextMonthLabel, nextMonthOf, formatCurrency, isFutureMonth } from "../utils/format";
 import { tokens as t } from "../design/tokens";
 
 export default function TenantInvoices({ initialInvoices = [], initialSettings = null, hasRoom = true, contractId }) {
@@ -48,6 +48,9 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
 
   const lastInv = invoices.length > 0 ? invoices[0] : null;
   const formMonth = lastInv ? nextMonthOf(lastInv.month) : nextMonthLabel();
+  // Nếu tháng cần chốt tiếp theo vượt quá tháng hiện tại nghĩa là đã đóng đủ,
+  // không cho gửi tiếp (tránh tự tăng tháng lên tương lai).
+  const paidAhead = isFutureMonth(formMonth);
   const baseContract = settings?.contract;
   // Improved logic: new tenant if no invoices exist AND there's an active contract
   // This helps distinguish "new tenant starting fresh" vs "existing tenant with no recent invoices"
@@ -89,6 +92,10 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
     e.preventDefault();
     setWarningMsg("");
     setSubmitSuccess("");
+    if (paidAhead) {
+      setWarningMsg(`⚠ Bạn đã thanh toán đủ đến tháng hiện tại. Chưa tới kỳ chốt hóa đơn tháng ${formMonth}.`);
+      return;
+    }
     if (elecVal < 0 || waterVal < 0) {
       setWarningMsg("⚠ Chỉ số không được nhập số âm.");
       return;
@@ -185,6 +192,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
           handlePhotoUpload={handlePhotoUpload} handleMeterSubmit={handleMeterSubmit}
           getVietQRContent={getVietQRContent}
           submitting={submitting} elecPhoto={elecPhoto} waterPhoto={waterPhoto}
+          paidAhead={paidAhead}
         />
       )}
 

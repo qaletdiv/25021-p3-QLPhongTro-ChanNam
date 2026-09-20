@@ -188,7 +188,23 @@ exports.createContract = async (req, res, next) => {
             await tenant.update({ buildingId: room.buildingId });
         }
 
-        await updateCompanionDetails(companionFingerprints);
+        // Người đi kèm mới (không có id) phải được tạo bản ghi; người đã có id
+        // (ví dụ do khách tự đăng ký hoặc đã lưu trước đó) thì cập nhật.
+        // Gán id vừa tạo ngược lại object để phần log bên dưới có ownerId đúng.
+        const incomingCompanions = Array.isArray(companionFingerprints) ? companionFingerprints : [];
+        for (const nc of incomingCompanions) {
+            if (nc.id) continue;
+            const created = await Companion.create({
+                tenantId: contract.tenantId,
+                name: nc.name,
+                phone: nc.phone || null,
+                cccd: nc.cccd || null,
+                relationship: nc.relationship || null,
+                fingerprintCode: nc.fingerprintCode || null,
+            });
+            nc.id = created.id;
+        }
+        await updateCompanionDetails(incomingCompanions);
 
         if (furnitures && furnitures.length > 0) {
             const items = furnitures.map(f => ({ contractId: contract.id, furnitureId: f.furnitureId, quantity: f.quantity || 1 }));

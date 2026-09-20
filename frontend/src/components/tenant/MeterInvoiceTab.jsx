@@ -63,6 +63,7 @@ export default function MeterInvoiceTab({
   handlePhotoUpload, handleMeterSubmit,
   getVietQRContent,
   submitting, elecPhoto, waterPhoto,
+  paidAhead = false,
 }) {
   const s = settings?.settings || {};
 
@@ -79,6 +80,12 @@ export default function MeterInvoiceTab({
           </Box>
         </Box>
 
+        {paidAhead && (
+          <Box role="status" sx={{ p: 2, bgcolor: t.colors.accentSoft, color: t.colors.accent, fontSize: "0.75rem", fontWeight: 700, borderRadius: t.radius.md, border: `1px solid ${t.colors.accentHair}`, mb: 2, display: "flex", alignItems: "center", gap: 1.5 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.colors.accentStrong} strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Bạn đã đóng đủ đến tháng hiện tại. Chưa tới kỳ chốt hóa đơn tháng {monthStr}.</span>
+          </Box>
+        )}
         {warningMsg && (
           <Box role="alert" sx={{ p: 2, bgcolor: t.colors.amberSoft, color: "#92400e", fontSize: "0.75rem", fontWeight: 700, borderRadius: t.radius.md, border: `1px solid #fde68a`, mb: 2, display: "flex", alignItems: "center", gap: 1.5 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.colors.amber} strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -152,10 +159,10 @@ export default function MeterInvoiceTab({
               </Box>
             </Box>
 
-            <Button type="submit" form="meter-form" variant="contained" color="success" disabled={submitting}
+            <Button type="submit" form="meter-form" variant="contained" color="success" disabled={submitting || paidAhead}
               sx={{ width: "100%", py: 1.5, fontSize: "0.75rem", fontWeight: 700, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              {submitting ? "Đang gửi..." : "Thanh toán và gửi chỉ số"}
+              {submitting ? "Đang gửi..." : (paidAhead ? "Đã đóng đủ" : "Thanh toán và gửi chỉ số")}
             </Button>
           </Box>
         </Box>
