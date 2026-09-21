@@ -89,8 +89,12 @@ exports.updateContract = async (req, res, next) => {
 
         if (companionFingerprints) {
             const existingCompanions = await Companion.findAll({ where: { tenantId: contract.tenantId, status: { [Op.ne]: 'ended' } } });
-            const incomingIds = companionFingerprints.filter(c => c.id).map(c => Number(c.id));
-            const toEnd = existingCompanions.filter(c => !incomingIds.includes(c.id));
+            const existingIdSet = new Set(existingCompanions.map((c) => String(c.id)));
+            // Chỉ id thực sự có trong DB mới coi là giữ lại; id giả (Date.now()...) bị loại.
+            const keptIds = companionFingerprints
+                .filter((c) => c.id && existingIdSet.has(String(c.id)))
+                .map((c) => Number(c.id));
+            const toEnd = existingCompanions.filter(c => !keptIds.includes(c.id));
             for (const c of toEnd) {
                 await c.update({ status: 'ended', endedAt: new Date() });
                 if (c.fingerprintCode) {
@@ -102,7 +106,7 @@ exports.updateContract = async (req, res, next) => {
                     });
                 }
             }
-            const newOnes = companionFingerprints.filter(c => !c.id);
+            const newOnes = companionFingerprints.filter(c => !c.id || !existingIdSet.has(String(c.id)));
             for (const nc of newOnes) {
                 const created = await Companion.create({
                     tenantId: contract.tenantId,
@@ -112,6 +116,7 @@ exports.updateContract = async (req, res, next) => {
                     relationship: nc.relationship || null,
                     fingerprintCode: nc.fingerprintCode || null,
                 });
+                nc.id = created.id;
                 if (nc.fingerprintCode) {
                     await logFingerprintRow({
                         fingerprintCode: nc.fingerprintCode, ownerType: 'companion', ownerId: created.id,
@@ -188,12 +193,16 @@ exports.createContract = async (req, res, next) => {
             await tenant.update({ buildingId: room.buildingId });
         }
 
-        // Người đi kèm mới (không có id) phải được tạo bản ghi; người đã có id
-        // (ví dụ do khách tự đăng ký hoặc đã lưu trước đó) thì cập nhật.
+        // Người đi kèm: chỉ coi là "đã tồn tại" khi id thực sự có trong DB của
+        // đúng khách thuê này. Id giả (ví dụ Date.now() từ client cũ) sẽ được tạo mới.
         // Gán id vừa tạo ngược lại object để phần log bên dưới có ownerId đúng.
         const incomingCompanions = Array.isArray(companionFingerprints) ? companionFingerprints : [];
+        const existingIds = new Set(
+            (await Companion.findAll({ where: { tenantId: contract.tenantId }, attributes: ["id"] }))
+                .map((c) => String(c.id))
+        );
         for (const nc of incomingCompanions) {
-            if (nc.id) continue;
+            if (nc.id && existingIds.has(String(nc.id))) continue;
             const created = await Companion.create({
                 tenantId: contract.tenantId,
                 name: nc.name,

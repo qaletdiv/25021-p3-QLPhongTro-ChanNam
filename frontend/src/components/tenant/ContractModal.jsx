@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocomplete, Select, MenuItem, IconButton } from "@mui/material";
+import { Box, Typography, TextField, CircularProgress, Grid, Checkbox, Autocomplete, Select, MenuItem, IconButton, Button } from "@mui/material";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import ModalShell from "../ui/ModalShell";
 import DateField from "../ui/DateField";
 import MoneyField from "../ui/MoneyField";
@@ -17,13 +17,17 @@ export default function ContractModal({
   furnitureList, selectedFurnitures, setSelectedFurnitures,
   paymentDayManuallyChanged, contractLoading, onClose, onSave,
 }) {
-  const [newCompanionName, setNewCompanionName] = useState("");
-  const handleAddCompanion = () => {
-    if (!newCompanionName.trim()) return;
-    // Không gán id giả: người đi kèm chưa lưu phải để trống id để backend
-    // tạo bản ghi mới (id giả sẽ khiến backend update no-op và làm mất dữ liệu).
-    setCompanionFingerprints([...companionFingerprints, { name: newCompanionName, phone: "", cccd: "", relationship: "", fingerprintCode: "" }]);
-    setNewCompanionName("");
+  const addCompanion = () => {
+    setCompanionFingerprints([
+      ...companionFingerprints,
+      { name: "", phone: "", cccd: "", relationship: "", fingerprintCode: "" },
+    ]);
+  };
+  const removeCompanion = (i) => setCompanionFingerprints(companionFingerprints.filter((_, idx) => idx !== i));
+  const updateCompanion = (i, field, value) => {
+    const updated = [...companionFingerprints];
+    updated[i] = { ...updated[i], [field]: value };
+    setCompanionFingerprints(updated);
   };
   if (!open) return null;
 
@@ -227,51 +231,51 @@ export default function ContractModal({
             </Grid>
           </Grid>
 
-          {/* Companion Fingerprints */}
-          {companionFingerprints.length > 0 && (
-            <Box>
-              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a", mb: 1 }}>Mã Số Vân Tay Người Đi Kèm</Typography>
-              {companionFingerprints.map((c, i) => (
-                <TextField
-                  key={c.id || `new-${i}`} fullWidth size="small"
-                  label={c.name}
-                  value={c.fingerprintCode}
-                  onChange={(e) => {
-                    const updated = [...companionFingerprints];
-                    updated[i] = { ...updated[i], fingerprintCode: e.target.value };
-                    setCompanionFingerprints(updated);
-                  }}
-                  sx={{ mb: 0.75, ...inputSx }}
-                />
-              ))}
-              <Box sx={{ mt: 1, display: "flex", gap: 8 }}>
-                <TextField
-                  fullWidth size="small"
-                  placeholder="Tên người đi kèm"
-                  value={newCompanionName}
-                  onChange={(e) => setNewCompanionName(e.target.value)}
-                  sx={{ flex: 1, ...inputSx }}
-                />
-                <IconButton size="small" onClick={handleAddCompanion} sx={{ ...inputSx, mr: 0.5 }}>
-                  <AddIcon fontSize="small" />
-                </IconButton>
+          {/* Companions */}
+          <Box>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+              <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "#0f172a" }}>
+                Người đi kèm ({companionFingerprints.length})
+              </Typography>
+              <Button size="small" startIcon={<AddIcon sx={{ fontSize: 16 }} />} onClick={addCompanion}
+                sx={{ textTransform: "none", fontSize: "0.75rem", fontWeight: 700, color: "#2563eb", bgcolor: "#eff6ff", "&:hover": { bgcolor: "#dbeafe" }, borderRadius: "8px" }}>
+                Thêm người đi kèm
+              </Button>
+            </Box>
+            {companionFingerprints.length === 0 ? (
+              <Box sx={{ p: 1.5, bgcolor: "#f8fafc", color: "#94a3b8", borderRadius: "12px", border: "1px dashed #cbd5e1", fontSize: "0.75rem", textAlign: "center", fontWeight: 600 }}>
+                Chưa có người đi kèm. Bấm "Thêm người đi kèm" để thêm.
               </Box>
-            </Box>
-          )}
-          {companionFingerprints.length === 0 && (
-            <Box sx={{ mt: 1, display: "flex", gap: 8 }}>
-              <TextField
-                fullWidth size="small"
-                placeholder="Tên người đi kèm"
-                value={newCompanionName}
-                onChange={(e) => setNewCompanionName(e.target.value)}
-                sx={{ flex: 1, ...inputSx }}
-              />
-              <IconButton size="small" onClick={handleAddCompanion} sx={{ ...inputSx, mr: 0.5 }}>
-                <AddIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          )}
+            ) : (
+              companionFingerprints.map((c, i) => (
+                <Box key={c.id || `new-${i}`} sx={{ mb: 1.5, p: 1.5, bgcolor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Typography sx={{ fontSize: "0.6875rem", fontWeight: 700, color: "#475569" }}>
+                      Người đi kèm #{i + 1}
+                    </Typography>
+                    <IconButton size="small" onClick={() => removeCompanion(i)} title="Xóa"
+                      sx={{ color: "#94a3b8", "&:hover": { color: "#e11d48", bgcolor: "#ffe4e6" } }}>
+                      <DeleteIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Box>
+                  <TextField fullWidth size="small" label="Họ tên" value={c.name || ""} required
+                    onChange={(e) => updateCompanion(i, "name", e.target.value)} sx={inputSx} />
+                  <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
+                    <TextField fullWidth size="small" label="Số điện thoại" value={c.phone || ""}
+                      onChange={(e) => updateCompanion(i, "phone", e.target.value)} sx={inputSx} />
+                    <TextField fullWidth size="small" label="CCCD" value={c.cccd || ""}
+                      onChange={(e) => updateCompanion(i, "cccd", e.target.value)} sx={inputSx} />
+                  </Box>
+                  <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
+                    <TextField fullWidth size="small" label="Quan hệ" value={c.relationship || ""}
+                      onChange={(e) => updateCompanion(i, "relationship", e.target.value)} sx={inputSx} />
+                    <TextField fullWidth size="small" label="Vân tay" value={c.fingerprintCode || ""}
+                      onChange={(e) => updateCompanion(i, "fingerprintCode", e.target.value)} sx={inputSx} />
+                  </Box>
+                </Box>
+              ))
+            )}
+          </Box>
 
           {/* Furniture Selection */}
           {furnitureList.length > 0 && (
