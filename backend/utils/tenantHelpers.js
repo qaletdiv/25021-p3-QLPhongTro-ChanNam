@@ -16,5 +16,5 @@ exports.resolveContract = async (tenantId, contractId, include) => {
         });
         if (contract) return contract;
     }
-    return findActiveContract(tenantId, include);
+    return exports.findActiveContract(tenantId, include);
 };
