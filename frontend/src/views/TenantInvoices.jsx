@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Box, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import MessageDialog from "../components/MessageDialog";
 import MeterInvoiceTab from "../components/tenant/MeterInvoiceTab";
@@ -10,7 +10,7 @@ import TenantPageHeader from "../components/tenant/TenantPageHeader";
 import NoRoomNotice from "../components/tenant/NoRoomNotice";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
-import { nextMonthLabel, nextMonthOf, formatCurrency, isFutureMonth } from "../utils/format";
+import { nextMonthLabel, nextMonthOf, currentMonthLabel, monthIndex, isFutureMonth, formatCurrency } from "../utils/format";
 import { tokens as t } from "../design/tokens";
 
 export default function TenantInvoices({ initialInvoices = [], initialSettings = null, hasRoom = true, contractId }) {
@@ -46,20 +46,46 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
 
   // Dữ liệu ban đầu được fetch server-side; loadData chỉ dùng sau khi gửi chỉ số
 
-  const lastInv = invoices.length > 0 ? invoices[0] : null;
-  const formMonth = lastInv ? nextMonthOf(lastInv.month) : nextMonthLabel();
+  // Tháng lớn nhất theo giá trị tháng (không phải theo createdAt) — hoá đơn có
+  // thể được tạo lệch thứ tự nên không thể tin vào invoices[0].
+  const latestMonth = invoices.reduce((max, inv) => {
+    if (!inv?.month) return max;
+    if (!max) return inv.month;
+    return monthIndex(inv.month) > monthIndex(max) ? inv.month : max;
+  }, null);
+  // Tháng kế tiếp cần đóng (đóng tuần tự để chỉ số điện/nước liền mạch).
+  const formMonth = latestMonth ? nextMonthOf(latestMonth) : nextMonthLabel();
   // Nếu tháng cần chốt tiếp theo vượt quá tháng hiện tại nghĩa là đã đóng đủ,
   // không cho gửi tiếp (tránh tự tăng tháng lên tương lai).
   const paidAhead = isFutureMonth(formMonth);
+  // Tháng đã đóng đủ đến hiện tại: các tháng từ formMonth đến tháng hiện tại là
+  // các tháng còn nợ, nhưng bắt buộc đóng lần lượt nên chỉ chọn được formMonth.
+  const owingMonths = (!paidAhead)
+    ? (() => {
+        const list = [];
+        let m = formMonth;
+        const cur = currentMonthLabel();
+        while (monthIndex(m) <= monthIndex(cur)) {
+          list.push(m);
+          m = nextMonthOf(m);
+        }
+        return list;
+      })()
+    : [];
+  const [selectedMonth, setSelectedMonth] = useState(formMonth);
+  // Khi dữ liệu hoá đơn thay đổi (sau khi gửi), tháng cần đóng tiếp theo đổi theo.
+  useEffect(() => { setSelectedMonth(formMonth); }, [formMonth]);
   const baseContract = settings?.contract;
   // Improved logic: new tenant if no invoices exist AND there's an active contract
   // This helps distinguish "new tenant starting fresh" vs "existing tenant with no recent invoices"
   const hasActiveContract = baseContract && baseContract.status === "active";
   const isNewTenant = invoices.length === 0 && hasActiveContract;
 
+  const latestInv = invoices.find((inv) => inv.month === latestMonth) || null;
+
   const contract = {
-    lastElectricity: lastInv ? Number(lastInv.electricityNew) || 0 : (baseContract ? Number(baseContract.initialElectricity) || 0 : 0),
-    lastWater: lastInv ? Number(lastInv.waterNew) || 0 : (baseContract ? Number(baseContract.initialWater) || 0 : 0),
+    lastElectricity: latestInv ? Number(latestInv.electricityNew) || 0 : (baseContract ? Number(baseContract.initialElectricity) || 0 : 0),
+    lastWater: latestInv ? Number(latestInv.waterNew) || 0 : (baseContract ? Number(baseContract.initialWater) || 0 : 0),
   };
   const room = settings?.room;
   const s = settings?.settings || {};
@@ -96,6 +122,10 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
       setWarningMsg(`⚠ Bạn đã thanh toán đủ đến tháng hiện tại. Chưa tới kỳ chốt hóa đơn tháng ${formMonth}.`);
       return;
     }
+    if (monthIndex(selectedMonth) !== monthIndex(formMonth)) {
+      setWarningMsg(`⚠ Vui lòng đóng đủ tháng ${formMonth} trước.`);
+      return;
+    }
     if (elecVal < 0 || waterVal < 0) {
       setWarningMsg("⚠ Chỉ số không được nhập số âm.");
       return;
@@ -128,6 +158,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
         water: waterVal,
         electricityPhoto: elecPhoto,
         waterPhoto: waterPhoto,
+        month: selectedMonth,
       }, contractId);
       setSubmitSuccess("Đã gửi chỉ số thành công! Hóa đơn đã được chốt.");
       setElecPhoto("");
@@ -147,7 +178,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
   };
 
   const getVietQRContent = () => {
-    return `Thanh toan phong ${room?.room_number || ""} thang ${formMonth}`;
+    return `Thanh toan phong ${room?.room_number || ""} thang ${selectedMonth}`;
   };
 
   if (loading) return <CircularProgress />;
@@ -183,7 +214,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
         />
       ) : (
         <MeterInvoiceTab
-          contract={contract} settings={settings} monthStr={formMonth}
+          contract={contract} settings={settings} monthStr={selectedMonth}
           elecVal={elecVal} setElecVal={setElecVal} waterVal={waterVal} setWaterVal={setWaterVal}
           warningMsg={warningMsg} submitSuccess={submitSuccess}
           calcElecUsage={calcElecUsage} calcWaterUsage={calcWaterUsage}
@@ -193,6 +224,8 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
           getVietQRContent={getVietQRContent}
           submitting={submitting} elecPhoto={elecPhoto} waterPhoto={waterPhoto}
           paidAhead={paidAhead}
+          payableMonths={owingMonths} nextPayableMonth={formMonth}
+          selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth}
         />
       )}
 

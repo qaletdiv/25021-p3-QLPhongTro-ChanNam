@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography, TextField, Paper, Button } from "@mui/material";
+import { Box, Typography, TextField, Paper, Button, MenuItem } from "@mui/material";
 import { VietQR } from "@viet-qr/react";
 import { formatCurrency } from "../../utils/format";
 import { resolveBankInfo } from "../../utils/vietqr";
@@ -64,6 +64,7 @@ export default function MeterInvoiceTab({
   getVietQRContent,
   submitting, elecPhoto, waterPhoto,
   paidAhead = false,
+  payableMonths = [], nextPayableMonth, selectedMonth, setSelectedMonth,
 }) {
   const s = settings?.settings || {};
 
@@ -79,6 +80,29 @@ export default function MeterInvoiceTab({
             </Typography>
           </Box>
         </Box>
+
+        {!paidAhead && payableMonths.length > 1 && (
+          <Box sx={{ mb: 3 }}>
+            <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: t.colors.ink, mb: 0.75 }}>
+              Chọn tháng muốn đóng
+            </Typography>
+            <TextField
+              select fullWidth size="small"
+              value={selectedMonth || nextPayableMonth || ""}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 700 } }}
+            >
+              {payableMonths.map((m) => (
+                <MenuItem key={m} value={m} disabled={m !== nextPayableMonth}>
+                  Tháng {m}{m !== nextPayableMonth ? " (cần đóng tháng trước)" : ""}
+                </MenuItem>
+              ))}
+            </TextField>
+            <Typography sx={{ fontSize: "0.6875rem", color: t.colors.muted, fontWeight: 500, mt: 0.75 }}>
+              Phải đóng tuần tự để tính đúng tiền điện/nước. Bạn còn {payableMonths.length} tháng chưa đóng.
+            </Typography>
+          </Box>
+        )}
 
         {paidAhead && (
           <Box role="status" sx={{ p: 2, bgcolor: t.colors.accentSoft, color: t.colors.accent, fontSize: "0.75rem", fontWeight: 700, borderRadius: t.radius.md, border: `1px solid ${t.colors.accentHair}`, mb: 2, display: "flex", alignItems: "center", gap: 1.5 }}>

@@ -3,7 +3,7 @@ const storage = require("../services/storage/storage.service");
 const { getResolvedSettings } = require("../utils/settings");
 const { findTenantByUser } = require("../utils/tenantHelpers");
 const { resolveContract } = require("../utils/tenantHelpers");
-const { monthStr, nextMonthOf, isFutureMonth } = require("../utils/dates");
+const { monthStr, nextMonthOf, isFutureMonth, monthIndex } = require("../utils/dates");
 const telegram = require("../utils/telegram");
 
 const FRONTEND_URL = process.env.FRONTEND_URL;
@@ -127,7 +127,7 @@ exports.saveInitialReadings = async (req, res, next) => {
 
 exports.submitMeter = async (req, res, next) => {
     try {
-        const { electricity, water, electricityPhoto, waterPhoto } = req.body;
+        const { electricity, water, electricityPhoto, waterPhoto, month: requestedMonth } = req.body;
         if (electricity === undefined || water === undefined) {
             return res.status(400).json({ message: "Thiếu chỉ số điện/nước" });
         }
@@ -141,18 +141,34 @@ exports.submitMeter = async (req, res, next) => {
         const contract = await resolveContract(tenant.id, req.query.contractId, [{ model: Room, as: "room" }]);
         if (!contract) return res.status(404).json({ message: "Không có hợp đồng hoạt động" });
 
-        const lastInvoice = await Invoice.findOne({
+        // Lấy hóa đơn có tháng LỚN NHẤT (không phải createdAt) để xác định tháng
+        // kế tiếp cần đóng; tránh việc sửa/thêm bản ghi làm sai thứ tự.
+        const allInvoices = await Invoice.findAll({
             where: { contractId: contract.id },
-            order: [['createdAt', 'DESC']]
+            attributes: ["month", "electricityNew", "waterNew"]
         });
+        const latestInvoice = allInvoices.reduce((max, inv) => {
+            if (!max) return inv;
+            return monthIndex(inv.month) > monthIndex(max.month) ? inv : max;
+        }, null);
+
         const now = new Date();
-        const month = lastInvoice
-            ? nextMonthOf(lastInvoice.month)
+        const nextPayable = latestInvoice
+            ? nextMonthOf(latestInvoice.month)
             : monthStr(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+        const month = requestedMonth || nextPayable;
+
         // Không cho chốt hóa đơn vượt quá tháng hiện tại: chặn tình trạng gửi
         // liên tục làm nhảy tháng tương lai (10, 11, 12...) và làm sai chỉ số nước/điện.
         if (isFutureMonth(month)) {
             return res.status(400).json({ message: "Không thể chốt hóa đơn cho tháng chưa tới." });
+        }
+        // Chỉ cho đóng đúng tháng kế tiếp: bắt buộc đóng tuần tự để chỉ số điện/nước
+        // luôn liền mạch (không nhảy cách tháng gây sai tiền nước).
+        if (monthIndex(month) !== monthIndex(nextPayable)) {
+            return res.status(400).json({
+                message: `Vui lòng đóng đủ các tháng trước. Tháng cần đóng tiếp theo là ${nextPayable}.`
+            });
         }
         const existing = await Invoice.findOne({ where: { contractId: contract.id, month } });
         if (existing) {
@@ -165,8 +181,9 @@ exports.submitMeter = async (req, res, next) => {
         const serviceFee = settings.serviceFee !== undefined && settings.serviceFee !== "" ? Number(settings.serviceFee) || 0 : 0;
         const roomPrice = Number(contract.room.price) || 0;
 
-        const elecOld = lastInvoice ? Number(lastInvoice.electricityNew) : (Number(contract.initialElectricity) || 0);
-        const waterOld = lastInvoice ? Number(lastInvoice.waterNew) : (Number(contract.initialWater) || 0);
+        // Chỉ số cũ lấy từ hóa đơn của tháng liền trước (theo thứ tự tháng).
+        const elecOld = latestInvoice ? Number(latestInvoice.electricityNew) : (Number(contract.initialElectricity) || 0);
+        const waterOld = latestInvoice ? Number(latestInvoice.waterNew) : (Number(contract.initialWater) || 0);
         const elecNew = Number(electricity);
         const waterNew = Number(water);
 
