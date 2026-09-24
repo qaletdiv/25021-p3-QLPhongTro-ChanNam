@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Box, Badge, IconButton, Menu, MenuItem, Divider, Typography, Button, Select } from "@mui/material";
 import { useRouter } from "next/navigation";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -11,6 +11,24 @@ import TenantOverviewTab from "../components/tenant/TenantOverviewTab";
 import { currentMonthLabel } from "../utils/format";
 import tenantNotificationApi from "../api/tenantNotificationApi";
 import { inputSx } from "../utils/styles";
+
+// Lọc thông báo theo phòng đang chọn (hỗ trợ nhiều phòng active cùng lúc).
+// - specific_rooms: n.matchedRoomIds chứa roomId hợp đồng này (từ backend)
+// - broadcast ('all'): hiển thị nếu createdAt >= startDate của hợp đồng
+function matchNotificationsForRoom(allNots, roomId, contractStartDate) {
+  if (!Array.isArray(allNots)) return [];
+  if (roomId == null) return [];
+  return allNots.filter((n) => {
+    const roomOk = Array.isArray(n.matchedRoomIds) && n.matchedRoomIds.includes(Number(roomId));
+    if (!roomOk) return false;
+    if (n.targetType === 'all') {
+      const startDate = contractStartDate ? new Date(contractStartDate) : null;
+      const created = n.createdAt ? new Date(n.createdAt) : null;
+      return startDate && created ? created >= startDate : true;
+    }
+    return true;
+  });
+}
 
 export default function TenantDashboard({ data, settings, notifInit }) {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "success" });
@@ -26,7 +44,10 @@ export default function TenantDashboard({ data, settings, notifInit }) {
   const hasContract = !!contract;
   const room = contract?.room;
   const tenant = data?.tenant;
-  const notifications = data?.notifications || [];
+  const notifications = useMemo(
+    () => matchNotificationsForRoom(data?.notifications || [], room?.id, contract?.startDate),
+    [data?.notifications, room?.id, contract?.startDate]
+  );
   const daysLeft = contract ? Math.max(0, Math.ceil((new Date(contract.endDate) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
   const s = settings?.settings || {};
   const serviceFee = s.serviceFee !== undefined && s.serviceFee !== "" ? Number(s.serviceFee) || 0 : 0;

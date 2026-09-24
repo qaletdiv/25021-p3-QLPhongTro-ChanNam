@@ -54,23 +54,44 @@ exports.getDashboard = async (req, res, next) => {
             }
         }
 
+        // Khách có thể thuê NHIỀU PHÒNG cùng lúc / nối tiếp nhau. Các hợp đồng luôn
+        // sắp xếp theo startDate giảm dần để phòng mới nhất là hợp đồng mặc định
+        // (trước đây lấy contracts[0] = hợp đồng cũ nhất -> vào phòng mới vẫn thấy
+        // thông báo của phòng cũ).
+        contracts.sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
         const contract = contracts[0] || null;
+
+        // Gom roomId theo landlord của TẤT CẢ hợp đồng active để thông báo
+        // 'all' của landlord nào cũng chỉ hiện với khách đang có phòng ở đó,
+        // và mỗi notification mang matchedRoomIds để UI lọc đúng theo phòng đang chọn.
+        const roomIdsByLandlord = {};
+        for (const c of contracts) {
+            const lid = c.room?.landlordId;
+            if (lid == null || c.roomId == null) continue;
+            (roomIdsByLandlord[lid] ??= new Set()).add(String(c.roomId));
+        }
+        const landlordIds = Object.keys(roomIdsByLandlord).map(Number);
 
         let notifications = [];
         let companions = [];
-        if (contract) {
-            notifications = await Notification.findAll({
-                where: {
-                    landlordId: contract.room.landlordId,
-                    status: 'sent',
-                    [Op.or]: [
-                        { targetType: 'all' },
-                        { targetType: 'specific_rooms', targetRoomIds: { [Op.like]: `%"${contract.roomId}"%` } }
-                    ]
-                },
+        if (landlordIds.length > 0) {
+            const sent = await Notification.findAll({
+                where: { landlordId: { [Op.in]: landlordIds }, status: 'sent' },
                 order: [['createdAt', 'DESC']],
-                limit: 20
+                limit: 50
             });
+            notifications = sent
+                .map(n => {
+                    const mine = roomIdsByLandlord[n.landlordId] || new Set();
+                    let targets = null;
+                    try { targets = n.targetRoomIds ? JSON.parse(n.targetRoomIds) : null; } catch { /* coi như broadcast */ }
+                    const matched = !Array.isArray(targets) || targets.length === 0
+                        ? [...mine].map(Number)
+                        : targets.filter(r => mine.has(String(r))).map(Number);
+                    return { ...n.toJSON(), matchedRoomIds: matched };
+                });
+        }
+        if (contract) {
             companions = await Companion.findAll({
                 where: { tenantId: contract.tenantId, status: 'active' },
                 order: [["createdAt", "ASC"]]
