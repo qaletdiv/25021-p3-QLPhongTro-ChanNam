@@ -45,7 +45,10 @@ exports.getSettings = async (req, res, next) => {
             settings,
             roomPrice: contract.room.price,
             room: contract.room,
-            contract
+            contract,
+            // Tháng hiện tại theo giờ server — frontend dùng làm mốc chọn tháng
+            // thay vì đồng hồ máy người dùng (QA BUG_012: fake time máy không chuẩn).
+            serverMonth: monthStr(new Date())
         });
     } catch (error) {
         next(error);
@@ -155,7 +158,10 @@ exports.submitMeter = async (req, res, next) => {
         const now = new Date();
         const nextPayable = latestInvoice
             ? nextMonthOf(latestInvoice.month)
-            : monthStr(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+            : monthStr(now);
+        if (requestedMonth && !/^\d{2}\/\d{4}$/.test(String(requestedMonth))) {
+            return res.status(400).json({ message: "Định dạng tháng không hợp lệ (MM/YYYY)" });
+        }
         const month = requestedMonth || nextPayable;
 
         // Không cho chốt hóa đơn vượt quá tháng hiện tại: chặn tình trạng gửi

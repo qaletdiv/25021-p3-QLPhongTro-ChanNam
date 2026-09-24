@@ -10,7 +10,7 @@ import TenantPageHeader from "../components/tenant/TenantPageHeader";
 import NoRoomNotice from "../components/tenant/NoRoomNotice";
 import tenantInvoiceApi from "../api/tenantInvoiceApi";
 import { resizeImage } from "../utils/image";
-import { nextMonthLabel, nextMonthOf, currentMonthLabel, monthIndex, isFutureMonth, formatCurrency } from "../utils/format";
+import { nextMonthOf, currentMonthLabel, monthIndex, isFutureMonth, formatCurrency } from "../utils/format";
 import { tokens as t } from "../design/tokens";
 
 export default function TenantInvoices({ initialInvoices = [], initialSettings = null, hasRoom = true, contractId }) {
@@ -54,24 +54,39 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
     return monthIndex(inv.month) > monthIndex(max) ? inv.month : max;
   }, null);
   // Tháng kế tiếp cần đóng (đóng tuần tự để chỉ số điện/nước liền mạch).
-  const formMonth = latestMonth ? nextMonthOf(latestMonth) : nextMonthLabel();
+  // Mốc "tháng hiện tại" lấy từ server giờ để đồng bộ, tránh fake time trên máy
+  // người dùng (QA BUG_012). currentMonthRef là 'MM/YYYY' do backend trả.
+  const currentMonthRef = settings?.serverMonth || currentMonthLabel();
+  const formMonth = latestMonth ? nextMonthOf(latestMonth) : currentMonthRef;
   // Nếu tháng cần chốt tiếp theo vượt quá tháng hiện tại nghĩa là đã đóng đủ,
   // không cho gửi tiếp (tránh tự tăng tháng lên tương lai).
-  const paidAhead = isFutureMonth(formMonth);
-  // Tháng đã đóng đủ đến hiện tại: các tháng từ formMonth đến tháng hiện tại là
-  // các tháng còn nợ, nhưng bắt buộc đóng lần lượt nên chỉ chọn được formMonth.
-  const owingMonths = (!paidAhead)
-    ? (() => {
-        const list = [];
-        let m = formMonth;
-        const cur = currentMonthLabel();
-        while (monthIndex(m) <= monthIndex(cur)) {
-          list.push(m);
-          m = nextMonthOf(m);
-        }
-        return list;
-      })()
-    : [];
+  const paidAhead = isFutureMonth(formMonth, currentMonthRef);
+  // Danh sách tháng để user "quản lý" trên dropdown: từ tháng đã đóng gần nhất
+  // đến tháng hiện tại. Mỗi tháng kèm trạng thái + cờ chọn được.
+  // Quy tắc: chỉ được đóng TUẦN TỰ, nên chỉ month cần đóng kế tiếp (formMonth)
+  // là chọn được; các tháng sau nó bị khóa (phải đóng tháng trước để tính đúng
+  // chỉ số điện/nước) — đúng ý QA "báo lỗi/không cho chọn".
+  const invoiceByMonth = invoices.reduce((acc, inv) => { acc[inv.month] = inv; return acc; }, {});
+  // Liệt kê mọi tháng từ kỳ đã đóng gần nhất đến tháng hiện tại; mỗi tháng mang
+  // 1 trạng thái: paid/submitted (đã có hoá đơn) | due (formMonth, chọn được) |
+  // locked (sau formMonth — phải đóng tuần tự để chỉ số điện/nước đúng).
+  // QA 22/09: "nên show dropdown để chọn tháng muốn tạo hoá đơn".
+  const monthChoices = (() => {
+    const list = [];
+    const currentMonth = currentMonthRef;
+    const start = latestMonth || formMonth;
+    let cur = start;
+    while (cur && monthIndex(cur) <= monthIndex(currentMonth)) {
+      const inv = invoiceByMonth[cur];
+      let status;
+      if (inv) status = inv.status === "paid" ? "paid" : "submitted";
+      else if (monthIndex(cur) === monthIndex(formMonth)) status = "due";
+      else status = "locked";
+      list.push({ month: cur, status, selectable: status === "due" });
+      cur = nextMonthOf(cur);
+    }
+    return list.reverse(); // tháng mới nhất lên đầu
+  })();
   const [selectedMonth, setSelectedMonth] = useState(formMonth);
   // Khi dữ liệu hoá đơn thay đổi (sau khi gửi), tháng cần đóng tiếp theo đổi theo.
   useEffect(() => { setSelectedMonth(formMonth); }, [formMonth]);
@@ -224,7 +239,7 @@ export default function TenantInvoices({ initialInvoices = [], initialSettings =
           getVietQRContent={getVietQRContent}
           submitting={submitting} elecPhoto={elecPhoto} waterPhoto={waterPhoto}
           paidAhead={paidAhead}
-          payableMonths={owingMonths} nextPayableMonth={formMonth}
+          monthChoices={monthChoices} nextPayableMonth={formMonth}
           selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth}
         />
       )}

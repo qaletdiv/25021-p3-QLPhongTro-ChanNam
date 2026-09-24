@@ -38,10 +38,10 @@ export const monthIndex = (month) => {
   return yyyy * 12 + (mm - 1);
 };
 
-// true nếu `month` nằm sau tháng hiện tại.
-export const isFutureMonth = (month) => {
+// true nếu `month` nằm sau mốc ref (mặc định = tháng hiện tại của máy).
+export const isFutureMonth = (month, ref) => {
   const mIdx = monthIndex(month);
-  const refIdx = monthIndex(currentMonthLabel());
+  const refIdx = ref !== undefined ? monthIndex(ref) : monthIndex(currentMonthLabel());
   if (Number.isNaN(mIdx) || Number.isNaN(refIdx)) return false;
   return mIdx > refIdx;
 };

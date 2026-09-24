@@ -64,9 +64,10 @@ export default function MeterInvoiceTab({
   getVietQRContent,
   submitting, elecPhoto, waterPhoto,
   paidAhead = false,
-  payableMonths = [], nextPayableMonth, selectedMonth, setSelectedMonth,
+  monthChoices = [], nextPayableMonth, selectedMonth, setSelectedMonth,
 }) {
   const s = settings?.settings || {};
+  const statusLabel = { paid: "- đã đóng", submitted: "- chờ xác nhận", due: "- chọn để đóng", locked: "- khóa: đóng tháng trước trước" };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -81,7 +82,7 @@ export default function MeterInvoiceTab({
           </Box>
         </Box>
 
-        {!paidAhead && payableMonths.length > 1 && (
+        {!paidAhead && monthChoices.length > 0 && (
           <Box sx={{ mb: 3 }}>
             <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: t.colors.ink, mb: 0.75 }}>
               Chọn tháng muốn đóng
@@ -92,15 +93,17 @@ export default function MeterInvoiceTab({
               onChange={(e) => setSelectedMonth(e.target.value)}
               sx={{ "& .MuiOutlinedInput-root": { fontSize: "0.75rem", bgcolor: "#fff", borderRadius: "10px", fontWeight: 700 } }}
             >
-              {payableMonths.map((m) => (
-                <MenuItem key={m} value={m} disabled={m !== nextPayableMonth}>
-                  Tháng {m}{m !== nextPayableMonth ? " (cần đóng tháng trước)" : ""}
+              {monthChoices.map((c) => (
+                <MenuItem key={c.month} value={c.month} disabled={!c.selectable}>
+                  Tháng {c.month} {statusLabel[c.status] || ""}
                 </MenuItem>
               ))}
             </TextField>
-            <Typography sx={{ fontSize: "0.6875rem", color: t.colors.muted, fontWeight: 500, mt: 0.75 }}>
-              Phải đóng tuần tự để tính đúng tiền điện/nước. Bạn còn {payableMonths.length} tháng chưa đóng.
-            </Typography>
+            {monthChoices.filter((c) => c.status === "locked").length > 0 && (
+              <Typography sx={{ fontSize: "0.6875rem", color: t.colors.muted, fontWeight: 500, mt: 0.75 }}>
+                Các tháng sau bị khóa: phải đóng tuần tự để tính đúng tiền điện/nước.
+              </Typography>
+            )}
           </Box>
         )}
 
