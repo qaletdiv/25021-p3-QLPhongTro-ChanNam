@@ -4,6 +4,7 @@ import { Box, Typography, Chip, Table, TableHead, TableRow, TableCell, TableBody
 import HistoryIcon from "@mui/icons-material/History";
 import { formatCurrency } from "../../utils/format";
 import { tokens as t } from "../../design/tokens";
+import TenantInvoicePhoto from "./TenantInvoicePhoto";
 
 const statusLabel = { pending: "Chờ thu tiền", submitted: "Đã gửi chỉ số", paid: "Đã thanh toán" };
 
@@ -36,7 +37,9 @@ export default function InvoiceHistoryTable({ invoices }) {
               <TableCell>Tháng</TableCell>
               <TableCell align="right">Tiền phòng</TableCell>
               <TableCell align="right">Tiền điện (kWh)</TableCell>
-              <TableCell align="right">Tiền nước (m³)</TableCell>
+              <TableCell>Hình điện</TableCell>
+              <TableCell align="right">Tiền nước (m3)</TableCell>
+              <TableCell>Hình nước</TableCell>
               <TableCell align="right">Phí khác</TableCell>
               <TableCell align="right">Tổng</TableCell>
               <TableCell>Trạng thái</TableCell>
@@ -48,7 +51,13 @@ export default function InvoiceHistoryTable({ invoices }) {
                 <TableCell sx={{ color: t.colors.ink }}>{inv.month}</TableCell>
                 <AmountCell amount={inv.roomPrice} />
                 <MeterCell cost={inv.electricityCost} oldVal={inv.electricityOld} newVal={inv.electricityNew} unit="kWh" />
-                <MeterCell cost={inv.waterCost} oldVal={inv.waterOld} newVal={inv.waterNew} unit="m³" />
+                <TableCell>
+                  <TenantInvoicePhoto photo={inv.electricityPhoto} alt={`Ảnh điện ${inv.month}`} />
+                </TableCell>
+                <MeterCell cost={inv.waterCost} oldVal={inv.waterOld} newVal={inv.waterNew} unit="m3" />
+                <TableCell>
+                  <TenantInvoicePhoto photo={inv.waterPhoto} alt={`Ảnh nước ${inv.month}`} />
+                </TableCell>
                 <AmountCell amount={inv.serviceFee + inv.otherFees} />
                 <TableCell align="right" sx={{ color: t.colors.ink, fontWeight: 600 }}>{formatCurrency(inv.total)}</TableCell>
                 <TableCell>
@@ -65,7 +74,7 @@ export default function InvoiceHistoryTable({ invoices }) {
             ))}
             {invoices.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ color: t.colors.muted, py: 4 }}>Chưa có hóa đơn nào</TableCell>
+                <TableCell colSpan={9} align="center" sx={{ color: t.colors.muted, py: 4 }}>Chưa có hóa đơn nào</TableCell>
               </TableRow>
             )}
           </TableBody>
